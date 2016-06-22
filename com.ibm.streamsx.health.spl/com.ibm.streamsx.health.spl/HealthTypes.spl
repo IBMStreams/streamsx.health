@@ -1,0 +1,9 @@
+//*******************************************************************************
+//* Copyright (C) 2016 International Business Machines Corporation
+//* All Rights Reserved
+//*******************************************************************************
+
+namespace com.ibm.streamsx.health.spl ;
+
+type Observation_T = rstring ts, rstring location, rstring observationId,
+	rstring observationValue, rstring unit;

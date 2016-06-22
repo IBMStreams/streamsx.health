@@ -1,0 +1,33 @@
+//*******************************************************************************
+//* Copyright (C) 2016 International Business Machines Corporation
+//* All Rights Reserved
+//*******************************************************************************
+
+namespace com.ibm.streamsx.health.spl ;
+
+composite IngestObservation
+{
+	param
+		expression<rstring> $topic : "oru01";
+
+	graph
+		(stream<Observation_T> Import_1_out0) as Import_1 = Import()
+		{
+			param
+				subscription : __spl_exportType == "topic" && __spl_topic ==
+					$topic ;
+		}
+
+		() as Custom_2 = Custom(Import_1_out0 as inputStream)
+		{
+			logic
+				onTuple inputStream :
+				{
+					printStringLn((rstring)inputStream);
+
+				}
+
+		}
+
+}
+
