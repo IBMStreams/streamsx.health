@@ -14,6 +14,7 @@ The initial contribution consists of:
 When a message is recieved by the server, the server transforms the messages to SPL Tuples.  The SPL stream is then published with a specified topic.  Downstream applications can subscribe to that topic to analyze the.
 
 This contribution contains two projects:
+
 1.  com.ibm.streamsx.health.hapi - This project contains the microservice for ingesting HL7 messages using the MLLP protocol.  The service is implemented using the Java Application API from the streamsx.topology project.  This project depends on the [HAPI](http://hl7api.sourceforge.net) project, which provides the underlying support for MLLP and HL7 Message Parsing.
 2.  com.ibm.streamsx.health.spl - This is a SPL project, demonstrating how to ingest data from the microservice.
 
@@ -27,11 +28,13 @@ This contribution contains two projects:
 ## Setting up Environment Variables:
 
 Set the following environment variables before starting Streams Studio:
+
 export STREAMS_ZKCONNECT=<zookeeper ensemble>
 export STREAMS_DOMAIN_ID=<name of the domain>
 export STREAMS_INSTANCE_ID=<name of instance to submit your job to>
 
 ## Building the Projects
+
 1.  Fork this project
 2.  Clone the project to your local file system.  e.g.  `git clone https://github.com/IBMStreams/streamsx.health.git`
 3.  Copy the jar files from <HAPI Install>/hai-dist-2/lib/ directory to com.ibm.streamsx.health.hapi/opt/lib directory 
