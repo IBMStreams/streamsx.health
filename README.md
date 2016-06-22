@@ -20,6 +20,7 @@ This contribution contains two projects:
 # Getting Started
 
 ## Downloading Dependencies
+
 1.  Download the HAPI project from here:  [HAPI Download](https://sourceforge.net/projects/hl7api/files/hl7api/)  The health toolkit is built on v2.2.
 2.  Extract HAPI to your file system.
 
