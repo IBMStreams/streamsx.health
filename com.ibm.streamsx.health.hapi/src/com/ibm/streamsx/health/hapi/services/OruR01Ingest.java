@@ -50,8 +50,6 @@ public class OruR01Ingest extends AbstractHL7Service {
 			return mapper.messageToModel(message);			
 		});
 		
-		observationStream.print();
-		
 		StreamSchema schema = Type.Factory.getStreamSchema(Observation.OBSERVATION_SCHEMA_SPL);
 		
 		SPLStream splObservations = SPLStreams.convertStream(observationStream, new BiFunction<Observation, OutputTuple, OutputTuple>() {
