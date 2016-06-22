@@ -29,9 +29,9 @@ This contribution contains two projects:
 
 Set the following environment variables before starting Streams Studio:
 
-* export STREAMS_ZKCONNECT=<zookeeper ensemble>
-* export STREAMS_DOMAIN_ID=<name of the domain>
-* export STREAMS_INSTANCE_ID=<name of instance to submit your job to>
+* export STREAMS_ZKCONNECT=`<zookeeper ensemble>`
+* export STREAMS_DOMAIN_ID=`<name of the domain>`
+* export STREAMS_INSTANCE_ID=`<name of instance to submit your job to>`
 
 ## Building the Projects
 
