@@ -29,9 +29,9 @@ This contribution contains two projects:
 
 Set the following environment variables before starting Streams Studio:
 
-export STREAMS_ZKCONNECT=<zookeeper ensemble>
-export STREAMS_DOMAIN_ID=<name of the domain>
-export STREAMS_INSTANCE_ID=<name of instance to submit your job to>
+* export STREAMS_ZKCONNECT=<zookeeper ensemble>
+* export STREAMS_DOMAIN_ID=<name of the domain>
+* export STREAMS_INSTANCE_ID=<name of instance to submit your job to>
 
 ## Building the Projects
 
@@ -48,11 +48,12 @@ export STREAMS_INSTANCE_ID=<name of instance to submit your job to>
 ## Running the application
 
 To run the application in Streams Studio:
+
 1.  Open OruR01Ingest class from com.ibm.streamsx.health.hapi.services
 2.  Create a Java launch configuration for this class.  
 3.  In the launch configuration, optionally specify the following as the VM argument:
-    * -Dport=<port number>
-    * -Dtopic=<topic to publish to>
+    * -Dport=`<port number>`
+    * -Dtopic=`<topic to publish to>`
 4.  Run this launch configuration.  This will generate the SPL application, and submit it to the instance as specified in the environment variables earlier.
 5.  To check that the microservice is running correctly, run the com.ibm.streamsx.health.spl::IngestObservation application from the com.ibm.streamsx.health.spl project.  By default, this application subscribes to "oru01" as the topic.  Modify this to match the topic being published by the service.
 
