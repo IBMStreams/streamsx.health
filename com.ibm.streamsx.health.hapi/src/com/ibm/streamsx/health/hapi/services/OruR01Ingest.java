@@ -23,6 +23,11 @@ import ca.uhn.hl7v2.model.Message;
 
 public class OruR01Ingest extends AbstractHL7Service {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public static void main(String[] args) {
 		
 		String port = System.getProperty("port", "8080");
