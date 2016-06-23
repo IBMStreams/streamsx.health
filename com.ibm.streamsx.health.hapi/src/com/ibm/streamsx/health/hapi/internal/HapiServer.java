@@ -8,7 +8,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 
 import org.apache.log4j.Logger;
 
-import com.ibm.streamsx.health.hapi.mapper.ObxToSplMapper;
+import com.ibm.streams.operator.log4j.TraceLevel;
 
 import ca.uhn.hl7v2.DefaultHapiContext;
 import ca.uhn.hl7v2.HapiContext;
@@ -56,8 +56,7 @@ public class HapiServer {
 		try {
 			messageQueue.put(message);
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			TRACE.log(TraceLevel.ERROR, "Unable to write to message queue.", e);
 		}
 	}
 	

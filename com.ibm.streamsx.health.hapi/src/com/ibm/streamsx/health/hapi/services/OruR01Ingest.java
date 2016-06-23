@@ -57,6 +57,7 @@ public class OruR01Ingest extends AbstractHL7Service {
 		
 		StreamSchema schema = Type.Factory.getStreamSchema(Observation.OBSERVATION_SCHEMA_SPL);
 		
+		@SuppressWarnings("serial")
 		SPLStream splObservations = SPLStreams.convertStream(observationStream, new BiFunction<Observation, OutputTuple, OutputTuple>() {
 
 			@Override

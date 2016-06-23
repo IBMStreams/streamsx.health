@@ -8,6 +8,10 @@ package com.ibm.streamsx.health.hapi.internal;
 import java.io.IOException;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
+
+import com.ibm.streams.operator.log4j.TraceLevel;
+
 import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.model.Message;
 import ca.uhn.hl7v2.protocol.ReceivingApplication;
@@ -16,6 +20,8 @@ import ca.uhn.hl7v2.protocol.ReceivingApplicationException;
 public class HapiMessageHandler implements ReceivingApplication {
 	
 	private HapiServer server;
+	
+	private static final Logger TRACE = Logger.getLogger(HapiMessageHandler.class);
 	
 	public HapiMessageHandler(HapiServer server) {
 		this.server = server;
@@ -35,8 +41,7 @@ public class HapiMessageHandler implements ReceivingApplication {
 			ack = theMessage.generateACK();
 			return ack;
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			TRACE.log(TraceLevel.ERROR, "Unable to generate ack message", e);
 		}
 		return theMessage;
 	

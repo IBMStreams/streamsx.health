@@ -7,9 +7,6 @@ package com.ibm.streamsx.health.hapi.internal;
 import java.io.IOException;
 import java.util.concurrent.Executors;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-
 import ca.uhn.hl7v2.DefaultHapiContext;
 import ca.uhn.hl7v2.HapiContext;
 import ca.uhn.hl7v2.app.Connection;

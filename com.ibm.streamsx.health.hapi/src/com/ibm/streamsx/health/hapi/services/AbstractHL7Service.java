@@ -12,6 +12,11 @@ import com.ibm.streamsx.topology.Topology;
 
 abstract public class AbstractHL7Service implements Serializable{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	protected static Logger TRACE = Logger.getLogger(AbstractHL7Service.class);
 	
 	private int port;
