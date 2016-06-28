@@ -33,11 +33,26 @@ Set the following environment variables before starting Streams Studio:
 * export STREAMS_DOMAIN_ID=`<name of the domain>`
 * export STREAMS_INSTANCE_ID=`<name of instance to submit your job to>`
 
-## Building the Projects
+## Building the Microservice at Command Line
+
+1.  `cd com.ibm.streamsx.health.hapi`
+1.  `gradle build` - This steps download all required dependencies and will build a `release` folder that contains everything you need to run.
+
+## Running the Microservice at Command Line
+
+1.  `cd com.ibm.streamsx.health.hapi/release`
+1.  `./run.sh` - This runs the microservice Java code and submits the job to the streams instance as specified in your environment variable.  
+1.  To customize the port and topic for the microservice, add the following VM arguments when running run.sh
+    * -Dport=`<port number>`
+    * -Dtopic=`<topic to publish to>`
+1.  To check that the microservice is running correctly, run the com.ibm.streamsx.health.spl::IngestObservation application from the com.ibm.streamsx.health.spl project.  By default, this application subscribes to "oru01" as the topic.  Modify this to match the topic being published by the service.
+
+
+## Building the Projects in Eclipse
 
 1.  Fork this project
 2.  Clone the project to your local file system.  e.g.  `git clone https://github.com/IBMStreams/streamsx.health.git`
-3.  Copy the jar files from <HAPI Install>/hai-dist-2/lib/ directory to com.ibm.streamsx.health.hapi/opt/lib directory 
+3.  `gradle deps` - This will download dependencies and place them in the correct folder in your project
 4.  In Streams Studio:
     1. File -> Import -> General -> Existing Projects Into Workspace
     2. Import the following projects:
@@ -45,7 +60,7 @@ Set the following environment variables before starting Streams Studio:
         2.  com.ibm.streamsx.health.spl
 5.  You may see that the build path for com.ibm.streamsx.health.hapi is not set up correctly and that it cannot find com.ibm.streamsx.topology.jar.  This jar file can be found in <Streams Install>/toolkits/com.ibm.streamsx.topology/lib directory if you are running Streams v4.1.1.
 
-## Running the application
+## Running the application in Eclipse
 
 To run the application in Streams Studio:
 
