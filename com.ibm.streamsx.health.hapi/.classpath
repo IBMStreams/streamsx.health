@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="src/main/java"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
 	<classpathentry kind="con" path="com.ibm.streams.java/com.ibm.streams.operator"/>
 	<classpathentry kind="lib" path="opt/lib/hapi-base-2.2.jar"/>
-	<classpathentry kind="lib" path="opt/lib/hapi-examples-2.2.jar"/>
-	<classpathentry kind="lib" path="opt/lib/hapi-hl7overhttp-2.2.jar"/>
 	<classpathentry kind="lib" path="opt/lib/hapi-structures-v21-2.2.jar"/>
 	<classpathentry kind="lib" path="opt/lib/hapi-structures-v22-2.2.jar"/>
 	<classpathentry kind="lib" path="opt/lib/hapi-structures-v23-2.2.jar"/>
