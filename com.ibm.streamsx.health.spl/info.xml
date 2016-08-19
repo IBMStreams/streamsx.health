@@ -3,7 +3,7 @@
   <info:identity>
     <info:name>com.ibm.streamsx.health.spl</info:name>
     <info:description></info:description>
-    <info:version>0.1.0</info:version>
+    <info:version>0.2.0</info:version>
     <info:requiredProductVersion>4.1.1.0</info:requiredProductVersion>
   </info:identity>
   <info:dependencies>

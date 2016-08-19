@@ -27,6 +27,7 @@ import ca.uhn.hl7v2.model.v26.group.ORU_R01_PATIENT;
 import ca.uhn.hl7v2.model.v26.group.ORU_R01_PATIENT_RESULT;
 import ca.uhn.hl7v2.model.v26.group.ORU_R01_VISIT;
 import ca.uhn.hl7v2.model.v26.message.ORU_R01;
+import ca.uhn.hl7v2.model.v26.segment.MSH;
 import ca.uhn.hl7v2.model.v26.segment.OBR;
 import ca.uhn.hl7v2.model.v26.segment.OBX;
 import ca.uhn.hl7v2.model.v26.segment.PV1;
@@ -44,11 +45,17 @@ public class ObxToSplMapper implements Serializable {
 
 		if (message instanceof ORU_R01) {
 			ORU_R01 oruMsg = (ORU_R01) message;
-
+			
 			String obxTs = "";
 			String obxLocation = "";
+			String sendingApp = "";
+			String sendingFacility = "";
 
 			try {
+				MSH msh = oruMsg.getMSH();
+				sendingApp = msh.getSendingApplication().encode();
+				sendingFacility = msh.getSendingFacility().encode();
+				
 				List<ORU_R01_PATIENT_RESULT> patient_RESULTAll = ((ORU_R01) message).getPATIENT_RESULTAll();
 
 				for (ORU_R01_PATIENT_RESULT result : patient_RESULTAll) {
@@ -66,7 +73,7 @@ public class ObxToSplMapper implements Serializable {
 					List<ORU_R01_OBSERVATION> observationAll = order_OBSERVATION.getOBSERVATIONAll();
 					for (ORU_R01_OBSERVATION oru_R01_OBSERVATION : observationAll) {
 						
-						parseOBX(observations, obxTs, obxLocation, oru_R01_OBSERVATION.getOBX());
+						parseOBX(observations, obxTs, obxLocation, oru_R01_OBSERVATION.getOBX(), sendingApp, sendingFacility);
 					}
 
 				}
@@ -84,12 +91,12 @@ public class ObxToSplMapper implements Serializable {
 				if (tmp != null) {
 					PV1 pv1 = (PV1) tmp;
 					PL location = pv1.getAssignedPatientLocation();
-					obxLocation = location.getRoom().getValue();
+					obxLocation = location.encode();
 				}
 
 				Structure[] structures = oruMsg.getAll("OBX");
 				for (Structure structure : structures) {
-					parseOBX(observations, obxTs, obxLocation, (OBX)structure);
+					parseOBX(observations, obxTs, obxLocation, (OBX)structure, sendingApp, sendingFacility);
 				}
 			} catch (HL7Exception e) {
 				if (TRACE.isDebugEnabled())
@@ -102,7 +109,7 @@ public class ObxToSplMapper implements Serializable {
 	}
 
 	private void parseOBX(ArrayList<Observation> observations, String obxTs, String obxLocation,
-			OBX obx) throws HL7Exception {
+			OBX obx, String sendingApp, String sendingFacility) throws HL7Exception {
 		
 		Observation observation = new Observation();
 		observation.setTs(obxTs);
@@ -113,6 +120,9 @@ public class ObxToSplMapper implements Serializable {
 
 		observation.setObservationId(observationId);
 		observation.setUnit(unit);
+		
+		observation.setSendingApp(sendingApp);
+		observation.setSendingFacility(sendingFacility);
 
 		Varies[] values = obx.getObservationValue();
 
@@ -131,6 +141,8 @@ public class ObxToSplMapper implements Serializable {
 		outTuple.setString("observationId", observation.getObservationId());
 		outTuple.setString("observationValue", observation.getObservationValue());
 		outTuple.setString("unit", observation.getUnit());
+		outTuple.setString("sendingApp", observation.getSendingApp());
+		outTuple.setString("sendingFacility", observation.getSendingFacility());
 		return outTuple;
 	}
 

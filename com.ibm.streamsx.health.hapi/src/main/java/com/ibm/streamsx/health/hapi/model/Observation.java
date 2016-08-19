@@ -21,9 +21,11 @@ public class Observation implements Serializable{
 	private String observationId = EMPTYSTR;
 	private String observationValue = EMPTYSTR;
 	private String unit = EMPTYSTR;
+	private String sendingApp = EMPTYSTR;
+	private String sendingFacility = EMPTYSTR;
 
 	// This is the SPL type defined by the toolkit.  This must match the Observation model class.
-	public static final String OBSERVATION_SCHEMA_SPL = "tuple<rstring ts, rstring location, rstring observationId,rstring observationValue, rstring unit>";
+	public static final String OBSERVATION_SCHEMA_SPL = "tuple<rstring ts, rstring location, rstring observationId,rstring observationValue, rstring unit, rstring sendingApp, rstring sendingFacility>";
 	
 	public Observation() {
 	}
@@ -74,6 +76,22 @@ public class Observation implements Serializable{
 			this.unit = unit;
 	}
 	
+	public void setSendingApp(String sendingApp) {
+		this.sendingApp = sendingApp;
+	}
+	
+	public String getSendingApp() {
+		return sendingApp;
+	}
+	
+	public void setSendingFacility(String sendingFacility) {
+		this.sendingFacility = sendingFacility;
+	}
+	
+	public String getSendingFacility() {
+		return sendingFacility;
+	}
+	
 	@Override
 	public String toString() {
 		StringBuffer buffer = new StringBuffer();
@@ -82,6 +100,8 @@ public class Observation implements Serializable{
 		buffer.append("ObxId: " + observationId + ", ");
 		buffer.append("ObxValue: " + observationValue + ", ");
 		buffer.append("ObxUnit: " + unit + ", ");
+		buffer.append("sendingApp: " + sendingApp + ",");
+		buffer.append("sendingFacility: " + sendingFacility + ",");
 		return buffer.toString();
 	}
 
