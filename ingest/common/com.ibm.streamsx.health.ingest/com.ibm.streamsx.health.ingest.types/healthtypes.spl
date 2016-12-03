@@ -1,0 +1,33 @@
+// begin_generated_IBM_copyright_prolog                                       
+//                                                                            
+// This is an automatically generated copyright prolog.                       
+// After initializing,  DO NOT MODIFY OR MOVE                                 
+//****************************************************************************
+// Copyright (C) 2016 International Business Machines Corporation             
+// All Rights Reserved                                                        
+//****************************************************************************
+// end_generated_IBM_copyright_prolog                                         
+namespace com.ibm.streamsx.health.ingest.types ;
+
+
+type Reading_T = int64 ts, rstring readingType, float64 value, rstring uom;
+
+type Observation_T = Device_T device, set<rstring> patientId, ReadingSource_T readingSource, Reading_T reading;
+	
+type Patient_T = set<rstring> ids, rstring name, rstring gender, rstring DOB, rstring status ;	
+	
+type Location_T = rstring id, rstring name, rstring locationType;	
+
+type ReadingSource_T = rstring id, rstring sourceType, rstring deviceId;
+
+type Device_T = rstring id, rstring locationId;
+
+/**
+ * Schema type for service publish
+ */
+type PublishJson_T = rstring jsonString ;
+
+
+
+//type SignalECGInternal_T = float64 ts, int32 ch1, int32 ch2 ;
+//type PatientECGInternal_T = SignalECGInternal_T, tuple<rstring patientId> ;
