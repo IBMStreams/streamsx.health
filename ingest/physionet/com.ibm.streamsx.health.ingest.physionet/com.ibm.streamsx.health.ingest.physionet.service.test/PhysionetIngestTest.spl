@@ -1,0 +1,54 @@
+// begin_generated_IBM_copyright_prolog                                       
+//                                                                            
+// This is an automatically generated copyright prolog.                       
+// After initializing,  DO NOT MODIFY OR MOVE                                 
+//****************************************************************************
+// Copyright (C) 2016 International Business Machines Corporation             
+// All Rights Reserved                                                        
+//****************************************************************************
+// end_generated_IBM_copyright_prolog                                         
+namespace com.ibm.streamsx.health.ingest.physionet.service.test ;
+
+use com.ibm.streamsx.health.ingest.physionet.service::* ;
+use com.ibm.streamsx.topology.topic::Subscribe ;
+use com.ibm.streamsx.json::JSONToTuple ;
+use com.ibm.streamsx.health.ingest.physionet.service::PatientECG_T ;
+use com.ibm.streamsx.inet.rest::HTTPTupleView ;
+
+use com.ibm.streamsx.health.ingest.types::*;
+
+composite PhysionetIngestTest
+{
+	graph
+		(stream<PublishJson_T> Subscribe_1_out0) as Subscribe_1 = Subscribe()
+		{
+			param
+				topic : TOPIC() ;
+				streamType : PublishJson_T ;
+		}
+
+		() as Custom_2 = Custom(JSONToTuple_3_out0 as inputStream)
+		{
+			logic
+				onTuple inputStream :
+				{
+					printStringLn((rstring) inputStream) ;
+				}
+
+		}
+
+		(stream<Observation_T> JSONToTuple_3_out0) as JSONToTuple_3 =
+			JSONToTuple(Subscribe_1_out0)
+		{
+		}
+
+		() as ECGSignal = HTTPTupleView(JSONToTuple_3_out0 as inPort0Alias)
+		{
+			window
+				inPort0Alias : sliding, count(1000), time(1.0) ;
+			param
+				port: 8080;
+		}
+
+}
+

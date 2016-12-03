@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- begin_generated_IBM_copyright_prolog                                       -->
+<!--                                                                            -->
+<!-- This is an automatically generated copyright prolog.                       -->
+<!-- After initializing,  DO NOT MODIFY OR MOVE                                 -->
+<!--****************************************************************************-->
+<!-- Copyright (C) 2016 International Business Machines Corporation             -->
+<!-- All Rights Reserved                                                        -->
+<!--****************************************************************************-->
+<!-- end_generated_IBM_copyright_prolog                                         -->
+<operatorModel xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.ibm.com/xmlns/prod/streams/spl/operator" xmlns:cmn="http://www.ibm.com/xmlns/prod/streams/spl/common" xsi:schemaLocation="http://www.ibm.com/xmlns/prod/streams/spl/operator operatorModel.xsd">
+  <cppOperatorModel>
+    <context>
+      <description></description>
+      <customOutputFunctions>
+        <customOutputFunction>
+          <name>physionet_functions</name>
+          <function>
+            <description></description>
+            <prototype>&lt;any T> T getSignal(int32 signalIndex)</prototype>
+          </function>
+          <function>
+            <description></description>
+            <prototype>&lt;any T> T getNormalizedChannel(int32 channel)</prototype>
+          </function>
+          <function>
+            <description></description>
+            <prototype>&lt;any T> T getTimestamp()</prototype>
+          </function>
+          <function>
+            <description></description>
+            <prototype>&lt;any T> T AsIs()</prototype>
+          </function>
+        </customOutputFunction>
+      </customOutputFunctions>
+      <libraryDependencies>
+        <library>
+          <cmn:description></cmn:description>
+          <cmn:managedLibrary>
+            <cmn:lib>wfdb</cmn:lib>
+            <!--  <cmn:libPath>@WFDB_LIB_PATH@</cmn:libPath>
+            <cmn:includePath>@WFDB_INCLUDE_PATH@</cmn:includePath> -->
+            <cmn:libPath>../..//impl/opt/lib/</cmn:libPath>
+            <cmn:includePath>../../impl/opt/include/wfdb/</cmn:includePath>
+          </cmn:managedLibrary>
+        </library>
+      </libraryDependencies>
+      <providesSingleThreadedContext>Never</providesSingleThreadedContext>
+      <allowCustomLogic>true</allowCustomLogic>
+    </context>
+    <parameters>
+      <description></description>
+      <allowAny>false</allowAny>
+      <parameter>
+        <name>recordName</name>
+        <description></description>
+        <optional>true</optional>
+        <rewriteAllowed>true</rewriteAllowed>
+        <expressionMode>Expression</expressionMode>
+        <type>rstring</type>
+        <cardinality>-1</cardinality>
+      </parameter>
+      <parameter>
+        <name>iterations</name>
+        <description></description>
+        <optional>true</optional>
+        <rewriteAllowed>true</rewriteAllowed>
+        <expressionMode>Constant</expressionMode>
+        <type>int64</type>
+        <cardinality>-1</cardinality>
+      </parameter>
+      <parameter>
+        <name>normalize</name>
+        <description></description>
+        <optional>true</optional>
+        <rewriteAllowed>true</rewriteAllowed>
+        <expressionMode>Constant</expressionMode>
+        <type>boolean</type>
+        <cardinality>-1</cardinality>
+      </parameter>
+    </parameters>
+    <inputPorts>
+      <inputPortOpenSet>
+        <tupleMutationAllowed>true</tupleMutationAllowed>
+        <windowingMode>OptionallyWindowed</windowingMode>
+        <windowPunctuationInputMode>WindowBound</windowPunctuationInputMode>
+      </inputPortOpenSet>
+    </inputPorts>
+    <outputPorts>
+      <outputPortOpenSet>
+        <description></description>
+        <expressionMode>Expression</expressionMode>
+        <autoAssignment>false</autoAssignment>
+        <completeAssignment>false</completeAssignment>
+        <rewriteAllowed>true</rewriteAllowed>
+        <outputFunctions>
+          <default>AsIs</default>
+          <type>physionet_functions</type>
+        </outputFunctions>
+        <windowPunctuationOutputMode>Generating</windowPunctuationOutputMode>
+        <windowPunctuationInputPort>-1</windowPunctuationInputPort>
+        <tupleMutationAllowed>true</tupleMutationAllowed>
+        <allowNestedCustomOutputFunctions>false</allowNestedCustomOutputFunctions>
+      </outputPortOpenSet>
+    </outputPorts>
+  </cppOperatorModel>
+</operatorModel>
