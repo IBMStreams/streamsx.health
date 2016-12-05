@@ -1,0 +1,67 @@
+apply plugin: 'java'
+
+def STREAMS_INSTALL = System.getenv("STREAMS_INSTALL")
+def JsonToolkitPath = STREAMS_INSTALL + '/toolkits/com.ibm.streamsx.json'
+def TopologyToolkitPath = STREAMS_INSTALL + '/toolkits/com.ibm.streamsx.topology'
+def HealthIngestToolkitPath = '../../ingest/common/com.ibm.streamsx.health.ingest'
+def TimeseriesToolkitPath = STREAMS_INSTALL + '/toolkits/com.ibm.streams.timeseries'
+
+sourceSets {
+    main {
+        java {
+            srcDir 'impl/java/src'
+        }
+    }
+}
+
+repositories { 
+    mavenCentral() 
+}
+
+dependencies {
+    compile fileTree(dir: System.getenv("STREAMS_INSTALL") + '/lib', include: ['*.jar'])
+    compile fileTree(dir: 'opt/downloaded', include: ['*.jar'])
+}
+
+task buildToolkit(type: Exec) {
+    commandLine System.getenv("STREAMS_INSTALL") + '/bin/spl-make-toolkit', '-i', '.' 
+}
+
+task buildIngestToolkit(type: GradleBuild) {
+    buildFile = '../../ingest/common/com.ibm.streamsx.health.ingest/build.gradle'
+    tasks = ['build']
+}
+
+task buildServices(dependsOn: 'buildIngestToolkit') {
+    doLast {
+        exec {
+            commandLine STREAMS_INSTALL + '/bin/sc', '-M', 'com.ibm.streamsx.health.analysis.ecg.service::RPeakDetectService', '--output-directory=output/com.ibm.streamsx.health.analytics.ecg.service.RPeakDetectService.BuildConfig', '-a', '-t', JsonToolkitPath + ':' + TopologyToolkitPath + ':' + HealthIngestToolkitPath + ':' + TimeseriesToolkitPath
+        }
+    }
+}
+
+task cleanToolkit {
+    doLast {
+        exec {
+            commandLine System.getenv("STREAMS_INSTALL") + '/bin/spl-make-toolkit', '-i', '.', '-c'
+        }
+        exec {
+            commandLine 'rm', '-rf', 'output'
+        }
+    }   
+}
+
+task copyJarToImpl(type: Copy) {
+    from fileTree(dir : 'build/libs', include : ['*.jar'])
+    into 'impl/lib'
+}
+
+task deleteDeps(type: Delete) {
+    delete fileTree(dir: 'impl/lib', include: ['*.jar'])
+    delete 'impl/java/bin'
+}
+
+build.dependsOn buildToolkit
+build.finalizedBy(copyJarToImpl)
+clean.dependsOn deleteDeps, cleanToolkit
+

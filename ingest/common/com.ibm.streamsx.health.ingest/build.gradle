@@ -19,3 +19,23 @@ sourceSets {
 }
 
 libsDirName = '../lib'
+
+task buildToolkit(type: Exec) {
+    commandLine System.getenv("STREAMS_INSTALL") + '/bin/spl-make-toolkit', '-i', '.' 
+}
+
+task cleanToolkit {
+    doLast {
+        exec {
+            commandLine System.getenv("STREAMS_INSTALL") + '/bin/spl-make-toolkit', '-i', '.', '-c'
+        }
+    }   
+}
+
+task deleteDeps(type: Delete) {
+    delete 'lib'
+    delete 'output'
+}
+
+build.dependsOn buildToolkit
+clean.dependsOn deleteDeps, cleanToolkit
