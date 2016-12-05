@@ -5,3 +5,4 @@ This community is focused on using Streams in the health care industry.  Go to t
 https://github.com/IBMStreams/streamsx.health/wiki
 
 
+<iframe id="roadmap" src="https://github.com/IBMStreams/streamsx.health/wiki/Streams-Healthcare-Analytics-Platform-Roadmap"></iframe>

@@ -1,0 +1,79 @@
+<project name="JupyterDemoMulti-EXT" default="all">
+    <dirname property="ext.dir" file="${ant.file}" />
+
+    <!-- If STREAMS_INSTALL property is not set, set it to a "bad" value    -->
+    <condition property="STREAMS_INSTALL" value="NOTFOUND">
+        <not><isset property="STREAMS_INSTALL"/></not>
+    </condition>
+
+    <!-- If the environment variable is set, use this, otherwise use the    -->
+    <!-- STREAMS_INSTALL property                                           -->
+    <property environment="env" />
+    <condition property="streams.install"
+               value="${env.STREAMS_INSTALL}"
+               else="${STREAMS_INSTALL}">
+        <isset property="env.STREAMS_INSTALL" />
+    </condition> 
+
+    <property name="spl-make-toolkit" value="${streams.install}/bin/spl-make-toolkit" />
+    <property name="dep.archive" value="deps.tar.gz" />
+
+    <target name="all" depends="extract-deps, compile" />
+
+    <target name="extract-deps">
+        <echo>${ext.dir}</echo>
+        <exec executable="tar" dir="${ext.dir}">
+            <arg value="-xpvzf" />
+            <arg value="${dep.archive}" />
+        </exec>
+<!--        <untar src="${ext.dir}/${dep.archive}" dest="${ext.dir}" compression="gzip"/> -->
+<!--        <chmod file="${ext.dir}/streamsx.topology/com.ibm.streamsx.topology/opt/python/templates/common/pyversion.sh" perm="u+x"/> -->
+    </target>
+
+    <target name="compile">
+        <ant antfile="${ext.dir}/com.ibm.streamsx.health/build.xml" useNativeBasedir="true" target="all" />
+        <ant antfile="${ext.dir}/streamsx.inet/com.ibm.streamsx.inet/build.xml" useNativeBasedir="true" target="all" />
+        <exec executable="${spl-make-toolkit}" dir="${ext.dir}/streamsx.topology/com.ibm.streamsx.topology">
+            <arg value="-i" />
+            <arg value="${ext.dir}/streamsx.topology/com.ibm.streamsx.topology" />
+        </exec>
+    </target>
+
+    <target name="package-deps">
+        <exec executable="tar" dir="${ext.dir}">
+            <arg value="-cpzvf" />
+            <arg value="${ext.dir}/${dep.archive}" />
+            <arg value="biosppy_streaming" />
+            <!--<arg value="biosppy" />-->
+            <arg value="com.ibm.streamsx.health" />
+            <arg value="streamsx.inet" />
+            <arg value="streamsx.topology" />
+        </exec>
+        <!--
+        <tar destfile="${ext.dir}/deps.tar.gz" compression="gzip" longfile="gnu">
+            <tarfileset dir="${ext.dir}/.." filemode="755">
+                <include name="${ext.dir}/streamsx.topology/com.ibm.streamsx.topology/opt/python/templates/common/pyversion.sh" />
+            </tarfileset>
+            <tarfileset dir="${ext.dir}/..">
+                <include name="${ext.dir}/biosppy_streaming/**" />
+                <include name="${ext.dir}/biosppy/**" />
+                <include name="${ext.dir}/streamsx.topology/**" />
+                <include name="${ext.dir}/com.ibm.streamsx.health/**" />
+                <include name="${ext.dir}/streamsx.inet/**" />
+            </tarfileset>
+        </tar>
+        -->
+    </target>       
+
+    <target name="remove-deps">
+        <delete dir="${ext.dir}/biosppy_streaming" />
+        <delete dir="${ext.dir}/biosppy" />
+        <delete dir="${ext.dir}/streamsx.topology" />
+        <delete dir="${ext.dir}/com.ibm.streamsx.health" />
+        <delete dir="${ext.dir}/streamsx.inet" />
+    </target> 
+
+    <target name="clean" depends="remove-deps"/>
+
+</project>
+

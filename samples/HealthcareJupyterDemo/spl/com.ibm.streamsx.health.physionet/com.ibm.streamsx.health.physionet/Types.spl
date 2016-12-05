@@ -1,0 +1,12 @@
+namespace com.ibm.streamsx.health.physionet;
+
+type SignalECG_T = float64 ts, int32 ch1, int32 ch2, float64 frequency, float64 ch1Gain, float64 ch2Gain ;
+type PatientECG_T = SignalECG_T, tuple<rstring patientId> ;
+
+type Observation_T = Patient_T patient, list<Data_T> data;
+type Patient_T = rstring identifier, Name_T name;
+type Name_T = rstring full, rstring family, rstring given;
+type Data_T = rstring label, SampledData_T valueSampledData, CoordinateData_T valueCoordinateData;
+type SampledData_T = Period_T period, list<float64> values, float64 gain, float64 initVal, rstring unit;
+type Period_T = rstring unit, float64 value;
+type CoordinateData_T = list<list<float64>> values;

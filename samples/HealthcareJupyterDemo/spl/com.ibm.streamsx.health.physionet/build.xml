@@ -1,0 +1,90 @@
+<project name="com.ibm.streamsx.health.physionet" default="all">
+    <!-- Resolve the directory that this file is in -->
+    <dirname property="com.ibm.streamsx.health.DIR" file="${ant.file.com.ibm.streamsx.health}"/>
+
+    <!-- the location of the streams installation used to build the toolkit -->
+    <!-- can either be specified by one of the following:                   -->
+    <!-- $STREAMS_INSTALL environment variable (set in invoking environment)-->
+    <!-- ${STREAMS_INSTALL} ant property (set outside of this build.xml)    -->
+
+    <!-- If STREAMS_INSTALL property is not set, set it to a "bad" value    -->
+    <condition property="STREAMS_INSTALL" value="NOTFOUND">
+        <not><isset property="STREAMS_INSTALL"/></not>
+    </condition>
+
+    <!-- If the environment variable is set, use this, otherwise use the    -->
+    <!-- STREAMS_INSTALL property                                           -->
+    <property environment="env" />
+    <condition property="streams.install"
+               value="${env.STREAMS_INSTALL}"
+               else="${STREAMS_INSTALL}">
+        <isset property="env.STREAMS_INSTALL" />
+    </condition>
+
+    <property name="spl-make-toolkit" value="${streams.install}/bin/spl-make-toolkit" />
+    <property name="sc" value="${streams.install}/bin/sc" />
+
+    <property name="toolkit.dir" value="${com.ibm.streamsx.health.DIR}"/>
+    <property name="doc.dir" value="${com.ibm.streamsx.health.DIR}/doc/en_US/spldoc"/>
+ 
+    <!-- THESE PROPERTIES NEED TO BE SET BEFORE EXECUTING -->
+    <condition property="toolkit.path" value="NOTFOUND">
+        <not><isset property="toolkit.path"/></not>
+    </condition>
+
+    <target name="all" depends="check, toolkit" />
+
+    <target name="check">
+        <fail message="Unable to determine streams install location.  One of either $STREAMS_INSTALL environment variable of STREAMS_INSTALL ant property must be set.">
+            <condition>
+                <equals arg1="${streams.install}" arg2="NOTFOUND"/>
+            </condition>
+        </fail>
+    </target>
+
+    <target name="check-toolkit-path">
+        <fail message="The 'toolkit.path' property must be set in order to compile the application">
+            <condition>
+                <equals arg1="${toolkit.path}" arg2="NOTFOUND" />
+            </condition>
+        </fail>
+    </target>
+
+    <target name="toolkit">
+        <exec executable="${spl-make-toolkit}" dir="${toolkit.dir}" failonerror="true">
+            <env key="STREAMS_INSTALL" value="${streams.install}"/>
+            <arg value="-i"/>
+            <arg value="."/>
+            <arg value="-m"/>
+        </exec>
+    </target>
+
+    <target name="compile" depends="check-toolkit-path,check,toolkit">
+        <exec executable="${sc}" dir="${toolkit.dir}" failonerror="true">
+            <env key="STREAMS_INSTALL" value="${streams.install}"/>
+            <arg value="-M" />
+            <arg value="com.ibm.streamsx.health.physionet::PhysionetIngestServiceMulti" />
+            <arg value="-t" />
+            <arg value="${toolkit.path}" />
+            <arg value="--output-dir" />
+            <arg value="${toolkit.dir}/output" />
+        </exec>
+    </target>
+
+    <target name="clean-toolkit">
+        <exec executable="${spl-make-toolkit}" failonerror="true">
+            <env key="STREAMS_INSTALL" value="${streams.install}"/>
+            <arg value="-c"/>
+            <arg value="-i"/>
+            <arg value="."/>
+            <arg value="-m"/>
+        </exec>
+    </target>
+
+    <target name="clean-compile">
+        <delete dir="${toolkit.dir}/output" />
+    </target>
+
+    <target name="clean" depends="clean-compile, clean-toolkit" />
+
+</project>
