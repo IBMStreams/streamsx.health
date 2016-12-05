@@ -2,6 +2,6 @@
 
 This component contains toolkits and artifacts that are common acorss all ingest service.  This component contains:
 
-* Ingest Foundational Toolkit (com.ibm.streamsx.health.ingest) - This toolkit contains the necessary types and connectors ingest services to communicate with downstream services.  For more details about this toolkit, see this page: [Healthcare Ingest Service Framework](https://github.ibm.com/streams/streamsx.health.internal/wiki/Healthcare-Ingest-Service-Framework)
+* Ingest Foundational Toolkit (com.ibm.streamsx.health.ingest) - This toolkit contains the necessary types and connectors for ingest services to communicate with downstream services.  For more details about this toolkit, see this page: [Healthcare Ingest Service Framework](https://github.ibm.com/streams/streamsx.health.internal/wiki/Healthcare-Ingest-Service-Framework)
 
 
