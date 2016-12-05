@@ -1,0 +1,148 @@
+// begin_generated_IBM_copyright_prolog                                       
+//                                                                            
+// This is an automatically generated copyright prolog.                       
+// After initializing,  DO NOT MODIFY OR MOVE                                 
+//****************************************************************************
+// Copyright (C) 2016 International Business Machines Corporation             
+// All Rights Reserved                                                        
+//****************************************************************************
+// end_generated_IBM_copyright_prolog                                         
+namespace com.ibm.streamsx.health.ingest.physionet.service ;
+
+use com.ibm.streamsx.health.ingest.physionet::PhysionetGetSignals ;
+use com.ibm.streamsx.topology.topic::Publish ;
+use com.ibm.streamsx.json::TupleToJSON ;
+use com.ibm.streamsx.health.ingest.types::* ;
+use com.ibm.streamsx.health.ingest.connector::IngestPublish ;
+use com.ibm.streamsx.datetime::*;
+
+/**
+ * Topic definition for service
+ */
+public rstring TOPIC()
+{
+	return "ingest-physionet" ;
+}
+
+public rstring DEVICE_ID(){
+	return "physionet.db";
+}
+
+public rstring SOURCE_TYPE() {
+	return "channel";
+}
+
+public rstring EMPTY() {
+	return "EMPTY";
+}
+
+public rstring READING_TYPE() {
+	return "ecg";
+}
+
+/** Service for ingesting data from Physionet
+ * 
+ * Submission Time Parameter:
+ * * record.name - specifies the name of the database in Physionet
+ * 
+ * Export Topic:
+ * * SERVICE_TOPIC() - "ingest-physionet"
+ * 
+ * Data Schema:
+ * * Data is exported in JSON format.  
+ * * SPL Schema:  com.ibm.streamsx.health.types::Observation_T
+ */
+composite PhysionetIngestService
+{
+	param
+		expression<rstring> $recordName : getSubmissionTimeValue("record.name",
+			"mitdb/100") ;
+			
+		expression<float64> $frequency : (float64) getSubmissionTimeValue("frequency",
+			"360.0") ;	
+	graph
+		@parallel(width = 1)
+		(stream<ReadFromPhysionet.PhysiontPatient_T> ReadFromPhysionet_6_out0) as
+			ReadFromPhysionet_6 = ReadFromPhysionet()
+		{
+			param
+				recordName : $recordName ;
+				frequency: $frequency;
+		}
+
+		(stream<Observation_T> Functor_7_out0) as Functor_7 =
+			Custom(ReadFromPhysionet_6_out0 as fromPhysionet)
+		{
+			logic
+				state: {
+					int64 baseTs = currentTimeMillis();
+				}
+				onTuple fromPhysionet :
+				{
+					rstring location = $recordName ;
+					set<rstring> patientIds = { patientId } ;
+					Device_T device = { id = DEVICE_ID(), locationId = location } ;
+					ReadingSource_T ch1Src = { id = "ch1", sourceType = SOURCE_TYPE(), deviceId
+						= DEVICE_ID() } ;
+					ReadingSource_T ch2Src = { id = "ch2", sourceType = SOURCE_TYPE(), deviceId
+						= DEVICE_ID()} ;
+						
+					Reading_T ch1 = { ts = baseTs + (int64)fromPhysionet.ts, readingType = READING_TYPE(), value
+						=(float64) fromPhysionet.ch1, uom = EMPTY()} ;
+					Reading_T ch2 = { ts = baseTs + (int64)fromPhysionet.ts, readingType = READING_TYPE(), value
+						=(float64) fromPhysionet.ch2, uom = EMPTY() } ;
+					Observation_T obxCh1 = { device = device, patientId = patientIds,
+						readingSource = ch1Src, reading = ch1 } ;
+					Observation_T obxCh2 = { device = device, patientId = patientIds,
+						readingSource = ch2Src, reading = ch2 } ;
+					submit(obxCh1, 0u) ;
+					submit(obxCh2, 0u) ;
+				}
+
+		}
+
+		() as IngestPublish_6 = IngestPublish(Functor_7_out0)
+		{
+			param
+				topic : TOPIC() ;
+		}
+
+}
+
+composite ReadFromPhysionet(output Out0 )
+{
+	param
+		expression<rstring> $recordName ;
+		expression<float64> $frequency;
+	type
+		static PhysionetSignal_T = float64 ts, int32 ch1, int32 ch2 ;
+		static PhysiontPatient_T = PhysionetSignal_T, tuple<rstring patientId> ;
+	graph
+		(stream<PhysionetSignal_T> PhysionetGetSignals_1_out0) as
+			PhysionetGetSignals_1 = PhysionetGetSignals()
+		{
+			param
+				recordName : $recordName ;
+				normalize : false ;
+			output
+				PhysionetGetSignals_1_out0 : ts = getTimestamp(), ch1 = getSignal(0), ch2 =
+					getSignal(1) ;
+		}
+
+		(stream<PhysionetSignal_T> Throttle_3_out0) as Throttle_3 =
+			Throttle(PhysionetGetSignals_1_out0)
+		{
+			param
+				rate : $frequency ;
+		}
+
+		(stream<PhysiontPatient_T> Out0) as Functor_5 = Functor(Throttle_3_out0)
+		{
+			output
+				Out0 : patientId = "patient" +(rstring) getChannel() ;
+		}
+
+}
+
+
+

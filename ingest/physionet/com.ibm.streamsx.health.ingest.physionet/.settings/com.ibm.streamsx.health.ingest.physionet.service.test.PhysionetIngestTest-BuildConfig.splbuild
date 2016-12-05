@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+<comment>SPL Build Configuration: BuildConfig</comment>
+<entry key="com.ibm.streams.studio.splproject:STATIC_LINKING">F</entry>
+<entry key="com.ibm.streams.studio.splproject:OPTIMIZED_CODE">T</entry>
+<entry key="com.ibm.streams.studio.splproject:FUSION_MODE">FDEF</entry>
+<entry key="com.ibm.streams.studio.splproject:MAIN_COMPOSITE">com.ibm.streamsx.health.ingest.physionet.service.test::PhysionetIngestTest</entry>
+<entry key="com.ibm.streams.studio.splproject:NAME">BuildConfig</entry>
+<entry key="com.ibm.streams.studio.splproject:GCC_OPTS"/>
+<entry key="com.ibm.streams.studio.splproject:SC_OPTS"/>
+<entry key="com.ibm.streams.studio.splproject:ACTIVE">T</entry>
+<entry key="com.ibm.streams.studio.splproject:LD_OPTS"/>
+<entry key="com.ibm.streams.studio.splproject:PRE_BUILD_CMD"/>
+<entry key="com.ibm.streams.studio.splproject:DATA_DIR"/>
+<entry key="com.ibm.streams.studio.splproject:POST_BUILD_CMD"/>
+<entry key="com.ibm.streams.studio.splproject:REPLACE_ENVIRONMENT">F</entry>
+<entry key="com.ibm.streams.studio.splproject:USE_PROJECT_DATA_DIR">T</entry>
+<entry key="com.ibm.streams.studio.splproject:PROFILING"/>
+<entry key="com.ibm.streams.studio.splproject:SDB">F</entry>
+<entry key="com.ibm.streams.studio.splproject:DEFAULT_POOL_SIZE"/>
+<entry key="com.ibm.streams.studio.splproject:OUTPUT_DIR">BuildConfig</entry>
+<entry key="com.ibm.streams.studio.splproject:SAMPLING_RATE"/>
+<entry key="com.ibm.streams.studio.splproject:STANDALONE">F</entry>
+</properties>
