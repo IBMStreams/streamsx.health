@@ -1,0 +1,98 @@
+<project name="JupyterDemoMulti" default="all">
+    <dirname property="demo.DIR" file="${ant.file}" />
+
+    <!-- If STREAMS_INSTALL property is not set, set it to a "bad" value    -->
+    <condition property="STREAMS_INSTALL" value="NOTFOUND">
+        <not><isset property="STREAMS_INSTALL"/></not>
+    </condition>
+
+    <!-- If the environment variable is set, use this, otherwise use the    -->
+    <!-- STREAMS_INSTALL property                                           -->
+    <property environment="env" />
+    <condition property="streams.install"
+               value="${env.STREAMS_INSTALL}"
+               else="${STREAMS_INSTALL}">
+        <isset property="env.STREAMS_INSTALL" />
+    </condition> 
+
+    <property name="spl-make-toolkit" value="${streams.install}/bin/spl-make-toolkit" />
+    <property name="health.toolkit.impl" value="${demo.DIR}/ext/com.ibm.streamsx.health/impl" />
+    <property name="db.dir" value="${demo.DIR}/ext/database" />
+    <property name="mimic2.dir" value="${db.dir}/mimic2wdb" />
+    <property name="mimic2.url" value="https://physionet.org/physiobank/database/mimic2wdb" />
+    <property name="ingest.service.spl.dir" value="${demo.DIR}/spl/com.ibm.streamsx.health.physionet" />
+    <property name="ingest.service.sab.name" value="com.ibm.streamsx.health.physionet.PhysionetIngestServiceMulti.sab" />
+    <property name="ingest.service.sab.path" value="${ingest.service.spl.dir}/output/${ingest.service.sab.name}" />
+
+    <target name="all" depends="dependencies, compile-ingest-service">
+    </target>
+
+    <target name="dependencies">
+        <ant antfile="${demo.DIR}/ext/build.xml" target="all" />
+    </target>
+
+    <target name="download-databases" depends="dependencies">
+        <!-- create the database directory structure first -->
+        <mkdir dir="${mimic2.dir}" />
+        <mkdir dir="${mimic2.dir}/31" />
+        <mkdir dir="${mimic2.dir}/31/3109537" />
+        <mkdir dir="${mimic2.dir}/31/3109737" />
+        <mkdir dir="${mimic2.dir}/31/3111022" />
+
+        <antcall target="wget">
+            <param name="dbpath" value="31/3109537" />
+        </antcall>
+        <antcall target="wget">
+            <param name="dbpath" value="31/3109737" />
+        </antcall>
+        <antcall target="wget">
+            <param name="dbpath" value="31/3111022" />
+        </antcall>
+    </target>
+
+    <target name="compile-ingest-service">
+        <!-- Compile the ingest service -->
+        <ant antfile="${ingest.service.spl.dir}/build.xml" useNativeBasedir="true" target="compile" >
+            <property name="toolkit.path" value="${streams.install}/toolkits:${demo.DIR}/ext/streamsx.inet:${demo.DIR}/ext/com.ibm.streamsx.health:${demo.DIR}/ext/streamsx.topology" />
+        </ant>
+
+        <!-- Copy the ingest service SAB to the services directory -->
+        <delete file="${demo.DIR}/services/${ingest.service.sab.name}" />
+        <copy file="${ingest.service.sab.path}" todir="${demo.DIR}/services" />
+    </target>
+
+    <target name="clean">
+        <!-- Cleanup services -->
+        <delete file="${demo.DIR}/services/${ingest.service.sab.name}" />
+
+        <!-- Clean ext/ directory -->
+        <ant antfile="${demo.DIR}/ext/build.xml" useNativeBasedir="true" target="clean" />            
+
+        <!-- Clean ingest service SPL -->
+        <ant antfile="${ingest.service.spl.dir}/build.xml" useNativeBasedir="true" target="clean" />
+
+        <delete file="${demo.DIR}/bokeh_server.log" />
+        <delete file="${demo.DIR}/www/html/http_server.log" />
+
+        <delete dir="${demo.DIR}/src/__pycache__" failonerror="false" />
+        
+        <delete file="${demo.DIR}/notebooks/HealthcareDemo.HealthcareDemo.sab" failonerror="false" />
+
+    </target>
+
+    <target name="wget">
+        <exec executable="wget">
+            <arg value="-r" />
+            <arg value="-l1" />
+            <arg value="-nH" />
+            <arg value="-nd" />
+            <arg value="-np" />
+            <arg value="-R" />
+            <arg value="index.html*" />
+            <arg value="-P" />
+            <arg value="${mimic2.dir}/${dbpath}" />
+            <arg value="${mimic2.url}/${dbpath}" />
+        </exec>
+    </target>    
+
+</project>

@@ -1,0 +1,286 @@
+namespace com.ibm.streamsx.health.physionet ;
+
+use com.ibm.streamsx.health.adapter::PhysionetGetSignals ;
+use com.ibm.streamsx.topology.topic::Publish ;
+use com.ibm.streamsx.json::TupleToJSON ;
+
+/*
+ * Following databases look good for demo: 
+ * 
+ * mimic2wdb/31/3109537/ (looks like all data is there)
+ * mimic2wdb/35/3500015/ (first few seconds have no data)
+ * mimic2wdb/31/3109737/ (there *may* be a gap in the data at some point...need to filter?)
+ * mimic2wdb/31/3111022/ (looks like all data is there)
+ */
+rstring getPhysionetDatabase(int32 dbIndex, boolean isNumerics)
+{
+	list<rstring> dbs = [ "mimic2wdb/31/3109537/", "mimic2wdb/31/3109737/",
+		"mimic2wdb/31/3111022/" ] ;
+	list<rstring> numericDbs = [ "mimic2wdb/31/3109537/3109537n",
+		"mimic2wdb/31/3109737/3109737n", "mimic2wdb/31/3111022/3111022n" ] ;
+	if(isNumerics)
+	{
+		return numericDbs [ dbIndex % size(numericDbs) ] ;
+	}
+
+	else
+	{
+		return dbs [ dbIndex % size(dbs) ] ;
+	}
+
+}
+
+composite PhysionetIngestServiceMulti
+{
+	graph
+		() as Publish_4 = Publish(TupleToJSON_4_out0 as inPort0Alias)
+		{
+			param
+				topic : "ingest-physionet" ;
+		}
+
+		(stream<rstring jsonString> TupleToJSON_4_out0) as TupleToJSON_4 =
+			TupleToJSON(ReadFromPhysionet_6_out0 as inPort0Alias)
+		{
+		}
+
+		@parallel(width =(int32) getSubmissionTimeValue("num.patients", "1"))
+		(stream<Observation_T> ReadFromPhysionet_6_out0) as ReadFromPhysionet_6 =
+			ReadFromPhysionet()
+		{
+		}
+
+}
+
+composite ReadFromPhysionet(output Out0 )
+{
+	type
+		PhysionetData_T = int32 ecgLeadII_value, float64 ecgLeadII_gain,
+			int32 ecgLeadII_initVal, int32 avr_value, float64 avr_gain,
+			int32 avr_initVal, int32 ecgLeadV_value, float64 ecgLeadV_gain,
+			int32 ecgLeadV_initVal, int32 resp_value, float64 resp_gain,
+			int32 resp_initVal, int32 pleth_value, float64 pleth_gain,
+			int32 pleth_initVal, float64 frequency ;
+		PhysionetNumericsData_T = int32 hr, int32 pulse, int32 abp_sys,
+			int32 abp_dias, int32 spo2 ;
+	graph
+		(stream<PhysionetData_T> PhysionetGetSignals_1_out0) as PhysionetWaveformOp =
+			PhysionetGetSignals()
+		{
+			param
+				recordName : getPhysionetDatabase(getChannel(), false) ;
+			output
+				PhysionetGetSignals_1_out0 : frequency = getFrequency(), ecgLeadII_value =
+					getSignal(0), ecgLeadII_gain = getGain(0), ecgLeadII_initVal =
+					getInitialValue(0), ecgLeadV_value = getSignal(2), ecgLeadV_gain =
+					getGain(2), ecgLeadV_initVal = getInitialValue(2), resp_value =
+					getSignal(3), resp_gain = getGain(3), resp_initVal = getInitialValue(3),
+					pleth_value = getSignal(4), pleth_gain = getGain(4), pleth_initVal =
+					getInitialValue(4) ;
+			config
+				placement : partitionColocation("waveform" + (rstring)getChannel()),
+					partitionExlocation("physionet_adapter") ;
+		}
+
+		(stream<PhysionetData_T> ThrottledData) as Throttle_3 =
+			Throttle(PhysionetGetSignals_1_out0)
+		{
+			param
+				rate : 125.0 ;
+			config
+				placement : partitionColocation("waveform" + (rstring)getChannel()) ;
+		}
+
+		(stream<Observation_T> WaveformObservationStream) as PhysionetToObservation =
+			Custom(ThrottledData)
+		{
+			logic
+				onTuple ThrottledData :
+				{
+					mutable Observation_T outTuple =(Observation_T) { } ;
+
+					// set patient information
+					mutable Patient_T patient =(Patient_T) { } ;
+					patient.identifier = "patient-" +(rstring)(getChannel() + 1) ;
+					outTuple.patient = patient ;
+					outTuple.data =(list<Data_T>) [ ] ;
+
+					// set data	
+					Period_T period = { unit = "ms", value =(1f / frequency) * 1000f } ;
+
+					// ecg lead II
+					mutable SampledData_T ecgLeadII_sData =(SampledData_T) { } ;
+					ecgLeadII_sData.period = period ;
+					ecgLeadII_sData.values = [(float64) ecgLeadII_value ] ;
+					ecgLeadII_sData.gain = ecgLeadII_gain ;
+					ecgLeadII_sData.initVal =(float64) ecgLeadII_initVal ;
+					ecgLeadII_sData.unit = "mV" ;
+					mutable Data_T ecgLeadII_data =(Data_T) { } ;
+					ecgLeadII_data.label = "ECG Lead II" ;
+					ecgLeadII_data.valueSampledData = ecgLeadII_sData ;
+					appendM(outTuple.data, ecgLeadII_data) ;
+
+					// ecg lead V
+					mutable SampledData_T ecgLeadV_sData =(SampledData_T) { } ;
+					ecgLeadV_sData.period = period ;
+					ecgLeadV_sData.values = [(float64) ecgLeadV_value ] ;
+					ecgLeadV_sData.gain = ecgLeadV_gain ;
+					ecgLeadV_sData.initVal =(float64) ecgLeadV_initVal ;
+					ecgLeadV_sData.unit = "mV" ;
+					mutable Data_T ecgLeadV_data =(Data_T) { } ;
+					ecgLeadV_data.label = "ECG Lead V" ;
+					ecgLeadV_data.valueSampledData = ecgLeadV_sData ;
+					appendM(outTuple.data, ecgLeadV_data) ;
+
+					// pleth
+					mutable SampledData_T pleth_sData =(SampledData_T) { } ;
+					pleth_sData.period = period ;
+					pleth_sData.values = [(float64) pleth_value ] ;
+					pleth_sData.gain = pleth_gain ;
+					pleth_sData.initVal =(float64) pleth_initVal ;
+					pleth_sData.unit = "mV" ;
+					mutable Data_T pleth_data =(Data_T) { } ;
+					pleth_data.label = "Pleth" ;
+					pleth_data.valueSampledData = pleth_sData ;
+					appendM(outTuple.data, pleth_data) ;
+
+					// resp
+					mutable SampledData_T resp_sData =(SampledData_T) { } ;
+					resp_sData.period = period ;
+					resp_sData.values = [(float64) resp_value ] ;
+					resp_sData.gain = resp_gain ;
+					resp_sData.initVal =(float64) resp_initVal ;
+					resp_sData.unit = "mV" ;
+					mutable Data_T resp_data =(Data_T) { } ;
+					resp_data.label = "Resp" ;
+					resp_data.valueSampledData = resp_sData ;
+					appendM(outTuple.data, resp_data) ;
+					submit(outTuple, WaveformObservationStream) ;
+				}
+
+			config
+				placement : partitionColocation("waveform" + (rstring)getChannel()) ;
+		}
+
+		(stream<PhysionetNumericsData_T> NumericsStream) as PhysionetNumericsOp =
+			PhysionetGetSignals()
+		{
+			param
+				recordName : getPhysionetDatabase(getChannel(), true) ;
+			output
+				NumericsStream : hr = getSignal(0), pulse = getSignal(1), abp_sys =
+					getSignal(3), abp_dias = getSignal(4), spo2 = getSignal(8) ;
+			config
+				placement : partitionColocation("numerics" + (rstring)getChannel()),
+					partitionExlocation("physionet_adapter") ;
+		}
+
+		(stream<PhysionetNumericsData_T> NumericsThrottleStream) as Throttle_8 =
+			Throttle(NumericsStream)
+		{
+			param
+				rate : 1.0 ;
+			config
+				placement : partitionColocation("numerics" + (rstring)getChannel()) ;
+		}
+
+		(stream<Observation_T> NumericsObservationStream) as Custom_9 =
+			Custom(NumericsThrottleStream)
+		{
+			logic
+				onTuple NumericsThrottleStream :
+				{
+					mutable Observation_T outTuple =(Observation_T) { } ;
+
+					// set data	
+					Period_T period = { unit = "ms", value = 1000f } ;
+
+					// hr
+					mutable SampledData_T hr_sData =(SampledData_T) { } ;
+					hr_sData.period = period ;
+					hr_sData.values = [(float64) hr ] ;
+					hr_sData.unit = "bpm" ;
+					mutable Data_T hr_data =(Data_T) { } ;
+					hr_data.label = "HR" ;
+					hr_data.valueSampledData = hr_sData ;
+					appendM(outTuple.data, hr_data) ;
+
+					// pulse
+					mutable SampledData_T pulse_sData =(SampledData_T) { } ;
+					pulse_sData.period = period ;
+					pulse_sData.values = [(float64) pulse ] ;
+					pulse_sData.unit = "bpm" ;
+					mutable Data_T pulse_data =(Data_T) { } ;
+					pulse_data.label = "PULSE" ;
+					pulse_data.valueSampledData = pulse_sData ;
+					appendM(outTuple.data, pulse_data) ;
+
+					// abp_sys
+					mutable SampledData_T abp_sys_sData =(SampledData_T) { } ;
+					abp_sys_sData.period = period ;
+					abp_sys_sData.values = [(float64) abp_sys ] ;
+					abp_sys_sData.unit = "mmHg" ;
+					mutable Data_T abp_sys_data =(Data_T) { } ;
+					abp_sys_data.label = "ABP Systolic" ;
+					abp_sys_data.valueSampledData = abp_sys_sData ;
+					appendM(outTuple.data, abp_sys_data) ;
+
+					// abp_dias
+					mutable SampledData_T abp_dias_sData =(SampledData_T) { } ;
+					abp_dias_sData.period = period ;
+					abp_dias_sData.values = [(float64) abp_dias ] ;
+					abp_dias_sData.unit = "mmHg" ;
+					mutable Data_T abp_dias_data =(Data_T) { } ;
+					abp_dias_data.label = "ABP Diastolic" ;
+					abp_dias_data.valueSampledData = abp_dias_sData ;
+					appendM(outTuple.data, abp_dias_data) ;
+
+					// spo2
+					mutable SampledData_T spo2_sData =(SampledData_T) { } ;
+					spo2_sData.period = period ;
+					spo2_sData.values = [(float64) spo2 ] ;
+					spo2_sData.unit = "%" ;
+					mutable Data_T spo2_data =(Data_T) { } ;
+					spo2_data.label = "SpO2" ;
+					spo2_data.valueSampledData = spo2_sData ;
+					appendM(outTuple.data, spo2_data) ;
+					submit(outTuple, NumericsObservationStream) ;
+				}
+
+			config
+				placement : partitionColocation("numerics" + (rstring)getChannel()) ;
+		}
+
+		(stream<Observation_T> Out0) as Custom_10 =
+			Custom(WaveformObservationStream ; NumericsObservationStream)
+		{
+			logic
+				state :
+				{
+					mutable Observation_T numericsData ;
+					mutable boolean hasNumerics = false ;
+				}
+
+				onTuple NumericsObservationStream :
+				{
+					numericsData = NumericsObservationStream ;
+					hasNumerics = true ;
+				}
+
+				onTuple WaveformObservationStream :
+				{
+				// wait for numerics data to arrive
+					while(! hasNumerics)
+					{
+						block(1.0) ;
+					}
+
+					WaveformObservationStream.data = concat(WaveformObservationStream.data,
+						numericsData.data) ;
+					submit(WaveformObservationStream, Out0) ;
+				}
+
+		}
+
+}
+

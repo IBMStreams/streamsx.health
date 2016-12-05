@@ -1,0 +1,47 @@
+namespace com.ibm.streamsx.health.physionet ;
+
+use com.ibm.streamsx.inet.rest::HTTPTupleView ;
+use com.ibm.streamsx.topology.topic::Subscribe ;
+use com.ibm.streamsx.json::JSONToTuple ;
+
+composite TupleViewerTest
+{
+	graph
+		() as HTTPTupleView_3 = HTTPTupleView(Custom_4_out0 as inPort0Alias)
+		{
+			window
+				inPort0Alias : sliding, count(200), count(1) ;
+		}
+
+		(stream<rstring jsonString> Subscribe_2_out0) as Subscribe_2 = Subscribe()
+		{
+			param
+				topic : "ingest-physionet" ;
+				streamType : com.ibm.streamsx.topology::Json ;
+		}
+
+		(stream<Observation_T> JSONToTuple_3_out0) as JSONToTuple_3 =
+			JSONToTuple(Subscribe_2_out0)
+		{
+		}
+
+		(stream<float64 x, float64 y> Custom_4_out0) as Custom_4 =
+			Custom(JSONToTuple_3_out0)
+		{
+			logic
+				state: { mutable uint64 t_ = 0ul; }
+				onTuple JSONToTuple_3_out0:
+				{
+					for(float64 v in JSONToTuple_3_out0.data[0].valueSampledData.values)
+					{
+						float64 x_ = t_++;
+						float64 y_ = v ;
+						
+						submit({x = x_, y = y_}, Custom_4_out0);
+					}
+					
+				}
+		}
+
+}
+

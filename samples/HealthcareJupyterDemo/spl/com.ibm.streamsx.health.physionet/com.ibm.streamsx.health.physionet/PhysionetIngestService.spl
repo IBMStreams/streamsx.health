@@ -1,0 +1,45 @@
+namespace com.ibm.streamsx.health.physionet ;
+
+use com.ibm.streamsx.health.adapter::PhysionetGetSignals ;
+use com.ibm.streamsx.topology.topic::Publish ;
+use com.ibm.streamsx.json::TupleToJSON ;
+
+composite PhysionetIngestService
+{
+	type IngestSignalECG_T = SignalECG_T, tuple<float64 frequency, float64 ch1Gain, float64 ch2Gain>;
+
+	graph
+		(stream<IngestSignalECG_T> PhysionetGetSignals_1_out0) as PhysionetGetSignals_1 =
+			PhysionetGetSignals()
+		{
+			param
+				recordName : getSubmissionTimeValue("record.name", "100s") ;
+				iterations : 100l ;
+			output
+				PhysionetGetSignals_1_out0 : ts = getTimestamp(), ch1 = getSignal(0), 
+					ch2 = getSignal(1), frequency = getFrequency(), ch1Gain = getGain(0), ch2Gain = getGain(1);
+		}
+
+		(stream<IngestSignalECG_T> Throttle_3_out0) as Throttle_3 =
+			Throttle(PhysionetGetSignals_1_out0)
+		{
+			param
+				rate : 360.0 ;
+		}
+
+		() as Publish_4 = Publish(TupleToJSON_4_out0 as inPort0Alias)
+		{
+			param
+				topic : "ecg-patient0" ;
+		}
+
+		(stream<rstring jsonString> TupleToJSON_4_out0) as TupleToJSON_4 =
+			TupleToJSON(Throttle_3_out0)
+		{
+		}
+
+}
+
+
+
+
