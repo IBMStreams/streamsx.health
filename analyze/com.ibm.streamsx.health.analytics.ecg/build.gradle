@@ -35,7 +35,7 @@ task buildIngestToolkit(type: GradleBuild) {
 task buildServices(dependsOn: 'buildIngestToolkit') {
     doLast {
         exec {
-            commandLine STREAMS_INSTALL + '/bin/sc', '-M', 'com.ibm.streamsx.health.analysis.ecg.service::RPeakDetectService', '--output-directory=output/com.ibm.streamsx.health.analytics.ecg.service.RPeakDetectService.BuildConfig', '-a', '-t', JsonToolkitPath + ':' + TopologyToolkitPath + ':' + HealthIngestToolkitPath + ':' + TimeseriesToolkitPath
+            commandLine STREAMS_INSTALL + '/bin/sc', '-M', 'com.ibm.streamsx.health.analysis.ecg.service::RPeakDetectService', '--output-directory=output/com.ibm.streamsx.health.analytics.ecg.service.RPeakDetectService/BuildConfig', '-a', '-t', JsonToolkitPath + ':' + TopologyToolkitPath + ':' + HealthIngestToolkitPath + ':' + TimeseriesToolkitPath
         }
     }
 }
