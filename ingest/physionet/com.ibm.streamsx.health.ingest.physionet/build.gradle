@@ -1,6 +1,12 @@
 apply plugin: 'java'
 apply from: '../../../common.gradle'
 
+def STREAMS_INSTALL = System.getenv("STREAMS_INSTALL")
+def healthIngestToolkitPath = '../../common/com.ibm.streamsx.health.ingest'
+def jsonToolkitPath = STREAMS_INSTALL + '/toolkits/com.ibm.streamsx.json'
+def topologyToolkitPath = STREAMS_INSTALL + '/toolkits/com.ibm.streamsx.topology'
+def dateTimeToolkitPath = STREAMS_INSTALL + '/toolkits/com.ibm.streamsx.datetime'
+
 repositories {
     mavenCentral()
 }
@@ -24,6 +30,13 @@ libsDirName = '../lib'
 task buildToolkit {
     doLast {
         splMakeToolkit()
+    }
+}
+
+task buildServices {
+    doLast {
+        def serviceToolkitPath = healthIngestToolkitPath + ':' + ':' + jsonToolkitPath + ':' + topologyToolkitPath + ':' + ':' + dateTimeToolkitPath 
+        compileApp('com.ibm.streamsx.health.ingest.physionet.service', 'PhysionetIngestService', serviceToolkitPath) 
     }
 }
 
