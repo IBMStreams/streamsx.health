@@ -1,0 +1,12 @@
+com.ibm.streamsx.health.beacon/1.0.0
+spl/1.3.0
+com.ibm.streams.timeseries/4.0.0
+com.ibm.streamsx.datetime/1.1.2.__dev__
+com.ibm.streamsx.health.analytics.ecg/1.0.0
+com.ibm.streamsx.health.ingest/1.0.0
+com.ibm.streamsx.health.ingest.physionet/1.0.0
+com.ibm.streamsx.inet/2.8.1
+com.ibm.streamsx.jdbc/1.0.1
+com.ibm.streamsx.json/1.3.0.__dev__
+com.ibm.streamsx.messaging/5.2.0
+com.ibm.streamsx.topology/1.4.4
