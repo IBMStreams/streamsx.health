@@ -39,27 +39,21 @@ The following diagram outlines the architecture of the demo.
       st startinstance
       ```
 
-  4. Extract HealthcareJupyterDemo.tar.gz in the home directory. Change directory to *HealthcareJupyterDemo*
+  5. In the home directory, clone the git repository, navigate to *streamsx.health/samples/HealthcareJupyterDemo* and run `ant` to build the demo for your platform (< 5 minutes):
 
       ```
-      tar -xvf HealthcareJupyterDemo.tar.gz
-      cd HealthcareJupyterDemo
-      ```
-
-  5. Navigate to `/home/streamsadmin/HealthcareJupyterDemo` and run `ant` to build the demo for your platform (~5 minutes):
-
-      ```
-      cd /home/streamsadmin/HealthcareJupyterDemo
+      git clone <repo>
+      cd /home/streamsadmin/streamsx.health/samples/HealthcareJupyterDemo
       ant
       ```
 
-  6. Start the Jupyter notebook from /home/streamsadmin/HealthcareJupyterDemo:
+  6. Start the Jupyter notebook from *streamsx.ecgdemo/samples/HealthcareJupyterDemo*:
 
       ```
       ./start.sh
       ```
 
-  7. In the web browser, open the *notebooks/MultiGraphViz.pynb* notebook
+  7. In the web browser, open the *notebooks/HealthcareDemo.pynb* notebook
 
   8. Run each cell individually. The following graphs should be displayed and updating in real-time. 
 
