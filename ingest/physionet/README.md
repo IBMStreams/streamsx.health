@@ -1,7 +1,6 @@
-# streamsx.health
+# Physionet Ingest Service
 
-This community is focused on using Streams in the health care industry.  Go to the wiki to participate in the discussion.
+This service ingests data from the [Phsionet.org](https://physionet.org/) database.  
 
-https://github.com/IBMStreams/streamsx.health/wiki
-
+# Running the Service
 
