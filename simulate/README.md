@@ -1,7 +1,5 @@
-# streamsx.health
+# streamsx.health.simulate
 
-This community is focused on using Streams in the health care industry.  Go to the wiki to participate in the discussion.
+This component contains services for simulating physiological signals for analysis.
 
-https://github.com/IBMStreams/streamsx.health/wiki
-
-
+* com.ibm.streamsx.health.beacon.ECGBeaconService - This service simulates ECG signals
