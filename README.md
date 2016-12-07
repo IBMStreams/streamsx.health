@@ -18,7 +18,7 @@ Our design and roadmap are always up for discussions and we welcome your feecdba
 
 The platform is designed to employ the microservice architecture.  A microservice is a small application written in SPL, Java, or Python that fulfills a specific task in a bigger healthcare application.  An application is made up of one of more of microservices, loosely connected to each other using the dynamic connection feature (Import/Export operators) in Streams.  To learn more about the microservice architecture in Streams, refer to this [post](https://developer.ibm.com/streamsdev/2016/09/02/analytics-microservice-architecture-with-ibm-streams/).
 
-The repository is set up to accomodate this architecture.  The top level folders represent major funcation components of the platform.  Under each folder, you will find one or more microservices for that component.  Each of the services can be built independently using gradle.  You can build them by following the build instructions below.  
+The repository is set up to accomodate this architecture.  The top level folders represent major functional components of the platform.  Under each folder, you will find one or more microservices for that component.  Each of the services can be built independently using gradle.  You can build them by following the build instructions below.  
 
 To run the services, follow instructions as documented in their respective README.md files.
 
