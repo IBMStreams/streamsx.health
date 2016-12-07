@@ -30,4 +30,11 @@ Similarly, individual components and  services can be built by navigating to eit
 
 All projects can be cleaned from either the root folder, a component folder or a service folder by running **`gradle clean`**
 
-<iframe id="roadmap" src="https://github.com/IBMStreams/streamsx.health/wiki/Streams-Healthcare-Analytics-Platform-Roadmap"></iframe>
+## Learn more about Streams
+
+To learn more about Streams:
+
+* [IBM Streams on Github](http://ibmstreams.github.io)
+* [Introduction to Streams Quick Start Edition](http://ibmstreams.github.io/streamsx.documentation/docs/4.1/qse-intro/)
+* [Streams Getting Started Guide](http://ibmstreams.github.io/streamsx.documentation/docs/4.1/qse-getting-started/)
+* [StreamsDev](https://developer.ibm.com/streamsdev/)
