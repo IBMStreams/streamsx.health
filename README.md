@@ -16,9 +16,13 @@ Our design and roadmap are always up for discussions and we welcome your feecdba
 
 ## Real-time ECG Monitoring Sample
 
-As part of our initial work for this platform, we have developed a real-time ECG monitoring sample, using the Physionet Ingest Service, Python and Jupyter notebook.  To see this sample in action, clone this repository and follow the instructions here to run the demo:
+As part of our initial work for this platform, we have developed a real-time ECG monitoring sample, using the Physionet Ingest Service, Python and Jupyter notebook.  
 
-[Healthcare Python Streaming Application Demo](https://github.com/IBMStreams/streamsx.health/tree/master/samples/HealthcareJupyterDemo)
+To see this sample in action:
+
+1.  Get the Streams Quick Start Edition VM from [here](https://www-01.ibm.com/marketing/iwm/iwm/web/preLogin.do?source=swg-ibmistvi&S_TACT=000000VP&S_OFF_CD=10000737).
+1.  Clone this repository.
+1.  Follow the instructions from here to run the demo:  [Healthcare Python Streaming Application Demo](https://github.com/IBMStreams/streamsx.health/tree/master/samples/HealthcareJupyterDemo)
 
 ![Healthcare Demo](https://github.com/IBMStreams/streamsx.health/blob/master/samples/HealthcareJupyterDemo/images/Healthcare_Demo.png)
 
