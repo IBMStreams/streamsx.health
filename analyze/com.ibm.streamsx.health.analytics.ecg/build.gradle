@@ -1,10 +1,11 @@
 apply plugin: 'java'
+apply from: '../../common.gradle'
 
 def STREAMS_INSTALL = System.getenv("STREAMS_INSTALL")
-def JsonToolkitPath = STREAMS_INSTALL + '/toolkits/com.ibm.streamsx.json'
-def TopologyToolkitPath = STREAMS_INSTALL + '/toolkits/com.ibm.streamsx.topology'
-def HealthIngestToolkitPath = '../../ingest/common/com.ibm.streamsx.health.ingest'
-def TimeseriesToolkitPath = STREAMS_INSTALL + '/toolkits/com.ibm.streams.timeseries'
+def jsonToolkitPath = STREAMS_INSTALL + '/toolkits/com.ibm.streamsx.json'
+def topologyToolkitPath = STREAMS_INSTALL + '/toolkits/com.ibm.streamsx.topology'
+def healthIngestToolkitPath = '../../ingest/common/com.ibm.streamsx.health.ingest'
+def timeseriesToolkitPath = STREAMS_INSTALL + '/toolkits/com.ibm.streams.timeseries'
 
 sourceSets {
     main {
@@ -23,8 +24,10 @@ dependencies {
     compile fileTree(dir: 'opt/downloaded', include: ['*.jar'])
 }
 
-task buildToolkit(type: Exec) {
-    commandLine System.getenv("STREAMS_INSTALL") + '/bin/spl-make-toolkit', '-i', '.' 
+task buildToolkit {
+    doLast {
+        splMakeToolkit()
+    }
 }
 
 task buildIngestToolkit(type: GradleBuild) {
@@ -34,20 +37,15 @@ task buildIngestToolkit(type: GradleBuild) {
 
 task buildServices(dependsOn: 'buildIngestToolkit') {
     doLast {
-        exec {
-            commandLine STREAMS_INSTALL + '/bin/sc', '-M', 'com.ibm.streamsx.health.analysis.ecg.service::RPeakDetectService', '--output-directory=output/com.ibm.streamsx.health.analytics.ecg.service.RPeakDetectService/BuildConfig', '-a', '-t', JsonToolkitPath + ':' + TopologyToolkitPath + ':' + HealthIngestToolkitPath + ':' + TimeseriesToolkitPath
-        }
+        def serviceToolkitPath = jsonToolkitPath + ':' + topologyToolkitPath + ':' + healthIngestToolkitPath + ':' + timeseriesToolkitPath
+        compileApp('com.ibm.streamsx.health.analysis.ecg.service', 'RPeakDetectService', serviceToolkitPath)
     }
 }
 
 task cleanToolkit {
     doLast {
-        exec {
-            commandLine System.getenv("STREAMS_INSTALL") + '/bin/spl-make-toolkit', '-i', '.', '-c'
-        }
-        exec {
-            commandLine 'rm', '-rf', 'output'
-        }
+        splCleanToolkit()
+        delete 'output'
     }   
 }
 

@@ -13,7 +13,6 @@ use com.ibm.streamsx.health.ingest.physionet.service::* ;
 use com.ibm.streamsx.topology.topic::Subscribe ;
 use com.ibm.streamsx.json::JSONToTuple ;
 use com.ibm.streamsx.health.ingest.physionet.service::PatientECG_T ;
-use com.ibm.streamsx.inet.rest::HTTPTupleView ;
 
 use com.ibm.streamsx.health.ingest.types::*;
 
@@ -41,14 +40,5 @@ composite PhysionetIngestTest
 			JSONToTuple(Subscribe_1_out0)
 		{
 		}
-
-		() as ECGSignal = HTTPTupleView(JSONToTuple_3_out0 as inPort0Alias)
-		{
-			window
-				inPort0Alias : sliding, count(1000), time(1.0) ;
-			param
-				port: 8080;
-		}
-
 }
 
