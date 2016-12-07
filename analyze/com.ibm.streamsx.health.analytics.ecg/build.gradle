@@ -26,6 +26,7 @@ dependencies {
 
 task buildToolkit {
     doLast {
+	tasks.copyJarToImpl.execute()
         splMakeToolkit()
     }
 }
@@ -35,7 +36,7 @@ task buildIngestToolkit(type: GradleBuild) {
     tasks = ['build']
 }
 
-task buildServices(dependsOn: 'buildIngestToolkit') {
+task buildServices(dependsOn: ['buildIngestToolkit', 'buildToolkit']) {
     doLast {
         def serviceToolkitPath = jsonToolkitPath + ':' + topologyToolkitPath + ':' + healthIngestToolkitPath + ':' + timeseriesToolkitPath
         compileApp('com.ibm.streamsx.health.analysis.ecg.service', 'RPeakDetectService', serviceToolkitPath)
@@ -59,7 +60,6 @@ task deleteDeps(type: Delete) {
     delete 'impl/java/bin'
 }
 
-build.dependsOn buildToolkit
-build.finalizedBy(copyJarToImpl)
+build.dependsOn buildToolkit, buildServices
 clean.dependsOn deleteDeps, cleanToolkit
 
