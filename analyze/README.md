@@ -1,7 +1,5 @@
-# streamsx.health
+# streamsx.health.analyze
 
-This community is focused on using Streams in the health care industry.  Go to the wiki to participate in the discussion.
+This component contains services that provide base analytics for vital or waveform data.
 
-https://github.com/IBMStreams/streamsx.health/wiki
-
-
+* com.ibm.streamsx.health.analytics.ecg - This service provides base analytics for ECG waveforms.  Initial contribution includes a QRS beat detector based on this project:  [OSEA-4-Java](https://github.com/MEDEVIT/OSEA-4-Java)
