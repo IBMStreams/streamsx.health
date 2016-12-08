@@ -1,7 +1,6 @@
-# streamsx.health
+# streamsx.health.samples
 
-This community is focused on using Streams in the health care industry.  Go to the wiki to participate in the discussion.
+This folder contains samples built using the microservices from the Streams Healthcare Analytics Platform:
 
-https://github.com/IBMStreams/streamsx.health/wiki
-
+* HealthcareJupyterDemo - Real-time ECG analysis application using the Physionet Ingest Service, Python and Jupyter Notebook
 
