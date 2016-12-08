@@ -36,6 +36,8 @@ To run the services, follow instructions as documented in their respective READM
 
 ## Build Instructions
 
+This repository is set up to build using [Gradle](https://gradle.org/).
+
 All of the services can be built from the root folder by running **`gradle build`**.
 
 Similarly, individual components and  services can be built by navigating to either the component or service directory and running **`gradle build`**. 
