@@ -3,6 +3,8 @@ This application demonstrates how users can develop Python Streaming Application
 
 Submitting the Python application from the Notebook allows for connecting to the Streams view server in order to retrieve the data. Once the data has been retrieved, it can be analyzed, manipulated or visualized like any other data accessed from a notebook. In the case of this demo, waveform graphs and numerical widgets are being used to display the healthcare data of the patient. 
 
+This sample is built using the [BioSPPy](http://biosppy.readthedocs.io/en/stable/) Signal Processing Libraries.
+
 The following diagram outlines the architecture of the demo.  
 
 ![Demo Architecture](images/architecture_diagram.jpg)
