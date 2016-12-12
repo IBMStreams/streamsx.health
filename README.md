@@ -14,7 +14,7 @@ https://github.com/IBMStreams/streamsx.health/wiki
 
 Our design and roadmap are always up for discussions and we welcome your feecdback and contribution.  Please submit an [issue](https://github.com/IBMStreams/streamsx.health/issues) if you have any feedback for us.
 
-## Real-time ECG Monitoring Sample
+## Real-time Healthcare Monitoring Sample
 
 As part of our initial work for this platform, we have developed a real-time ECG monitoring sample, using the Physionet Ingest Service, Python and Jupyter notebook.  
 
