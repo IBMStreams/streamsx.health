@@ -27,5 +27,3 @@ The service requires the following submission time parameters:
 This service exports data with the following topic: 
 
  * ingest-vines
-
-Data is exported as a `com.ibm.streamsx.health.vines.model.ViNES` Java object.
