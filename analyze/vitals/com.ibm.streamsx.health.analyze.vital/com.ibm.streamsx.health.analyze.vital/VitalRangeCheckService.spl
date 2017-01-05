@@ -7,7 +7,6 @@
 // All Rights Reserved                                                        
 //****************************************************************************
 // end_generated_IBM_copyright_prolog                
-
 namespace com.ibm.streamsx.health.analyze.vital ;
 
 use com.ibm.streamsx.health.ingest.connector::IngestSubscribe ;
@@ -16,7 +15,7 @@ use com.ibm.streamsx.health.analyze.vital.generated::HealthRules ;
 use com.ibm.streamsx.health.analyze.vital.generated.demo::Patient ;
 use com.ibm.streamsx.topology.topic::Publish ;
 use com.ibm.streamsx.json::TupleToJSON ;
-
+use com.ibm.streamsx.health.analyze.vital.connectors::VitalsRangeCheckPublish ;
 rstring getPatientId(set<rstring> ids)
 {
 	for(rstring id in ids)
@@ -75,7 +74,7 @@ composite VitalRangeCheckService
 		(stream<Observation_T> Readings) as IngestSubscribe_1 = IngestSubscribe()
 		{
 			param
-				topic : getSubmissionTimeValue("ingestTopic","ingest-beacon") ;
+				topic : getSubmissionTimeValue("ingestTopic", "ingest-beacon") ;
 		}
 
 		(stream<Patient o_Patient> HealthRules_2_out0) as HealthRules_2 =
@@ -99,24 +98,20 @@ composite VitalRangeCheckService
 						mutable Patient p = newPatient() ;
 						p.name =(ustring) patientId ;
 						populate(p, Readings) ;
-						submit(p, 0u) ;
+						insertM(patientMap,patientId,p);
+						submit({ i_Patient = p }, Custom_3_out0) ;
 					}
 
 					else
 					{
 						mutable Patient p = patientMap [ patientId ] ;
 						populate(p, Readings) ;
-						submit(p, 0u) ;
+						insertM(patientMap,patientId,p);
+						submit({ i_Patient = p }, Custom_3_out0) ;
 					}
 
 				}
 
-		}
-
-		() as Publish_4 = Publish(TupleToJSON_6_out0)
-		{
-			param
-				topic : "analyze.vitalcheck" ;
 		}
 
 		(stream<ustring patientId, boolean alert, list<ustring> messages>
@@ -128,8 +123,7 @@ composite VitalRangeCheckService
 					HealthRules_2_out0.o_Patient.messages ;
 		}
 
-		(stream<rstring jsonStr> TupleToJSON_6_out0) as TupleToJSON_6 =
-			TupleToJSON(Functor_5_out0)
+		() as VitalsRangeCheckPublish_5 = VitalsRangeCheckPublish(Functor_5_out0)
 		{
 		}
 

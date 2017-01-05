@@ -14,7 +14,7 @@ use com.ibm.streamsx.health.analyze.vital.generated.demo::*;
 
 public void addToMessages(mutable Patient obj, ustring arg0) {
 
-//	appendM(obj.messages, arg0);
+	appendM(obj.messages, arg0);
 }
 
 public void setAlert(mutable Patient obj) {

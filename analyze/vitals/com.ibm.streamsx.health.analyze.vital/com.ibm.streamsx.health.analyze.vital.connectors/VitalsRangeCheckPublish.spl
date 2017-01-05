@@ -1,0 +1,30 @@
+namespace com.ibm.streamsx.health.analyze.vital.connectors ;
+
+use com.ibm.streamsx.json::TupleToJSON ;
+use com.ibm.streamsx.topology.topic::Publish ;
+
+
+public rstring TOPIC_VITALSRANGECHECK() {
+	return "analyze.vitalscheck";
+}
+
+public composite VitalsRangeCheckPublish(input In0 )
+{
+	type
+		static PublishJsonString = rstring jsonString;
+		
+		
+	graph
+		(stream<PublishJsonString> TupleToJSON_6_out0) as TupleToJSON_6 =
+			TupleToJSON(In0)
+		{
+		}
+
+		() as Publish_4 = Publish(TupleToJSON_6_out0)
+		{
+			param
+				topic :TOPIC_VITALSRANGECHECK() ;
+		}
+
+}
+

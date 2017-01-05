@@ -1,0 +1,22 @@
+namespace com.ibm.streamsx.health.analyze.vital.connectors ;
+
+use com.ibm.streamsx.topology.topic::Subscribe ;
+use com.ibm.streamsx.json::JSONToTuple ;
+
+public composite VitalsRangeCheckSubscribe(output Out0 )
+{
+	graph
+		(stream<VitalsRangeCheckPublish.PublishJsonString> Subscribe_1_out0) as Subscribe_1 = Subscribe()
+		{
+			param
+				topic : TOPIC_VITALSRANGECHECK();
+				streamType :"VitalsRangeCheckPublish.PublishJsonString" ;
+		}
+
+		(stream<rstring str> Out0) as JSONToTuple_2 =
+			JSONToTuple(Subscribe_1_out0)
+		{
+		}
+
+}
+
