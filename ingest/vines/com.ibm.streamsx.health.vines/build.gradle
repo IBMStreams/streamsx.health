@@ -1,0 +1,26 @@
+apply plugin: 'java'
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	compile fileTree(dir: System.getenv("STREAMS_INSTALL") + '/lib', include: ['*.jar'])
+	compile files(System.getenv("STREAMS_INSTALL") + '/toolkits/com.ibm.streamsx.topology/lib/com.ibm.streamsx.topology.jar')
+    compile files(System.getenv("STREAMS_INSTALL") + '/toolkits/com.ibm.streamsx.datetime/impl/lib/com.ibm.streamsx.datetime.jar')
+    compile fileTree(dir: '../../com.ibm.streamsx.health.ingest/lib', include: ['*.jar'])
+    compile group: 'commons-cli', name: 'commons-cli', version: '1.2'
+	testCompile 'junit:junit:4.12'
+}
+
+test {
+    afterTest { desc, result -> 
+        println "Executing test ${desc.name} [${desc.className}] with result: ${result.resultType}"
+    }
+}
+
+task copyToLib(type: Copy) {
+	into "$buildDir/output/lib"
+	from configurations.runtime
+}
+build.dependsOn copyToLib
