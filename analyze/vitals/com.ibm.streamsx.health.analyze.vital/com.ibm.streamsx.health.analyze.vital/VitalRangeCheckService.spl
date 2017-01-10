@@ -68,6 +68,58 @@ Patient populate(mutable Patient patient, Observation_T reading)
 	return patient ;
 }
 
+composite VitalsCheck(input In0 ; output Out0)
+{
+	graph
+		(stream<Patient i_Patient> Custom_3_out0) as Custom_3 = Custom(In0 as
+			inPort0Alias)
+		{
+			logic
+				state :
+				{
+					mutable map<rstring, Patient> patientMap = { } ;
+				}
+
+				onTuple inPort0Alias :
+				{
+					rstring patientId = getPatientId(inPort0Alias.obx.patientId) ;
+					if(has(patientMap, patientId) == false)
+					{
+						mutable Patient p = newPatient() ;
+						p.name =(ustring) patientId ;
+						populate(p, inPort0Alias.obx) ;
+						insertM(patientMap, patientId, p) ;
+						submit({ i_Patient = p }, Custom_3_out0) ;
+					}
+
+					else
+					{
+						mutable Patient p = patientMap [ patientId ] ;
+						populate(p, inPort0Alias.obx) ;
+						insertM(patientMap, patientId, p) ;
+						submit({ i_Patient = p }, Custom_3_out0) ;
+					}
+
+				}
+
+		}
+
+		(stream<Patient o_Patient> HealthRules_2_out0) as HealthRules_2 =
+			HealthRules(Custom_3_out0)
+		{
+		}
+
+		(stream<ustring patientId, boolean alert, list<ustring> messages> Out0) as
+			Functor_5 = Functor(HealthRules_2_out0)
+		{
+			output
+				Out0 : patientId = HealthRules_2_out0.o_Patient.name, alert =
+					HealthRules_2_out0.o_Patient.alert, messages =
+					HealthRules_2_out0.o_Patient.messages ;
+		}
+
+}
+
 composite VitalRangeCheckService
 {
 	graph
@@ -77,55 +129,27 @@ composite VitalRangeCheckService
 				topic : getSubmissionTimeValue("ingestTopic", "ingest-beacon") ;
 		}
 
-		(stream<Patient o_Patient> HealthRules_2_out0) as HealthRules_2 =
-			HealthRules(Custom_3_out0)
+		() as VitalsRangeCheckPublish_5 = VitalsRangeCheckPublish(VitalsCheck_7_out0
+			as inPort0Alias)
 		{
 		}
 
-		(stream<Patient i_Patient> Custom_3_out0) as Custom_3 = Custom(Readings)
-		{
-			logic
-				state :
-				{
-					mutable map<rstring, Patient> patientMap = { } ;
-				}
-
-				onTuple Readings :
-				{
-					rstring patientId = getPatientId(Readings.patientId) ;
-					if(has(patientMap, patientId) == false)
-					{
-						mutable Patient p = newPatient() ;
-						p.name =(ustring) patientId ;
-						populate(p, Readings) ;
-						insertM(patientMap,patientId,p);
-						submit({ i_Patient = p }, Custom_3_out0) ;
-					}
-
-					else
-					{
-						mutable Patient p = patientMap [ patientId ] ;
-						populate(p, Readings) ;
-						insertM(patientMap,patientId,p);
-						submit({ i_Patient = p }, Custom_3_out0) ;
-					}
-
-				}
-
-		}
-
-		(stream<ustring patientId, boolean alert, list<ustring> messages>
-			Functor_5_out0) as Functor_5 = Functor(HealthRules_2_out0)
+		(stream<Observation_T obx, rstring pid> Functor_6_out0) as Functor_6 =
+			Functor(Readings)
 		{
 			output
-				Functor_5_out0 : patientId = HealthRules_2_out0.o_Patient.name, alert =
-					HealthRules_2_out0.o_Patient.alert, messages =
-					HealthRules_2_out0.o_Patient.messages ;
+				Functor_6_out0 : obx = Readings, pid = getPatientId(patientId) ;
 		}
 
-		() as VitalsRangeCheckPublish_5 = VitalsRangeCheckPublish(Functor_5_out0)
+		@parallel(width = 10, partitionBy = [ { port = Functor_6_out0, attributes = [
+			pid ] } ])
+		(stream<ustring patientId, boolean alert, list<ustring> messages>
+			VitalsCheck_7_out0) as VitalsCheck_7 = VitalsCheck(Functor_6_out0)
 		{
 		}
 
 }
+
+
+
 

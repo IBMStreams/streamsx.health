@@ -28,14 +28,25 @@ public composite HealthRules(input stream<Patient i_Patient> ruleIn; output stre
 			onTuple ruleIn: {
 				ovar.o_Patient = ruleIn.i_Patient;
 				/* 
+				 * Now generating code for rule alertrules.no heart rate.
+				 * if 'the patient' 's heart rate is less than 20
+				 * then setAlert 'the patient' ;
+				 * add "HR:Patient needs ambulance" to the messages of 'the patient' ;  
+				*/
+				if((((ovar.o_Patient.heartRate < ((float32)20))))) {
+					setAlert(ovar.o_Patient);
+					addToMessages(ovar.o_Patient, "HR:Patient needs ambulance"u);
+				}
+				
+				/* 
 				 * Now generating code for rule alertrules.high blood pressure.
 				 * if the bp diastolic of 'the patient' is more than 80 or the bp systolic of 'the patient' is more than 120
 				 * then
-				 * 	add "Patient has high blood pressure" to the messages of 'the patient' ;
+				 * 	add "ABPsys,ABPdias:Patient has high blood pressure" to the messages of 'the patient' ;
 				 * 	setAlert 'the patient'  ;
 				*/
 				if(((((ovar.o_Patient.bpDiastolic > 80)) || ((ovar.o_Patient.bpSystolic > 120))))) {
-					addToMessages(ovar.o_Patient, "Patient has high blood pressure"u);
+					addToMessages(ovar.o_Patient, "ABPsys,ABPdias:Patient has high blood pressure"u);
 					setAlert(ovar.o_Patient);
 				}
 				
@@ -43,11 +54,11 @@ public composite HealthRules(input stream<Patient i_Patient> ruleIn; output stre
 				 * Now generating code for rule alertrules.fever check.
 				 * if the temperature of 'the patient' is more than 102
 				 * then
-				 * 	add "Patient has a high fever" to the messages of 'the patient' ;
+				 * 	add "Temperature:Patient has a high fever" to the messages of 'the patient' ;
 				 * 	setAlert 'the patient'  ;
 				*/
 				if((((ovar.o_Patient.temperature > ((float32)102))))) {
-					addToMessages(ovar.o_Patient, "Patient has a high fever"u);
+					addToMessages(ovar.o_Patient, "Temperature:Patient has a high fever"u);
 					setAlert(ovar.o_Patient);
 				}
 				
@@ -55,11 +66,11 @@ public composite HealthRules(input stream<Patient i_Patient> ruleIn; output stre
 				 * Now generating code for rule alertrules.low blood pressure.
 				 * if the bp diastolic of 'the patient' is less than 60 or the bp systolic of 'the patient' is less than 90
 				 * then
-				 * 	add "Patient has low blood pressure" to the messages of 'the patient' ;
+				 * 	add "ABPsys,ABPdias:Patient has low blood pressure" to the messages of 'the patient' ;
 				 * 	setAlert 'the patient'  ;
 				*/
 				if(((((ovar.o_Patient.bpDiastolic < 60)) || ((ovar.o_Patient.bpSystolic < 90))))) {
-					addToMessages(ovar.o_Patient, "Patient has low blood pressure"u);
+					addToMessages(ovar.o_Patient, "ABPsys,ABPdias:Patient has low blood pressure"u);
 					setAlert(ovar.o_Patient);
 				}
 				
@@ -67,11 +78,11 @@ public composite HealthRules(input stream<Patient i_Patient> ruleIn; output stre
 				 * Now generating code for rule alertrules.spo2 levels.
 				 * if the sp O2 of 'the patient' is less than 95
 				 * then
-				 * 	add "spO2 should be greater than 95%" to the messages of 'the patient' ;
+				 * 	add "SpO2:spO2 should be greater than 95%" to the messages of 'the patient' ;
 				 * 	setAlert 'the patient' ;
 				*/
 				if((((ovar.o_Patient.spO2 < 95)))) {
-					addToMessages(ovar.o_Patient, "spO2 should be greater than 95%"u);
+					addToMessages(ovar.o_Patient, "SpO2:spO2 should be greater than 95%"u);
 					setAlert(ovar.o_Patient);
 				}
 				
@@ -79,14 +90,14 @@ public composite HealthRules(input stream<Patient i_Patient> ruleIn; output stre
 				 * Now generating code for rule alertrules.heart rate within range.
 				 * if the heart rate of 'the patient' is less than 60 or the heart rate of 'the patient' is more than 100
 				 * then
-				 * 	add "Heart rate must be between 60 and 100!" to the messages of 'the patient' ; 
+				 * 	add "HR:Heart rate must be between 60 and 100!" to the messages of 'the patient' ; 
 				 * 	setAlert 'the patient' ;
 				 * 	
 				 * 	
 				 * 	
 				*/
 				if(((((ovar.o_Patient.heartRate < ((float32)60))) || ((ovar.o_Patient.heartRate > ((float32)100)))))) {
-					addToMessages(ovar.o_Patient, "Heart rate must be between 60 and 100!"u);
+					addToMessages(ovar.o_Patient, "HR:Heart rate must be between 60 and 100!"u);
 					setAlert(ovar.o_Patient);
 				}
 				
@@ -94,11 +105,11 @@ public composite HealthRules(input stream<Patient i_Patient> ruleIn; output stre
 				 * Now generating code for rule alertrules.temperature within range.
 				 * if the temperature of 'the patient' is less than 97 or the temperature of 'the patient' is more than 99
 				 * then
-				 * 	add "Patient body temperature is out of range" to the messages of 'the patient' ;
+				 * 	add "Temperature:Patient body temperature is out of range" to the messages of 'the patient' ;
 				 * 	setAlert 'the patient'  ;
 				*/
 				if(((((ovar.o_Patient.temperature < ((float32)97))) || ((ovar.o_Patient.temperature > ((float32)99)))))) {
-					addToMessages(ovar.o_Patient, "Patient body temperature is out of range"u);
+					addToMessages(ovar.o_Patient, "Temperature:Patient body temperature is out of range"u);
 					setAlert(ovar.o_Patient);
 				}
 				
