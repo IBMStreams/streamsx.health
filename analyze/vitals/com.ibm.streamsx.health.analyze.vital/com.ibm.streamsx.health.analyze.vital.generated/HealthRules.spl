@@ -79,7 +79,7 @@ public composite HealthRules(input stream<Patient i_Patient> ruleIn; output stre
 				
 				/* 
 				 * Now generating code for rule alertrules.heart rate within range.
-				 * if the heart rate of 'the patient' is less than 60 or the heart rate of 'the patient' is more than 115
+				 * if the heart rate of 'the patient' is less than 60 or the heart rate of 'the patient' is more than 120
 				 * then
 				 * 	add "HR:Heart rate must be between 60 and 115!" to the messages of 'the patient' ; 
 				 * 	setAlert 'the patient' ;
@@ -87,8 +87,8 @@ public composite HealthRules(input stream<Patient i_Patient> ruleIn; output stre
 				 * 	
 				 * 	
 				*/
-				if(((((ovar.o_Patient.heartRate < ((float32)60))) || ((ovar.o_Patient.heartRate > ((float32)115)))))) {
-					addToMessages(ovar.o_Patient, "HR:Heart rate must be between 60 and 115!"u);
+				if(((((ovar.o_Patient.heartRate < ((float32)60))) || ((ovar.o_Patient.heartRate > ((float32)120)))))) {
+					addToMessages(ovar.o_Patient, "HR:Heart rate must be between 60 and 120!"u);
 					setAlert(ovar.o_Patient);
 				}
 				
