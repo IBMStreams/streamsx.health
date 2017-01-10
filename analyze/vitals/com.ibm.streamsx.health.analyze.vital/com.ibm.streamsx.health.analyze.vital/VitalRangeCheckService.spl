@@ -16,6 +16,8 @@ use com.ibm.streamsx.health.analyze.vital.generated.demo::Patient ;
 use com.ibm.streamsx.topology.topic::Publish ;
 use com.ibm.streamsx.json::TupleToJSON ;
 use com.ibm.streamsx.health.analyze.vital.connectors::VitalsRangeCheckPublish ;
+use com.ibm.streamsx.health.analyze.vital.connectors::PatientAlert;
+
 rstring getPatientId(set<rstring> ids)
 {
 	for(rstring id in ids)
@@ -143,7 +145,7 @@ composite VitalRangeCheckService
 
 		@parallel(width = 10, partitionBy = [ { port = Functor_6_out0, attributes = [
 			pid ] } ])
-		(stream<ustring patientId, boolean alert, list<ustring> messages>
+		(stream<PatientAlert>
 			VitalsCheck_7_out0) as VitalsCheck_7 = VitalsCheck(Functor_6_out0)
 		{
 		}

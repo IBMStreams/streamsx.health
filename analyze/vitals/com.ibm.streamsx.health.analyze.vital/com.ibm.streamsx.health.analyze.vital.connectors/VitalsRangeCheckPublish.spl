@@ -8,12 +8,11 @@ public rstring TOPIC_VITALSRANGECHECK() {
 	return "analyze.vitalscheck";
 }
 
+type PatientAlert = ustring patientId, boolean alert, list<ustring> messages;
+type PublishJsonString = rstring jsonString;
+
 public composite VitalsRangeCheckPublish(input In0 )
 {
-	type
-		static PublishJsonString = rstring jsonString;
-		
-		
 	graph
 		(stream<PublishJsonString> TupleToJSON_6_out0) as TupleToJSON_6 =
 			TupleToJSON(In0)
