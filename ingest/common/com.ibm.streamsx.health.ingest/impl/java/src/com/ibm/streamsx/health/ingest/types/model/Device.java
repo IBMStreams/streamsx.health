@@ -9,7 +9,10 @@
 /* end_generated_IBM_copyright_prolog                                         */
 package com.ibm.streamsx.health.ingest.types.model;
 
-public class Device {
+import java.io.Serializable;
+
+public class Device implements Serializable {
+	private static final long serialVersionUID = 1L;
 
 	private String id;
 	private String locationId;
@@ -19,6 +22,11 @@ public class Device {
 		locationId = "";
 	}
 
+	public Device(Device device) {
+		this.id = device.id;
+		this.locationId = device.locationId;
+	}
+	
 	public String getId() {
 		return id;
 	}

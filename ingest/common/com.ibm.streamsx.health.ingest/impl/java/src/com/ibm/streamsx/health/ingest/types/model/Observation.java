@@ -9,8 +9,11 @@
 /* end_generated_IBM_copyright_prolog                                         */
 package com.ibm.streamsx.health.ingest.types.model;
 
-public class Observation {
+import java.io.Serializable;
 
+public class Observation implements Serializable {
+	private static final long serialVersionUID = 1L;
+	
 	private Device device;
 	private PatientId patientId;
 	private ReadingSource readingSource;
@@ -24,6 +27,13 @@ public class Observation {
 		this.patientId = patientId;
 		this.readingSource = readingSource;
 		this.reading = reading;
+	}
+	
+	public Observation(Observation observation) {
+		this.device = new Device(observation.device);
+		this.patientId = new PatientId(observation.patientId);
+		this.readingSource = new ReadingSource(observation.readingSource);
+		this.reading = new Reading(observation.reading);
 	}
 
 	public Device getDevice() {

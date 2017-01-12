@@ -9,7 +9,10 @@
 /* end_generated_IBM_copyright_prolog                                         */
 package com.ibm.streamsx.health.ingest.types.model;
 
-public class ReadingSource {
+import java.io.Serializable;
+
+public class ReadingSource implements Serializable {
+	private static final long serialVersionUID = 1L;
 
 	private String id;
 	private String sourceType;
@@ -21,6 +24,12 @@ public class ReadingSource {
 		deviceId = "";
 	}
 
+	public ReadingSource(ReadingSource readingSource) {
+		this.id = readingSource.id;
+		this.sourceType = readingSource.sourceType;
+		this.deviceId = readingSource.deviceId;
+	}
+	
 	public String getId() {
 		return id;
 	}

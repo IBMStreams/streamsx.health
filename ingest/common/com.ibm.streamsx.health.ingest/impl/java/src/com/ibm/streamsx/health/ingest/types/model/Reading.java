@@ -9,7 +9,10 @@
 /* end_generated_IBM_copyright_prolog                                         */
 package com.ibm.streamsx.health.ingest.types.model;
 
-public class Reading {
+import java.io.Serializable;
+
+public class Reading implements Serializable {
+	private static final long serialVersionUID = 1L;
 
 	private long timestamp;
 	private String readingType;
@@ -21,6 +24,13 @@ public class Reading {
 		readingType = "";
 		value = -1;
 		uom = "";
+	}
+	
+	public Reading(Reading reading) {
+		this.timestamp = reading.timestamp;
+		this.readingType = reading.readingType;
+		this.value = reading.value;
+		this.uom = reading.uom;
 	}
 
 	public long getTimestamp() {

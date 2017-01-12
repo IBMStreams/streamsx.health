@@ -3,3 +3,4 @@
 output/
 toolkit.xml
 impl/java/bin/**
+/build/

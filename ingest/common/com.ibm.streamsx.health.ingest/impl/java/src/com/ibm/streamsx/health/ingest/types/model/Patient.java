@@ -9,7 +9,10 @@
 /* end_generated_IBM_copyright_prolog                                         */
 package com.ibm.streamsx.health.ingest.types.model;
 
-public class Patient {
+import java.io.Serializable;
+
+public class Patient implements Serializable {
+	private static final long serialVersionUID = 1L;
 
 	private PatientId id;
 	private String name;
