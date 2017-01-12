@@ -8,5 +8,8 @@
 			<attribute name="optional" value="true"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="var" path="STREAMS_JAVA_FUNCTIONAL_API"/>
+	<classpathentry kind="lib" path="/com.ibm.streamsx.health.ingest/lib/com.ibm.streamsx.health.ingest.jar"/>
+	<classpathentry kind="lib" path="opt/downloaded/commons-lang3-3.5.jar"/>
 	<classpathentry kind="output" path="impl/java/bin"/>
 </classpath>

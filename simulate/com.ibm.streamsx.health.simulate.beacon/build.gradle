@@ -22,12 +22,21 @@ repositories {
 
 dependencies {
     compile fileTree(dir: System.getenv("STREAMS_INSTALL") + '/lib', include: ['*.jar'])
+    compile fileTree(dir: topologyToolkitPath + '/lib', include: ['*.jar'])
+    compile fileTree(dir: '../../ingest/common/com.ibm.streamsx.health.ingest/lib', include: ['*.jar'])
+    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.5'
 }
 
 task buildToolkit {
     doLast {
         splMakeToolkit()
     }
+}
+
+task getDeps(type: Copy) {
+  from configurations.runtime
+  into 'opt/downloaded'
+  exclude '*streams*'
 }
 
 task buildIngestToolkit(type: GradleBuild) {
@@ -54,6 +63,6 @@ task cleanToolkit {
     }   
 }
 
-build.dependsOn buildServices
+build.dependsOn buildServices, getDeps
 clean.dependsOn cleanToolkit
 
