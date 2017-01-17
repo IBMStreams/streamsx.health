@@ -186,7 +186,11 @@
       same "printed page" as the copyright notice for easier
       identification within third-party archives.
 
+<<<<<<< HEAD
    Copyright 2016, 2017 IBM 
+=======
+   Copyright 2016, 2017 IBM
+>>>>>>> Update LICENSE.md
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
