@@ -18,6 +18,16 @@ public class Location implements Serializable {
 	private String name;
 	private String locationType;
 
+	public Location() {
+
+	}
+	
+	public Location(Location location) {
+		this.id = location.id;
+		this.name = location.name;
+		this.locationType = location.locationType;
+	}
+	
 	public String getId() {
 		return id;
 	}
