@@ -51,7 +51,6 @@ public class DataIngestService {
 	public DataIngestService(String beaconToolkitPath) throws Exception {
 		topo = new Topology("BeaconIngestService");
 		topo.addJarDependency(beaconToolkitPath + "/etc/healthdata/data.jar");
-		topo.addJarDependency(beaconToolkitPath + "/opt/downloaded/commons-lang3-3.5.jar");
 		
 		patientPrefixSupplier = topo.createSubmissionParameter("patient.prefix", DEFAULT_PATIENT_PREFIX);
 		numPatientsSupplier = topo.createSubmissionParameter("num.patients", DEFAULT_NUM_PATIENTS);
