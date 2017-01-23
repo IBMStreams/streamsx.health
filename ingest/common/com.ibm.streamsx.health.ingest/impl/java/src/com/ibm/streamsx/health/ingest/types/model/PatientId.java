@@ -14,4 +14,12 @@ import java.util.HashSet;
 public class PatientId extends HashSet<String> {
 
 	private static final long serialVersionUID = 1L;
+	
+	public PatientId() {
+		super();
+	}
+	
+	public PatientId(PatientId patientId) {
+		super(patientId);
+	}
 }

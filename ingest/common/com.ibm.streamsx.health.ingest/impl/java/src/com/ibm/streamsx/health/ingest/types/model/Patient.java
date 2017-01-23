@@ -9,7 +9,10 @@
 /* end_generated_IBM_copyright_prolog                                         */
 package com.ibm.streamsx.health.ingest.types.model;
 
-public class Patient {
+import java.io.Serializable;
+
+public class Patient implements Serializable {
+	private static final long serialVersionUID = 1L;
 
 	private PatientId id;
 	private String name;
@@ -25,6 +28,14 @@ public class Patient {
 		status = "";
 	}
 
+	public Patient(Patient patient) {
+		this.id = new PatientId(patient.id);
+		this.name = patient.name;
+		this.gender = patient.gender;
+		this.dateOfBirth = patient.dateOfBirth;
+		this.status = patient.status;
+	}
+	
 	public void setId(PatientId id) {
 		this.id = id;
 	}
