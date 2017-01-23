@@ -28,6 +28,14 @@ public class Patient implements Serializable {
 		status = "";
 	}
 
+	public Patient(Patient patient) {
+		this.id = new PatientId(patient.id);
+		this.name = patient.name;
+		this.gender = patient.gender;
+		this.dateOfBirth = patient.dateOfBirth;
+		this.status = patient.status;
+	}
+	
 	public void setId(PatientId id) {
 		this.id = id;
 	}
