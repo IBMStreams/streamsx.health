@@ -2,3 +2,5 @@
 /data/
 /build/
 /.apt_generated/
+.toolkitList
+impl/java/bin
