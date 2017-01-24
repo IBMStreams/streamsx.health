@@ -10,7 +10,6 @@ import com.ibm.streamsx.datetime.convert.ISO8601;
 import com.ibm.streamsx.health.ingest.types.connector.AbstractObservationMapper;
 import com.ibm.streamsx.health.ingest.types.model.Device;
 import com.ibm.streamsx.health.ingest.types.model.Observation;
-import com.ibm.streamsx.health.ingest.types.model.PatientId;
 import com.ibm.streamsx.health.ingest.types.model.Reading;
 import com.ibm.streamsx.health.ingest.types.model.ReadingSource;
 import com.ibm.streamsx.health.vines.model.Channel;
@@ -61,11 +60,11 @@ public class VinesToChefMapper extends AbstractObservationMapper<Vines> {
 		List<Observation> observations = new ArrayList<Observation>();
 
 		// generate Patient ID
-		PatientId patientId = new PatientId();
-		
+		String patientId = "";
+
 		Patient patient = v.getData().getPatient();
 		if(patient != null) {
-			patientId.add(patient.get_id());			
+			patientId = patient.get_id();			
 		}
 		
 		// generate device type (same for all observations)
@@ -121,10 +120,10 @@ public class VinesToChefMapper extends AbstractObservationMapper<Vines> {
 		List<Observation> observations = new ArrayList<Observation>();
 		
 		// generate Patient ID
-		PatientId patientId = new PatientId();
+		String patientId = "";
 		Patient patient = v.getData().getPatient();
 		if(patient != null) {
-			patientId.add(patient.get_id());			
+			patientId = patient.get_id();			
 		}
 		
 		// generate device type (same for all observations)

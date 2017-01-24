@@ -80,7 +80,6 @@ composite PhysionetIngestService
 				onTuple fromPhysionet :
 				{
 					rstring location = $recordName ;
-					set<rstring> patientIds = { patientId } ;
 					Device_T device = { id = DEVICE_ID(), locationId = location } ;
 					ReadingSource_T ch1Src = { id = "ch1", sourceType = SOURCE_TYPE(), deviceId
 						= DEVICE_ID() } ;
@@ -91,9 +90,9 @@ composite PhysionetIngestService
 						=(float64) fromPhysionet.ch1, uom = EMPTY()} ;
 					Reading_T ch2 = { ts = baseTs + (int64)fromPhysionet.ts, readingType = READING_TYPE(), value
 						=(float64) fromPhysionet.ch2, uom = EMPTY() } ;
-					Observation_T obxCh1 = { device = device, patientId = patientIds,
+					Observation_T obxCh1 = { device = device, patientId = patientId,
 						readingSource = ch1Src, reading = ch1 } ;
-					Observation_T obxCh2 = { device = device, patientId = patientIds,
+					Observation_T obxCh2 = { device = device, patientId = patientId,
 						readingSource = ch2Src, reading = ch2 } ;
 					submit(obxCh1, 0u) ;
 					submit(obxCh2, 0u) ;

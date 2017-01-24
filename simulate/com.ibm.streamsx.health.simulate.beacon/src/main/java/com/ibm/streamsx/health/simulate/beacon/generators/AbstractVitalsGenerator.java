@@ -2,7 +2,6 @@ package com.ibm.streamsx.health.simulate.beacon.generators;
 
 import com.ibm.streamsx.health.ingest.types.model.Device;
 import com.ibm.streamsx.health.ingest.types.model.Observation;
-import com.ibm.streamsx.health.ingest.types.model.PatientId;
 import com.ibm.streamsx.health.ingest.types.model.Reading;
 import com.ibm.streamsx.health.ingest.types.model.ReadingSource;
 import com.ibm.streamsx.topology.function.Supplier;
@@ -11,12 +10,12 @@ public abstract class AbstractVitalsGenerator implements Supplier<Observation> {
 	private static final long serialVersionUID = 1L;
 
 	private int count = 0;
-	private PatientId patientId;
+
+	private String patientId;
 	private VitalsDataGenerator vitalsGen;
 	
 	public AbstractVitalsGenerator(String patientId, VitalsDataRange vitalsDataRange) {
-		this.patientId = new PatientId();
-		this.patientId.add(patientId);
+		this.patientId = patientId;
 		
 		switch(vitalsDataRange) {
 		case NORMAL:

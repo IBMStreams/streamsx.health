@@ -73,6 +73,7 @@ public class VinesAdapterServiceRunner {
 		options.addOption(password);
 		options.addOption(queueName);
 		options.addOption(exchange);
+		options.addOption(help);
 		
 		CommandLineParser parser = new BasicParser();
 		CommandLine cmd = null;

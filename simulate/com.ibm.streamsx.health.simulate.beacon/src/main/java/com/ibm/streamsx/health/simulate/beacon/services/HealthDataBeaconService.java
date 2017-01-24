@@ -11,7 +11,6 @@ import java.util.concurrent.TimeUnit;
 import com.ibm.streamsx.health.ingest.types.connector.IdentityMapper;
 import com.ibm.streamsx.health.ingest.types.connector.PublishConnector;
 import com.ibm.streamsx.health.ingest.types.model.Observation;
-import com.ibm.streamsx.health.ingest.types.model.PatientId;
 import com.ibm.streamsx.health.simulate.beacon.generators.ABPDiastolicDataGenerator;
 import com.ibm.streamsx.health.simulate.beacon.generators.ABPSystolicDataGenerator;
 import com.ibm.streamsx.health.simulate.beacon.generators.HealthcareDataGenerator;
@@ -118,8 +117,7 @@ public class HealthDataBeaconService {
 			List<Observation> observations = new ArrayList<Observation>();
 			
 			for(int i = 0; i < numPatients; i++) {
-				PatientId patientId = new PatientId();
-				patientId.add(patientPrefix + (i+1));
+				String patientId = patientPrefix + (i+1);
 				Observation clone = new Observation(obs);
 				clone.setPatientId(patientId);
 				observations.add(clone);

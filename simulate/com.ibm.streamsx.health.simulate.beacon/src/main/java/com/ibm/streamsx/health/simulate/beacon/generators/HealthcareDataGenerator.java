@@ -9,7 +9,6 @@ import java.util.List;
 
 import com.ibm.streamsx.health.ingest.types.model.Device;
 import com.ibm.streamsx.health.ingest.types.model.Observation;
-import com.ibm.streamsx.health.ingest.types.model.PatientId;
 import com.ibm.streamsx.health.ingest.types.model.Reading;
 import com.ibm.streamsx.health.ingest.types.model.ReadingSource;
 import com.ibm.streamsx.topology.function.Supplier;
@@ -20,13 +19,12 @@ public class HealthcareDataGenerator implements Supplier<Observation> {
 		
 	private int index = 0;
 	
-	private PatientId patientId;
+	private String patientId;
 	private String filename;
 	private transient List<Observation> observations;
 	
 	public HealthcareDataGenerator(String patientId, String filename) {
-		this.patientId = new PatientId();
-		this.patientId.add(patientId);
+  	this.patientId = patientId;
 		this.filename = filename;
 	}
 	
