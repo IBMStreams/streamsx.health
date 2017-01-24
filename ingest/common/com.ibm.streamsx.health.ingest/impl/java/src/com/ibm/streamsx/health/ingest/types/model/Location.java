@@ -9,12 +9,25 @@
 /* end_generated_IBM_copyright_prolog                                         */
 package com.ibm.streamsx.health.ingest.types.model;
 
-public class Location {
+import java.io.Serializable;
+
+public class Location implements Serializable {
+	private static final long serialVersionUID = 1L;
 
 	private String id;
 	private String name;
 	private String locationType;
 
+	public Location() {
+
+	}
+	
+	public Location(Location location) {
+		this.id = location.id;
+		this.name = location.name;
+		this.locationType = location.locationType;
+	}
+	
 	public String getId() {
 		return id;
 	}
