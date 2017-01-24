@@ -24,7 +24,7 @@ public class HealthcareDataGenerator implements Supplier<Observation> {
 	private transient List<Observation> observations;
 	
 	public HealthcareDataGenerator(String patientId, String filename) {
-		this.patientId = patientId;
+  	this.patientId = patientId;
 		this.filename = filename;
 	}
 	

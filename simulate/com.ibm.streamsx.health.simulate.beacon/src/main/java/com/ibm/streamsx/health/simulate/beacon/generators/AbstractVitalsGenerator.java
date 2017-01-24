@@ -10,6 +10,7 @@ public abstract class AbstractVitalsGenerator implements Supplier<Observation> {
 	private static final long serialVersionUID = 1L;
 
 	private int count = 0;
+
 	private String patientId;
 	private VitalsDataGenerator vitalsGen;
 	
