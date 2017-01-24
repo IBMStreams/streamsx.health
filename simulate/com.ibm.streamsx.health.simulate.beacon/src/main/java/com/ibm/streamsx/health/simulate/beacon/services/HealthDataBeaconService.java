@@ -1,4 +1,4 @@
-package com.ibm.streamsx.health.beacon.services;
+package com.ibm.streamsx.health.simulate.beacon.services;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,16 +8,16 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import com.ibm.streamsx.health.beacon.generators.ABPDiastolicDataGenerator;
-import com.ibm.streamsx.health.beacon.generators.ABPSystolicDataGenerator;
-import com.ibm.streamsx.health.beacon.generators.HealthcareDataGenerator;
-import com.ibm.streamsx.health.beacon.generators.HeartRateDataGenerator;
-import com.ibm.streamsx.health.beacon.generators.SpO2DataGenerator;
-import com.ibm.streamsx.health.beacon.generators.TemperatureDataGenerator;
 import com.ibm.streamsx.health.ingest.types.connector.IdentityMapper;
 import com.ibm.streamsx.health.ingest.types.connector.PublishConnector;
 import com.ibm.streamsx.health.ingest.types.model.Observation;
 import com.ibm.streamsx.health.ingest.types.model.PatientId;
+import com.ibm.streamsx.health.simulate.beacon.generators.ABPDiastolicDataGenerator;
+import com.ibm.streamsx.health.simulate.beacon.generators.ABPSystolicDataGenerator;
+import com.ibm.streamsx.health.simulate.beacon.generators.HealthcareDataGenerator;
+import com.ibm.streamsx.health.simulate.beacon.generators.HeartRateDataGenerator;
+import com.ibm.streamsx.health.simulate.beacon.generators.SpO2DataGenerator;
+import com.ibm.streamsx.health.simulate.beacon.generators.TemperatureDataGenerator;
 import com.ibm.streamsx.topology.TStream;
 import com.ibm.streamsx.topology.Topology;
 import com.ibm.streamsx.topology.context.ContextProperties;
@@ -32,7 +32,7 @@ import com.ibm.streamsx.topology.function.Supplier;
  * 	"ingest-beacon";
  *
  */
-public class DataIngestService {
+public class HealthDataBeaconService {
 
 	public static final String BEACON_INGEST_SERVICE_TOPIC = "ingest-beacon";
 	public static final Integer DEFAULT_NUM_PATIENTS = 1;
@@ -42,15 +42,15 @@ public class DataIngestService {
 	private static final long WAVEFORM_PERIOD = 8;
 	private static final TimeUnit WAVEFORM_PERIOD_TIMEUNIT = TimeUnit.MILLISECONDS;
 	private static final long VITALS_PERIOD = 100;
-	private static final TimeUnit VITALS_PERIOD_TIMEUNIT = TimeUnit.MILLISECONDS;  // DEBUG
+	private static final TimeUnit VITALS_PERIOD_TIMEUNIT = TimeUnit.MILLISECONDS;
 	
 	private Topology topo;
 	private Supplier<String> patientPrefixSupplier;
 	private Supplier<Integer> numPatientsSupplier;
 	
-	public DataIngestService(String beaconToolkitPath) throws Exception {
-		topo = new Topology("BeaconIngestService");
-		topo.addJarDependency(beaconToolkitPath + "/etc/healthdata/data.jar");
+	public HealthDataBeaconService(String beaconProjectPath) throws Exception {
+		topo = new Topology("HealthDataBeaconService");
+		topo.addJarDependency(beaconProjectPath + "/src/main/resources/data.jar");
 		
 		patientPrefixSupplier = topo.createSubmissionParameter("patient.prefix", DEFAULT_PATIENT_PREFIX);
 		numPatientsSupplier = topo.createSubmissionParameter("num.patients", DEFAULT_NUM_PATIENTS);
@@ -130,7 +130,6 @@ public class DataIngestService {
 	
 	public static void main(String[] args) throws Exception {
 		Map<String, Object> params = new HashMap<>();
-		params.put("num.patients", 1000);
-		new DataIngestService(System.getProperty("user.dir")).run(Type.DISTRIBUTED, params);
+		new HealthDataBeaconService(System.getProperty("user.dir")).run(Type.BUNDLE, params);
 	}
 }

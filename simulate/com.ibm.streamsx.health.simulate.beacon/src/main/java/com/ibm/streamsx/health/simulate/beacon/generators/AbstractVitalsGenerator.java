@@ -1,4 +1,4 @@
-package com.ibm.streamsx.health.beacon.generators;
+package com.ibm.streamsx.health.simulate.beacon.generators;
 
 import com.ibm.streamsx.health.ingest.types.model.Device;
 import com.ibm.streamsx.health.ingest.types.model.Observation;

@@ -1,4 +1,4 @@
-package com.ibm.streamsx.health.beacon.generators;
+package com.ibm.streamsx.health.simulate.beacon.generators;
 
 public class ABPDiastolicDataGenerator extends AbstractVitalsGenerator {
 	private static final long serialVersionUID = 1L;

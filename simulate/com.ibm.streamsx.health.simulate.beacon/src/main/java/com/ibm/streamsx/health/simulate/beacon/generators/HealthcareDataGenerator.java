@@ -1,4 +1,4 @@
-package com.ibm.streamsx.health.beacon.generators;
+package com.ibm.streamsx.health.simulate.beacon.generators;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
