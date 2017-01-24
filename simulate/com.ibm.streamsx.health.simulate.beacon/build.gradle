@@ -2,19 +2,8 @@ apply plugin: 'java'
 apply from: '../../common.gradle'
 
 def STREAMS_INSTALL = System.getenv("STREAMS_INSTALL")
-def healthIngestToolkitPath = '../../ingest/common/com.ibm.streamsx.health.ingest'
-def physionetToolkitPath = '../../ingest/physionet/com.ibm.streamsx.health.ingest.physionet'
-def jsonToolkitPath = STREAMS_INSTALL + '/toolkits/com.ibm.streamsx.json'
 def topologyToolkitPath = STREAMS_INSTALL + '/toolkits/com.ibm.streamsx.topology'
-def dateTimeToolkitPath = STREAMS_INSTALL + '/toolkits/com.ibm.streamsx.datetime'
-
-sourceSets {
-    main {
-        java {
-            srcDir 'impl/java/src'
-        }
-    }
-}
+def healthIngestToolkitPath = '../../ingest/common/com.ibm.streamsx.health.ingest'
 
 repositories { 
     mavenCentral() 
@@ -22,12 +11,9 @@ repositories {
 
 dependencies {
     compile fileTree(dir: System.getenv("STREAMS_INSTALL") + '/lib', include: ['*.jar'])
-}
-
-task buildToolkit {
-    doLast {
-        splMakeToolkit()
-    }
+    compile fileTree(dir: topologyToolkitPath + '/lib', include: ['*.jar'])
+    compile fileTree(dir: healthIngestToolkitPath + '/lib', include: ['*.jar'])
+    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.5'
 }
 
 task buildIngestToolkit(type: GradleBuild) {
@@ -35,25 +21,18 @@ task buildIngestToolkit(type: GradleBuild) {
     tasks = ['build']
 }
 
-task buildPhysionetToolkit(type: GradleBuild) {
-    buildFile = '../../ingest/physionet/com.ibm.streamsx.health.ingest.physionet/build.gradle'
-    tasks = ['build']
+task buildService(type: JavaExec, dependsOn: 'classes') {
+	main = 'com.ibm.streamsx.health.simulate.beacon.services.HealthDataBeaconService'
+	classpath = sourceSets.main.runtimeClasspath
 }
 
-task buildServices(dependsOn: ['buildToolkit', 'buildIngestToolkit', 'buildPhysionetToolkit']) {
-    doLast {
-        def serviceToolkitPath = healthIngestToolkitPath + ':' + physionetToolkitPath + ':' + jsonToolkitPath + ':' + topologyToolkitPath + ':' + ':' + dateTimeToolkitPath
-        compileApp('com.ibm.streamsx.health.beacon', 'ECGBeaconService', serviceToolkitPath) 
-    }
+task cleanUp() {
+	doLast {
+		delete 'com.ibm.streamsx.health.simulate.beacon.services.HealthDataBeaconService.sab'
+		delete 'bin'
+	}
 }
 
-task cleanToolkit {
-    doLast {
-        splCleanToolkit()
-        delete 'output'
-    }   
-}
-
-build.dependsOn buildServices
-clean.dependsOn cleanToolkit
-
+compileJava.dependsOn buildIngestToolkit
+build.finalizedBy(buildService)
+clean.dependsOn cleanUp
