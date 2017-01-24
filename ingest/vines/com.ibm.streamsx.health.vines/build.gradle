@@ -23,4 +23,12 @@ task copyToLib(type: Copy) {
 	into "$buildDir/output/lib"
 	from configurations.runtime
 }
-build.dependsOn copyToLib
+
+task cleanUp() {
+    doLast {
+        delete 'bin'
+    }
+}
+
+compileJava.dependsOn copyToLib
+clean.finalizedBy(cleanUp)

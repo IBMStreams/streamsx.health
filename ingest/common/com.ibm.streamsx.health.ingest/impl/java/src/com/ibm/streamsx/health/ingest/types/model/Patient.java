@@ -14,14 +14,14 @@ import java.io.Serializable;
 public class Patient implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	private PatientId id;
+	private String id;
 	private String name;
 	private String gender;
 	private String dateOfBirth;
 	private String status;
 
 	public Patient() {
-		id = new PatientId();
+		id = "";
 		name = "";
 		gender = "";
 		dateOfBirth = "";
@@ -29,23 +29,19 @@ public class Patient implements Serializable {
 	}
 
 	public Patient(Patient patient) {
-		this.id = new PatientId(patient.id);
+		this.id = patient.id;
 		this.name = patient.name;
 		this.gender = patient.gender;
 		this.dateOfBirth = patient.dateOfBirth;
 		this.status = patient.status;
 	}
 	
-	public void setId(PatientId id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 
-	public PatientId getId() {
+	public String getId() {
 		return id;
-	}
-
-	public void addId(String id) {
-		this.id.add(id);
 	}
 
 	public String getName() {

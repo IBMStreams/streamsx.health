@@ -12,9 +12,9 @@ namespace com.ibm.streamsx.health.ingest.types ;
 
 type Reading_T = int64 ts, rstring readingType, float64 value, rstring uom;
 
-type Observation_T = Device_T device, set<rstring> patientId, ReadingSource_T readingSource, Reading_T reading;
+type Observation_T = Device_T device, rstring patientId, ReadingSource_T readingSource, Reading_T reading;
 	
-type Patient_T = set<rstring> ids, rstring name, rstring gender, rstring DOB, rstring status ;	
+type Patient_T = rstring id, rstring name, rstring gender, rstring DOB, rstring status ;	
 	
 type Location_T = rstring id, rstring name, rstring locationType;	
 
