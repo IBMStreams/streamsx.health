@@ -2,9 +2,7 @@
 .gradle
 build/
 
+toolkit.xml
 *.sab
-vcap_services.json
 ingest/common/com.ibm.streamsx.health.ingest/lib/
 ingest/physionet/com.ibm.streamsx.health.ingest.physionet/lib/
-samples/HealthcareJupyterDemo/ext/
-samples/HealthcareJupyterDemo/spl/
