@@ -87,3 +87,9 @@ ENV/
 
 # Rope project settings
 .ropeproject
+
+# notebook generated artifacts
+vcap_services.json
+ext/com.ibm.streamsx.health/
+ext/streamsx.inet/
+ext/streamsx.topology/
