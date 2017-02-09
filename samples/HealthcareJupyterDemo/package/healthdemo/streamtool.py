@@ -11,7 +11,8 @@ class Streamtool:
         self.job_ids = []
 
     def submitjob(self, sab_path, params=[]):
-        submit_list = ['streamtool', 'submitjob', sab_path].extend(params)
+        submit_list = ['streamtool', 'submitjob', sab_path]
+        submit_list.extend(params)
         p = subprocess.Popen(submit_list,
             stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True)
         for line in p.stdout:
