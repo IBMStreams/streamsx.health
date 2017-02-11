@@ -1,29 +1,37 @@
 # Licensed Materials - Property of IBM
 # Copyright IBM Corp. 2016, 2017
 from collections import deque
+from .utils import get_patient_id
 
 class TumblingWindow:
     def __init__ (self, length):
         self.length = length
-        self.window = []
+    
     def __call__ (self, tuple):
-        self.window.append(tuple)
-        if(len(self.window) == self.length):
-             temp = self.window
-             self.window = []
+        patientId = get_patient_id(tuple)
+        self.window.setdefault(patientId, [])
+        
+        self.window[patientId].append(tuple)
+        if(len(self.window[patientId]) == self.length):
+             temp = self.window[patientId]
+             self.window[patientId] = []
              return temp
 
 class SlidingWindow:
     def __init__(self, length, trigger):
         self.length = length
         self.trigger = trigger
-        self.triggerCount = 0
-        self.window = deque(maxlen=length)
+        self.triggerCount = {}
+        self.window = {}
 
     def __call__(self, data):
-        self.window.append(data)
-        self.triggerCount += 1
+        patientId = get_patient_id(data)
+        self.triggerCount.setdefault(patientId, 0)
+        self.window.setdefault(patientId, deque(maxlen=self.length))
+        
+        self.window[patientId].append(data)
+        self.triggerCount[patientId] += 1
 
-        if self.triggerCount == self.trigger:
-            self.triggerCount = 0
-            return list(self.window)
+        if self.triggerCount[patientId] == self.trigger:
+            self.triggerCount[patientId] = 0
+            return list(self.window[patientId])
