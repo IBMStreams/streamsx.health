@@ -1,0 +1,39 @@
+
+property loadGetterSetterAsProperties "true"
+property origin "xom:/streamsx-health-analyze-rules-vitals//com.ibm.streamsx.health.analyze.rules.model"
+property uuid "484cbd23-a962-4b3c-b82c-9e83d6d0757f"
+package com.ibm.streamsx.health.analyze.rules.model;
+
+
+public final class Consciousness
+        extends java.lang.Enum
+{
+    domain {static ALERT, static VOICE, static CONFUSE, static PAIN, static UNCONSCIOUS}
+    public static final readonly com.ibm.streamsx.health.analyze.rules.model.Consciousness ALERT;
+    public static final readonly com.ibm.streamsx.health.analyze.rules.model.Consciousness CONFUSE;
+    public static final readonly com.ibm.streamsx.health.analyze.rules.model.Consciousness PAIN;
+    public static final readonly com.ibm.streamsx.health.analyze.rules.model.Consciousness UNCONSCIOUS;
+    public static final readonly com.ibm.streamsx.health.analyze.rules.model.Consciousness VOICE;
+    public static com.ibm.streamsx.health.analyze.rules.model.Consciousness valueOf(string arg);
+    public static com.ibm.streamsx.health.analyze.rules.model.Consciousness[] values();
+}
+
+public class Patient
+{
+    public com.ibm.streamsx.health.analyze.rules.model.Consciousness avpu;
+    public float bpDiastolic;
+    public float bpSystolic;
+    public readonly int ewsScore;
+    public float hr;
+    public string id;
+    public string name;
+    public readonly int newsScore;
+    public float respRate;
+    public float spo2;
+    public boolean supplementOxygen;
+    public float temperature;
+    public Patient();
+    public void incrementEwsScore(int score);
+    public void incrementNewsScore(int arg);
+}
+

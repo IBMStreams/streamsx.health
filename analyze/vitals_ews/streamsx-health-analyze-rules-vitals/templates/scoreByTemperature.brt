@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ilog.rules.studio.model.brl:BRLRuleTemplate xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ilog.rules.studio.model.brl="http://ilog.rules.studio/model/brl.ecore">
+  <name>scoreByTemperature</name>
+  <uuid>c556e1f1-53e2-417a-a6b2-30d91deba345</uuid>
+  <rule xsi:type="ilog.rules.studio.model.brl:ActionRule">
+    <name>scoreByTemperature</name>
+    <locale>en_US</locale>
+    <definition><![CDATA[if
+	the temperature of <a patient> is between <a number value> and <a number value>
+then
+	add <a patient> ews score by <a number value> ;
+else
+	<action> ;
+	<action> ;]]></definition>
+  </rule>
+</ilog.rules.studio.model.brl:BRLRuleTemplate>

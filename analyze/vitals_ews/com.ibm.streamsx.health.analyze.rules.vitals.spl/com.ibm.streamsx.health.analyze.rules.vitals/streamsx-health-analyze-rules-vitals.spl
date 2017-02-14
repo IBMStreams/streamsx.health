@@ -1,0 +1,367 @@
+namespace com.ibm.streamsx.health.analyze.rules.vitals;
+use com.ibm.streams.rulescompiler::*;
+use com.ibm.streamsx.health.analyze.rules.vitals.com.ibm.streamsx.health.analyze.rules.model::*;
+
+/**
+ * Composite generated from ruleset streamsx-health-analyze-rules-vitals
+ * from project /home/streamsadmin/health/workspaces/rules/streamsx-health-analyze-rules-vitals at Tue, 14 Feb 2017 12:13:40.
+ * The rules are divided by package.
+ * @input ruleIn Represents IN/INOUT parameter(s) patient
+ * @output ruleOut Represents INOUT/OUT parameter(s) patient
+ */
+public composite streamsx_health_analyze_rules_vitals(input stream<Patient i_patient> ruleIn; output stream<tuple<Patient o_patient>> ruleOut) {
+	graph
+		stream<tuple<Patient o_patient>> ruleOut_ruleOut0_com_ibm_streamsx_health_analyze_rules_vitals_ews = Custom(ruleIn) {
+			logic state: {
+				mutable tuple<Patient o_patient> ovar;
+			}
+			
+			onTuple ruleIn: {
+				ovar.o_patient = ruleIn.i_patient;
+				/* 
+				 * Now generating code for rule com.ibm.streamsx.health.analyze.rules.vitals.ews.scoreByAlertness1.
+				 * if patient alertness  is RESPONDS TO VOICE then
+				 * 	add patient ews score by 1 ;
+				*/
+				if((((ovar.o_patient.avpu == VOICE)))) {
+					incrementEwsScore(ovar.o_patient, 1);
+				}
+				
+				/* 
+				 * Now generating code for rule com.ibm.streamsx.health.analyze.rules.vitals.ews.scoreByAlertness3.
+				 * if patient alertness is UNCONSCIOUS then add patient ews score by 3 ;
+				*/
+				if((((ovar.o_patient.avpu == UNCONSCIOUS)))) {
+					incrementEwsScore(ovar.o_patient, 3);
+				}
+				
+				/* 
+				 * Now generating code for rule com.ibm.streamsx.health.analyze.rules.vitals.ews.scoreByRespRate3.
+				 * if the respiratory rate of patient is more than 35 or the respiratory rate of patient is less than  7 then
+				 *  add patient ews score by 3 ;
+				*/
+				if(((((ovar.o_patient.respRate > ((float32)35))) || ((ovar.o_patient.respRate < ((float32)7)))))) {
+					incrementEwsScore(ovar.o_patient, 3);
+				}
+				
+				/* 
+				 * Now generating code for rule com.ibm.streamsx.health.analyze.rules.vitals.ews.scoreBySpo2_3.
+				 * if the SpO2 of patient is less than 85 then
+				 * 	add patient ews score by 3 ;
+				*/
+				if((((ovar.o_patient.spo2 < ((float32)85))))) {
+					incrementEwsScore(ovar.o_patient, 3);
+				}
+				
+				/* 
+				 * Now generating code for rule com.ibm.streamsx.health.analyze.rules.vitals.ews.scoreBySysBp1.
+				 * if systolic blood pressure of patient is between 80 and 99 then
+				 * 	add patient ews score by 1;
+				*/
+				if(((((((float64)ovar.o_patient.bpSystolic) >= ((float64)80)) && (((float64)ovar.o_patient.bpSystolic) <= ((float64)99)))))) {
+					incrementEwsScore(ovar.o_patient, 1);
+				}
+				
+				/* 
+				 * Now generating code for rule com.ibm.streamsx.health.analyze.rules.vitals.ews.scoreByHr2.
+				 * if the heart rate of patient is between 110 and 129 or the heart rate of patient is between 30 and 39 then
+				 * 	add patient ews score by 2;
+				*/
+				if((((((((float64)ovar.o_patient.hr) >= ((float64)110)) && (((float64)ovar.o_patient.hr) <= ((float64)129)))) || (((((float64)ovar.o_patient.hr) >= ((float64)30)) && (((float64)ovar.o_patient.hr) <= ((float64)39))))))) {
+					incrementEwsScore(ovar.o_patient, 2);
+				}
+				
+				/* 
+				 * Now generating code for rule com.ibm.streamsx.health.analyze.rules.vitals.ews.scoreByRespRate1.
+				 * if the respiratory rate of patient is between 21 and 30 then
+				 * 	add patient ews score by 1 ;
+				*/
+				if(((((((float64)ovar.o_patient.respRate) >= ((float64)21)) && (((float64)ovar.o_patient.respRate) <= ((float64)30)))))) {
+					incrementEwsScore(ovar.o_patient, 1);
+				}
+				
+				/* 
+				 * Now generating code for rule com.ibm.streamsx.health.analyze.rules.vitals.ews.scoreByHr1.
+				 * if the heart rate of patient is between 100 and 199 or the heart rate of patient is between 40 and 49 then
+				 * 	add patient ews score by 1;
+				*/
+				if((((((((float64)ovar.o_patient.hr) >= ((float64)100)) && (((float64)ovar.o_patient.hr) <= ((float64)199)))) || (((((float64)ovar.o_patient.hr) >= ((float64)40)) && (((float64)ovar.o_patient.hr) <= ((float64)49))))))) {
+					incrementEwsScore(ovar.o_patient, 1);
+				}
+				
+				/* 
+				 * Now generating code for rule com.ibm.streamsx.health.analyze.rules.vitals.ews.scoreByTemperature1.
+				 * if the temperature of patient is between 38 and 38.9 or the temperature of patient is between 35 and 35.9 then
+				 * 	add patient ews score by 1; 
+				*/
+				if((((((((float64)ovar.o_patient.temperature) >= ((float64)38)) && (((float64)ovar.o_patient.temperature) <= 38.9fl))) || (((((float64)ovar.o_patient.temperature) >= ((float64)35)) && (((float64)ovar.o_patient.temperature) <= 35.9fl)))))) {
+					incrementEwsScore(ovar.o_patient, 1);
+				}
+				
+				/* 
+				 * Now generating code for rule com.ibm.streamsx.health.analyze.rules.vitals.ews.scoreBySysBp2.
+				 * if systolic blood pressure of patient is more than 199 or systolic blood pressure of patient is between 70 and 79 then
+				 * 	add patient ews score by 2; 
+				*/
+				if(((((ovar.o_patient.bpSystolic > ((float32)199))) || (((((float64)ovar.o_patient.bpSystolic) >= ((float64)70)) && (((float64)ovar.o_patient.bpSystolic) <= ((float64)79))))))) {
+					incrementEwsScore(ovar.o_patient, 2);
+				}
+				
+				/* 
+				 * Now generating code for rule com.ibm.streamsx.health.analyze.rules.vitals.ews.scoreBySpo2_2.
+				 * if the SpO2 of patient is between 85 and 89 then
+				 * 	add patient ews score by 2 ;
+				*/
+				if(((((((float64)ovar.o_patient.spo2) >= ((float64)85)) && (((float64)ovar.o_patient.spo2) <= ((float64)89)))))) {
+					incrementEwsScore(ovar.o_patient, 2);
+				}
+				
+				/* 
+				 * Now generating code for rule com.ibm.streamsx.health.analyze.rules.vitals.ews.scoreBySpo2_1.
+				 * if the SpO2 of patient is between 90 and 92 then
+				 * 	add patient ews score by 1 ;
+				*/
+				if(((((((float64)ovar.o_patient.spo2) >= ((float64)90)) && (((float64)ovar.o_patient.spo2) <= ((float64)92)))))) {
+					incrementEwsScore(ovar.o_patient, 1);
+				}
+				
+				/* 
+				 * Now generating code for rule com.ibm.streamsx.health.analyze.rules.vitals.ews.scoreByAlertness2.
+				 * if patient alertness is RESPONDS TO PAIN then
+				 * 	add patient ews score by 2 ;
+				*/
+				if((((ovar.o_patient.avpu == PAIN)))) {
+					incrementEwsScore(ovar.o_patient, 2);
+				}
+				
+				/* 
+				 * Now generating code for rule com.ibm.streamsx.health.analyze.rules.vitals.ews.scoreBySysBp3.
+				 * if systolic blood pressure of patient is more than 199 or systolic blood pressure of patient is less than 70 then
+				 * 	add patient ews score by 3;
+				*/
+				if(((((ovar.o_patient.bpSystolic > ((float32)199))) || ((ovar.o_patient.bpSystolic < ((float32)70)))))) {
+					incrementEwsScore(ovar.o_patient, 3);
+				}
+				
+				/* 
+				 * Now generating code for rule com.ibm.streamsx.health.analyze.rules.vitals.ews.scoreByTemperature3.
+				 * if the temperature of patient is less than 34 then
+				 *  add patient ews score by 3;
+				*/
+				if((((ovar.o_patient.temperature < ((float32)34))))) {
+					incrementEwsScore(ovar.o_patient, 3);
+				}
+				
+				/* 
+				 * Now generating code for rule com.ibm.streamsx.health.analyze.rules.vitals.ews.scoreByTemperature2.
+				 * if the temperature of patient is between 34 and 34.9 or the temperature of patient is more than 38.9 then
+				 * add patient ews score by 2;
+				*/
+				if((((((((float64)ovar.o_patient.temperature) >= ((float64)34)) && (((float64)ovar.o_patient.temperature) <= 34.9fl))) || ((((float64)ovar.o_patient.temperature) > 38.9fl))))) {
+					incrementEwsScore(ovar.o_patient, 2);
+				}
+				
+				/* 
+				 * Now generating code for rule com.ibm.streamsx.health.analyze.rules.vitals.ews.scoreByRespRate2.
+				 * if the respiratory rate of patient is between 31 and 35 then
+				 * 	add patient ews score by 2 ;
+				*/
+				if(((((((float64)ovar.o_patient.respRate) >= ((float64)31)) && (((float64)ovar.o_patient.respRate) <= ((float64)35)))))) {
+					incrementEwsScore(ovar.o_patient, 2);
+				}
+				
+				/* 
+				 * Now generating code for rule com.ibm.streamsx.health.analyze.rules.vitals.ews.scoreByHr3.
+				 * if the heart rate of patient is more than 129 or the heart rate of patient is less than 30 then
+				 * 	add patient ews score by 3;
+				*/
+				if(((((ovar.o_patient.hr > ((float32)129))) || ((ovar.o_patient.hr < ((float32)30)))))) {
+					incrementEwsScore(ovar.o_patient, 3);
+				}
+				
+				submit({o_patient=ovar.o_patient}, ruleOut_ruleOut0_com_ibm_streamsx_health_analyze_rules_vitals_ews);
+		}
+		
+		onPunct ruleIn: {
+			if (currentPunct() == Sys.WindowMarker) {
+				submit(Sys.WindowMarker, ruleOut_ruleOut0_com_ibm_streamsx_health_analyze_rules_vitals_ews);
+			}
+		}
+		
+		config restartable: true;
+		}
+		
+		stream<tuple<Patient o_patient>> ruleOut = Custom(ruleOut_ruleOut0_com_ibm_streamsx_health_analyze_rules_vitals_ews) {
+			logic state: {
+				mutable tuple<Patient o_patient> ovar;
+			}
+			
+			onTuple ruleOut_ruleOut0_com_ibm_streamsx_health_analyze_rules_vitals_ews: {
+				ovar.o_patient = ruleOut_ruleOut0_com_ibm_streamsx_health_analyze_rules_vitals_ews.o_patient;
+				/* 
+				 * Now generating code for rule com.ibm.streamsx.health.analyze.rules.vitals.news.scoreByAlertness3.
+				 * if patient alertness is not ALERT then
+				 * 	add patient news score by 3 ;
+				*/
+				if((((! ((ovar.o_patient.avpu == ALERT)))))) {
+					incrementNewsScore(ovar.o_patient, 3);
+				}
+				
+				/* 
+				 * Now generating code for rule com.ibm.streamsx.health.analyze.rules.vitals.news.scoreByRespRate3.
+				 * if the respiratory rate of patient is more than 24 or the respiratory rate of patient is less than 9 then
+				 *  add patient news score by 3 ;
+				*/
+				if(((((ovar.o_patient.respRate > ((float32)24))) || ((ovar.o_patient.respRate < ((float32)9)))))) {
+					incrementNewsScore(ovar.o_patient, 3);
+				}
+				
+				/* 
+				 * Now generating code for rule com.ibm.streamsx.health.analyze.rules.vitals.news.scoreBySpo2_3.
+				 * if the SpO2 of patient is less than 92 then
+				 * 	add patient news score by 3 ;
+				*/
+				if((((ovar.o_patient.spo2 < ((float32)92))))) {
+					incrementNewsScore(ovar.o_patient, 3);
+				}
+				
+				/* 
+				 * Now generating code for rule com.ibm.streamsx.health.analyze.rules.vitals.news.scoreBySysBp1.
+				 * if systolic blood pressure of patient is between 101 and 110 then
+				 * 	add patient news score by 1;
+				*/
+				if(((((((float64)ovar.o_patient.bpSystolic) >= ((float64)101)) && (((float64)ovar.o_patient.bpSystolic) <= ((float64)110)))))) {
+					incrementNewsScore(ovar.o_patient, 1);
+				}
+				
+				/* 
+				 * Now generating code for rule com.ibm.streamsx.health.analyze.rules.vitals.news.scoreByHr2.
+				 * if the heart rate of patient is between 113 and 130  then
+				 * 	add patient news score by 2;
+				*/
+				if(((((((float64)ovar.o_patient.hr) >= ((float64)113)) && (((float64)ovar.o_patient.hr) <= ((float64)130)))))) {
+					incrementNewsScore(ovar.o_patient, 2);
+				}
+				
+				/* 
+				 * Now generating code for rule com.ibm.streamsx.health.analyze.rules.vitals.news.scoreByRespRate1.
+				 * if the respiratory rate of patient is between 9 and 11 then
+				 * 	add patient news score by 1;
+				*/
+				if(((((((float64)ovar.o_patient.respRate) >= ((float64)9)) && (((float64)ovar.o_patient.respRate) <= ((float64)11)))))) {
+					incrementNewsScore(ovar.o_patient, 1);
+				}
+				
+				/* 
+				 * Now generating code for rule com.ibm.streamsx.health.analyze.rules.vitals.news.scoreByHr1.
+				 * if the heart rate of patient is between 91 and 110 or the heart rate of patient is between 41 and 50 then
+				 * 	add patient news score by 1;
+				*/
+				if((((((((float64)ovar.o_patient.hr) >= ((float64)91)) && (((float64)ovar.o_patient.hr) <= ((float64)110)))) || (((((float64)ovar.o_patient.hr) >= ((float64)41)) && (((float64)ovar.o_patient.hr) <= ((float64)50))))))) {
+					incrementNewsScore(ovar.o_patient, 1);
+				}
+				
+				/* 
+				 * Now generating code for rule com.ibm.streamsx.health.analyze.rules.vitals.news.scoreByTemperature1.
+				 * if the temperature of patient is between 35.1 and 36.0 or the temperature of patient is between 38.1 and 39.0 then
+				 * 	add patient news score by 1; 
+				*/
+				if((((((((float64)ovar.o_patient.temperature) >= 35.1fl) && (((float64)ovar.o_patient.temperature) <= 36.0fl))) || (((((float64)ovar.o_patient.temperature) >= 38.1fl) && (((float64)ovar.o_patient.temperature) <= 39.0fl)))))) {
+					incrementNewsScore(ovar.o_patient, 1);
+				}
+				
+				/* 
+				 * Now generating code for rule com.ibm.streamsx.health.analyze.rules.vitals.news.scoreBySysBp2.
+				 * if systolic blood pressure of patient is between 91 and 100 then
+				 * 	add patient news score by 2; 
+				*/
+				if(((((((float64)ovar.o_patient.bpSystolic) >= ((float64)91)) && (((float64)ovar.o_patient.bpSystolic) <= ((float64)100)))))) {
+					incrementNewsScore(ovar.o_patient, 2);
+				}
+				
+				/* 
+				 * Now generating code for rule com.ibm.streamsx.health.analyze.rules.vitals.news.scoreBySpo2_2.
+				 * if the SpO2 of patient is between 92 and 93 then
+				 * 	add patient news score by 2 ;
+				*/
+				if(((((((float64)ovar.o_patient.spo2) >= ((float64)92)) && (((float64)ovar.o_patient.spo2) <= ((float64)93)))))) {
+					incrementNewsScore(ovar.o_patient, 2);
+				}
+				
+				/* 
+				 * Now generating code for rule com.ibm.streamsx.health.analyze.rules.vitals.news.scoreBySpo2_1.
+				 * if the SpO2 of patient is between 94 and 95 then
+				 * 	add patient news score by 1 ;
+				*/
+				if(((((((float64)ovar.o_patient.spo2) >= ((float64)94)) && (((float64)ovar.o_patient.spo2) <= ((float64)95)))))) {
+					incrementNewsScore(ovar.o_patient, 1);
+				}
+				
+				/* 
+				 * Now generating code for rule com.ibm.streamsx.health.analyze.rules.vitals.news.scoreBySysBp3.
+				 * if systolic blood pressure of patient is more than 219 or systolic blood pressure of patient is less than 91 then
+				 * 	add patient news score by 3;
+				*/
+				if(((((ovar.o_patient.bpSystolic > ((float32)219))) || ((ovar.o_patient.bpSystolic < ((float32)91)))))) {
+					incrementNewsScore(ovar.o_patient, 3);
+				}
+				
+				/* 
+				 * Now generating code for rule com.ibm.streamsx.health.analyze.rules.vitals.news.scoreByTemperature3.
+				 * if the temperature of patient is less than 35.1 then
+				 *  add patient news score by 3;
+				*/
+				if((((((float64)ovar.o_patient.temperature) < 35.1fl)))) {
+					incrementNewsScore(ovar.o_patient, 3);
+				}
+				
+				/* 
+				 * Now generating code for rule com.ibm.streamsx.health.analyze.rules.vitals.news.scoreBySupplementedOxygen.
+				 * if patient is supplement oxygen then 
+				 * 	add patient news score by 1;
+				*/
+				if(((ovar.o_patient.supplementOxygen))) {
+					incrementNewsScore(ovar.o_patient, 1);
+				}
+				
+				/* 
+				 * Now generating code for rule com.ibm.streamsx.health.analyze.rules.vitals.news.scoreByTemperature2.
+				 * if the temperature of patient is more than 39.0 then
+				 * 	add patient news score by 2;
+				*/
+				if((((((float64)ovar.o_patient.temperature) > 39.0fl)))) {
+					incrementNewsScore(ovar.o_patient, 2);
+				}
+				
+				/* 
+				 * Now generating code for rule com.ibm.streamsx.health.analyze.rules.vitals.news.scoreByRespRate2.
+				 * if the respiratory rate of patient is between 21 and 24 then
+				 * 	add patient news score by 2 ;
+				*/
+				if(((((((float64)ovar.o_patient.respRate) >= ((float64)21)) && (((float64)ovar.o_patient.respRate) <= ((float64)24)))))) {
+					incrementNewsScore(ovar.o_patient, 2);
+				}
+				
+				/* 
+				 * Now generating code for rule com.ibm.streamsx.health.analyze.rules.vitals.news.scoreByHr3.
+				 * if the heart rate of patient is more than 130 or the heart rate of patient is less than 41 then
+				 * 	add patient news score by 3;
+				*/
+				if(((((ovar.o_patient.hr > ((float32)130))) || ((ovar.o_patient.hr < ((float32)41)))))) {
+					incrementNewsScore(ovar.o_patient, 3);
+				}
+				
+				submit({o_patient=ovar.o_patient}, ruleOut);
+		}
+		
+		onPunct ruleOut_ruleOut0_com_ibm_streamsx_health_analyze_rules_vitals_ews: {
+			if (currentPunct() == Sys.WindowMarker) {
+				submit(Sys.WindowMarker, ruleOut);
+			}
+		}
+		
+		config restartable: true;
+		}
+		
+}
+

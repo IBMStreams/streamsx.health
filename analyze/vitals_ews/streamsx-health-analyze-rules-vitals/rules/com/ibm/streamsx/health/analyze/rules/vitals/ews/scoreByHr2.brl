@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ilog.rules.studio.model.brl:ActionRule xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ilog.rules.studio.model.brl="http://ilog.rules.studio/model/brl.ecore">
+  <name>scoreByHr2</name>
+  <uuid>a3976ba6-1b48-4946-a8d6-5780573dfea5</uuid>
+  <locale>en_US</locale>
+  <definition><![CDATA[if the heart rate of patient is between 110 and 129 or the heart rate of patient is between 30 and 39 then
+	add patient ews score by 2;]]></definition>
+</ilog.rules.studio.model.brl:ActionRule>

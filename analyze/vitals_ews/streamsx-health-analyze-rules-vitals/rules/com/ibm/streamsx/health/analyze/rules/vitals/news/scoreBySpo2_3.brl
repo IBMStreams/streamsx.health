@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ilog.rules.studio.model.brl:ActionRule xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ilog.rules.studio.model.brl="http://ilog.rules.studio/model/brl.ecore">
+  <name>scoreBySpo2_3</name>
+  <uuid>481e668d-220f-460d-8190-c503576a1382</uuid>
+  <locale>en_US</locale>
+  <definition><![CDATA[if the SpO2 of patient is less than 92 then
+	add patient news score by 3 ;]]></definition>
+</ilog.rules.studio.model.brl:ActionRule>

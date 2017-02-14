@@ -1,0 +1,28 @@
+namespace com.ibm.streamsx.health.analyze.rules.vitals.com.ibm.streamsx.health.analyze.rules.model;
+use com.ibm.streams.rulescompiler::*;
+use com.ibm.streamsx.health.analyze.rules.vitals.com.ibm.streamsx.health.analyze.rules.model::*;
+
+type Consciousness =
+	enum {
+		ALERT,
+		CONFUSE,
+		PAIN,
+		UNCONSCIOUS,
+		VOICE
+	};
+
+type Patient =
+	Consciousness avpu,
+	float32 bpDiastolic,
+	float32 bpSystolic,
+	int32 ewsScore,
+	float32 hr,
+	ustring id,
+	ustring name,
+	int32 newsScore,
+	float32 respRate,
+	float32 spo2,
+	boolean supplementOxygen,
+	float32 temperature;
+
+

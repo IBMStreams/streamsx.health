@@ -1,0 +1,13 @@
+namespace com.ibm.streamsx.health.analyze.rules.vitals;
+use com.ibm.streams.rulescompiler::*;
+use com.ibm.streamsx.health.analyze.rules.vitals.com.ibm.streamsx.health.analyze.rules.model::*;
+
+public void incrementNewsScore(Patient obj, int32 arg0) {
+	//TODO: fill out SPL equivalent of XOM function
+}
+
+public void incrementEwsScore(Patient obj, int32 arg0) {
+	//TODO: fill out SPL equivalent of XOM function
+}
+
+
