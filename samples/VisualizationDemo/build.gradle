@@ -106,6 +106,12 @@ task extractDeps(type: Copy) {
     into '.toolkits'
 }
 
+task buildBeaconService(type: GradleBuild) {
+    buildFile = '../../simulate/com.ibm.streamsx.health.simulate.beacon/build.gradle'
+    tasks = ['build']
+}
+
+compileJava.dependsOn buildBeaconService
 build.dependsOn downloadJS, downloadCSS, extractDeps, buildToolkit
 build.finalizedBy getDeps
 clean.dependsOn cleanup, cleanToolkit
