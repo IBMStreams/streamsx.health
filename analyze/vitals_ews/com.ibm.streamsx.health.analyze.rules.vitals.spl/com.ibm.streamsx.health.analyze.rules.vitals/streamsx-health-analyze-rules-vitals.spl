@@ -4,7 +4,7 @@ use com.ibm.streamsx.health.analyze.rules.vitals.com.ibm.streamsx.health.analyze
 
 /**
  * Composite generated from ruleset streamsx-health-analyze-rules-vitals
- * from project /home/streamsadmin/health/workspaces/rules/streamsx-health-analyze-rules-vitals at Tue, 14 Feb 2017 12:13:40.
+ * from project /home/streamsadmin/health/git/streamsx.health/analyze/vitals_ews/streamsx-health-analyze-rules-vitals at Wed, 22 Feb 2017 12:18:42.
  * The rules are divided by package.
  * @input ruleIn Represents IN/INOUT parameter(s) patient
  * @output ruleOut Represents INOUT/OUT parameter(s) patient

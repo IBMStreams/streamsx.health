@@ -122,7 +122,6 @@ public class Patient {
 		scoreNews+=score;
 	}
 	
-	
 	public void setAvpu(Consciousness avpu) {
 		this.avpu = avpu;
 	}
