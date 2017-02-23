@@ -41,22 +41,12 @@ The following diagram outlines the architecture of the demo.
       ant
       ```
 
-  6. Start the Jupyter notebook from *streamsx.ecgdemo/samples/HealthcareJupyterDemo*:
+  6. Start the Jupyter notebook from *streamsx.health/samples/HealthcareJupyterDemo*:
       ```
       ./start.sh
       ```
 
   7. In the web browser, open the *notebooks/HealthcareDemo-Distributed.pynb* notebook
-
-## DSX Setup (Experimental)
-
-  1. Create a new "Create VCAP" notebook from URL: `https://raw.githubusercontent.com/IBMStreams/streamsx.health/develop/samples/HealthcareJupyterDemo/notebooks/Create%20VCAP%20Service%20Credential.ipynb`
-
-  2. Follow the instructions in the cell to create a file containing your Bluemix Streaming Analytics service credential.
-  
-  3. Create a new "Healthcare Demo" notebook from URL: `https://raw.githubusercontent.com/IBMStreams/streamsx.health/develop/samples/HealthcareJupyterDemo/notebooks/HealthcareDemo-AnalyticsService.ipynb`
-
-  4. Submit the physionet ingest SAB file manually. In the submission configuration, set `num.patients` to at least 3 patients.
 
 ## Running the notebook
 
