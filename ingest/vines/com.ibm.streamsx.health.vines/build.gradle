@@ -13,6 +13,11 @@ dependencies {
 	testCompile 'junit:junit:4.12'
 }
 
+task buildIngestToolkit(type: GradleBuild) {
+    buildFile = '../../common/com.ibm.streamsx.health.ingest/build.gradle'
+    tasks = ['build']
+}
+
 test {
     afterTest { desc, result -> 
         println "Executing test ${desc.name} [${desc.className}] with result: ${result.resultType}"
@@ -30,5 +35,5 @@ task cleanUp() {
     }
 }
 
-compileJava.dependsOn copyToLib
+compileJava.dependsOn buildIngestToolkit, copyToLib
 clean.finalizedBy(cleanUp)
