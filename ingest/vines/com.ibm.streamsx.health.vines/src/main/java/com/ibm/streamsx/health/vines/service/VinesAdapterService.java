@@ -49,7 +49,7 @@ public class VinesAdapterService {
 		
 		SPL.addToolkit(topo, new File(System.getenv("STREAMS_INSTALL") + "/toolkits/com.ibm.streamsx.messaging"));
 		SPL.addToolkit(topo, new File(System.getenv("STREAMS_INSTALL") + "/toolkits/com.ibm.streamsx.json"));
-		SPL.addToolkit(topo, new File("../../../com.ibm.streamsx.health.ingest"));
+		SPL.addToolkit(topo, new File("../../../common/com.ibm.streamsx.health.ingest"));
 		
 		Map<String, Object> rabbitMQParams = new HashMap<String, Object>();
 		rabbitMQParams.put("hostAndPort", topo.createSubmissionParameter("hostAndPort", String.class));
