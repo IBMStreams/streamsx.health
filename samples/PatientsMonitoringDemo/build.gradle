@@ -84,12 +84,12 @@ task cleanup(type: Delete) {
 }
 
 task execute(type: JavaExec) {
-	main = 'com.ibm.streamsx.health.demo.VisualizationDemo'
+	main = 'com.ibm.streamsx.health.demo.PatientsMonitoringDemo'
 	classpath = sourceSets.main.runtimeClasspath
 }
 
 task bundle(type: JavaExec) {
-    main = 'com.ibm.streamsx.health.demo.VisualizationDemo'
+    main = 'com.ibm.streamsx.health.demo.PatientsMonitoringDemo'
     classpath = sourceSets.main.runtimeClasspath
     args '-t', 'BUNDLE'
 }

@@ -17,7 +17,7 @@ import com.ibm.streamsx.health.demo.service.VitalsRulesWrapperService;
 import com.ibm.streamsx.health.simulate.beacon.services.HealthDataBeaconService;
 import com.ibm.streamsx.topology.context.StreamsContext.Type;
 
-public class VisualizationDemo {
+public class PatientsMonitoringDemo {
 
 	private static Type contextType = Type.DISTRIBUTED;
 	
@@ -44,7 +44,7 @@ public class VisualizationDemo {
 		
 		if(cmdLine.hasOption("h")) {
 			HelpFormatter formatter = new HelpFormatter();
-			formatter.printHelp("VisualizationDemo", options);
+			formatter.printHelp("PatientsMonitoringDemo", options);
 			return;
 		} else if(cmdLine.hasOption("t")) {
 			String type = cmdLine.getOptionValue("t");
