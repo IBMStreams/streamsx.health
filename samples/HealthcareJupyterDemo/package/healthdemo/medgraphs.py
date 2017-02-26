@@ -15,7 +15,7 @@ class NumericText:
     def __init__(self, signal_label, title, color, override_str=None):
         self.sig_label = signal_label
         self.data_queue = queue.Queue(maxsize=1000)
-        self.div = Div(text='-1', width=280, height=120)
+        self.div = Div(text='', width=280, height=120)
         self.title = title
         self.unit = None
         self.color = color
@@ -41,6 +41,7 @@ class NumericText:
         try:
             value = self.data_queue.get_nowait()
         except queue.Empty:
+            self.div.text = ''
             return
 
         self.div.text = self._format_text(value)

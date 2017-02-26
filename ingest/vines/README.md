@@ -14,7 +14,7 @@ To generate the javadocs, run:
 To submit this service your local instance, run the following:
 
 	cd com.ibm.streamsx.health.vines
-	./vines-ingest.sh -h <host:port> -u <username> -p <password> -q <queueName> [-e <exchange_name>]
+	./ingest-vines.sh -h <host:port> -u <username> -p <password> -q <queueName> [-e <exchange_name>]
 
 The service requires the following submission time parameters: 
 
