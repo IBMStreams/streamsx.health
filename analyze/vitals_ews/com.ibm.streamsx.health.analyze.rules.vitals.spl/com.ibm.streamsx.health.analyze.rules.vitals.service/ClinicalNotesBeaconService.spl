@@ -1,0 +1,44 @@
+namespace com.ibm.streamsx.health.analyze.rules.vitals.service ;
+
+use com.ibm.streamsx.topology.topic::Publish ;
+use com.ibm.streamsx.json::TupleToJSON ;
+type ClinicalNoteEvent = rstring patientId, rstring eventType,
+	rstring eventName, int64 ts, float64 value, rstring uom ;
+
+composite ClinicalNotesBeaconService
+{
+	graph
+		(stream<ClinicalNoteEvent> Beacon_1_out0) as Beacon_1 = Beacon()
+		{
+			param
+				period : 0.1 ;
+			output
+				Beacon_1_out0 : patientId = "patient-1", eventType = "medication",
+					eventName = "Tylenol", ts = 1488341444081l, value = 0.0f, uom =
+					"unknown" ;
+		}
+
+		() as Publish_2 = Publish(TupleToJSON_4_out0 as inPort0Alias)
+		{
+			param
+				topic : "topic-clinicalNotes" ;
+		}
+
+		() as Custom_3 = Custom(TupleToJSON_4_out0 as inputStream)
+		{
+			logic
+				onTuple inputStream :
+				{
+					printStringLn((rstring) inputStream) ;
+				}
+
+		}
+
+		(stream<rstring jsonStr> TupleToJSON_4_out0) as TupleToJSON_4 =
+			TupleToJSON(Beacon_1_out0)
+		{
+		}
+
+}
+
+

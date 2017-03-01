@@ -4,14 +4,13 @@ use com.ibm.streamsx.health.analyze.rules.vitals.com.ibm.streamsx.health.analyze
 
 /**
  * Composite generated from ruleset streamsx-health-analyze-rules-vitals
- * from project /home/streamsadmin/health/git/streamsx.health/analyze/vitals_ews/streamsx-health-analyze-rules-vitals at Wed, 22 Feb 2017 12:18:42.
- * The rules are divided by package.
+ * from project /home/streamsadmin/health/workspaces/wexdemo/streamsx-health-analyze-rules-vitals at Tue, 28 Feb 2017 18:57:22.
  * @input ruleIn Represents IN/INOUT parameter(s) patient
  * @output ruleOut Represents INOUT/OUT parameter(s) patient
  */
 public composite streamsx_health_analyze_rules_vitals(input stream<Patient i_patient> ruleIn; output stream<tuple<Patient o_patient>> ruleOut) {
 	graph
-		stream<tuple<Patient o_patient>> ruleOut_ruleOut0_com_ibm_streamsx_health_analyze_rules_vitals_ews = Custom(ruleIn) {
+		stream<tuple<Patient o_patient>> ruleOut = Custom(ruleIn) {
 			logic state: {
 				mutable tuple<Patient o_patient> ovar;
 			}
@@ -179,25 +178,6 @@ public composite streamsx_health_analyze_rules_vitals(input stream<Patient i_pat
 					incrementEwsScore(ovar.o_patient, 3);
 				}
 				
-				submit({o_patient=ovar.o_patient}, ruleOut_ruleOut0_com_ibm_streamsx_health_analyze_rules_vitals_ews);
-		}
-		
-		onPunct ruleIn: {
-			if (currentPunct() == Sys.WindowMarker) {
-				submit(Sys.WindowMarker, ruleOut_ruleOut0_com_ibm_streamsx_health_analyze_rules_vitals_ews);
-			}
-		}
-		
-		config restartable: true;
-		}
-		
-		stream<tuple<Patient o_patient>> ruleOut = Custom(ruleOut_ruleOut0_com_ibm_streamsx_health_analyze_rules_vitals_ews) {
-			logic state: {
-				mutable tuple<Patient o_patient> ovar;
-			}
-			
-			onTuple ruleOut_ruleOut0_com_ibm_streamsx_health_analyze_rules_vitals_ews: {
-				ovar.o_patient = ruleOut_ruleOut0_com_ibm_streamsx_health_analyze_rules_vitals_ews.o_patient;
 				/* 
 				 * Now generating code for rule com.ibm.streamsx.health.analyze.rules.vitals.news.scoreByAlertness3.
 				 * if patient alertness is not ALERT then
@@ -236,10 +216,10 @@ public composite streamsx_health_analyze_rules_vitals(input stream<Patient i_pat
 				
 				/* 
 				 * Now generating code for rule com.ibm.streamsx.health.analyze.rules.vitals.news.scoreByHr2.
-				 * if the heart rate of patient is between 113 and 130  then
+				 * if the heart rate of patient is between 111 and 130  then
 				 * 	add patient news score by 2;
 				*/
-				if(((((((float64)ovar.o_patient.hr) >= ((float64)113)) && (((float64)ovar.o_patient.hr) <= ((float64)130)))))) {
+				if(((((((float64)ovar.o_patient.hr) >= ((float64)111)) && (((float64)ovar.o_patient.hr) <= ((float64)130)))))) {
 					incrementNewsScore(ovar.o_patient, 2);
 				}
 				
@@ -354,7 +334,7 @@ public composite streamsx_health_analyze_rules_vitals(input stream<Patient i_pat
 				submit({o_patient=ovar.o_patient}, ruleOut);
 		}
 		
-		onPunct ruleOut_ruleOut0_com_ibm_streamsx_health_analyze_rules_vitals_ews: {
+		onPunct ruleIn: {
 			if (currentPunct() == Sys.WindowMarker) {
 				submit(Sys.WindowMarker, ruleOut);
 			}

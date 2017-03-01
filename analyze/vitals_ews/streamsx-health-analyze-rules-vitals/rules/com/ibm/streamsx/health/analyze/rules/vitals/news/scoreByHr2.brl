@@ -3,6 +3,6 @@
   <name>scoreByHr2</name>
   <uuid>1e89584a-92a9-471d-a5b7-d54b9646ef2f</uuid>
   <locale>en_US</locale>
-  <definition><![CDATA[if the heart rate of patient is between 113 and 130  then
+  <definition><![CDATA[if the heart rate of patient is between 111 and 130  then
 	add patient news score by 2;]]></definition>
 </ilog.rules.studio.model.brl:ActionRule>

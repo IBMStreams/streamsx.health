@@ -1,5 +1,4 @@
 namespace com.ibm.streamsx.health.analyze.rules.vitals.com.ibm.streamsx.health.analyze.rules.model;
-use com.ibm.streams.rulescompiler::*;
 use com.ibm.streamsx.health.analyze.rules.vitals.com.ibm.streamsx.health.analyze.rules.model::*;
 
 type Consciousness =
