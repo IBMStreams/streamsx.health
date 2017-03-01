@@ -8,7 +8,7 @@ import com.ibm.streamsx.health.vines.model.TermTransformer;
 import com.ibm.streamsx.health.vines.model.TermValueTransformer;
 import com.ibm.streamsx.health.vines.model.Vines;
 
-public class VinesParser {
+public class VinesMessageParser {
 
 	private static Gson createGson() {
 		GsonBuilder builder = new GsonBuilder();
@@ -20,7 +20,10 @@ public class VinesParser {
 	
 	public static Vines fromJson(String jsonString) {
 		Gson gson = createGson();
-		return gson.fromJson(jsonString, Vines.class);
+		Vines vinesMsg = gson.fromJson(jsonString, Vines.class);
+		vinesMsg.setRawMessage(jsonString);
+		
+		return vinesMsg;
 	}
 	
 	public static String toJson(Vines vines) {

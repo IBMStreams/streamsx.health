@@ -3,7 +3,7 @@ package com.ibm.streamsx.health.vines.test;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.ibm.streamsx.health.vines.VinesParser;
+import com.ibm.streamsx.health.vines.VinesMessageParser;
 import com.ibm.streamsx.health.vines.model.Channel;
 import com.ibm.streamsx.health.vines.model.ITerm;
 import com.ibm.streamsx.health.vines.model.ITermValue;
@@ -27,13 +27,13 @@ public class Tests {
 	
 	@Test
 	public void _idTest() {
-		Vines vines = VinesParser.fromJson(simpleMessage);		
+		Vines vines = VinesMessageParser.fromJson(simpleMessage);		
 		Assert.assertEquals("581384c0d4355e094c65e542", vines.get_id().getOid());
 	}
 	
 	@Test
 	public void bodyTest() {
-		Vines vines = VinesParser.fromJson(simpleMessage);
+		Vines vines = VinesMessageParser.fromJson(simpleMessage);
 		
 		Assert.assertEquals("Vines", vines.getData().getBody().getUpdatedBy());
 		Assert.assertEquals("2014-05-22T16:02:30.0801253Z", vines.getData().getBody().getUpdatedTime());
@@ -47,7 +47,7 @@ public class Tests {
 	
 	@Test
 	public void serviceIdTest() {
-		Vines vines = VinesParser.fromJson(simpleMessage);
+		Vines vines = VinesMessageParser.fromJson(simpleMessage);
 		
 		ServiceId serviceId = vines.getData().getBody().getServiceId();
 		Assert.assertTrue(serviceId.containsKey("Dopamine 475"));
@@ -58,7 +58,7 @@ public class Tests {
 	
 	@Test
 	public void termsTest() {
-		Vines vines = VinesParser.fromJson(simpleMessage);
+		Vines vines = VinesMessageParser.fromJson(simpleMessage);
 		
 		Terms terms = vines.getData().getBody().getTerms();
 		Assert.assertTrue(terms.containsKey("CH1"));
@@ -120,7 +120,7 @@ public class Tests {
 	
 	@Test
 	public void testPatient() {
-		Vines vines = VinesParser.fromJson(simpleMessage);
+		Vines vines = VinesMessageParser.fromJson(simpleMessage);
 		Patient patient = vines.getData().getPatient();
 		
 		Assert.assertEquals("537e1f98db23c810388ae214", patient.get_id());
@@ -141,7 +141,7 @@ public class Tests {
 	
 	@Test
 	public void testLocation() {
-		Vines vines = VinesParser.fromJson(simpleMessage);
+		Vines vines = VinesMessageParser.fromJson(simpleMessage);
 		
 		Location location = vines.getData().getLocation();
 		Assert.assertEquals("537e1f98db23c810388ae216", location.get_id());
@@ -153,7 +153,7 @@ public class Tests {
 	
 	@Test
 	public void testWaveformTerm() {
-		Vines vines = VinesParser.fromJson(waveformMessage);
+		Vines vines = VinesMessageParser.fromJson(waveformMessage);
 		
 		Terms terms = vines.getData().getBody().getTerms();
 		Assert.assertTrue(terms.containsKey("CH01"));
@@ -199,7 +199,7 @@ public class Tests {
 	
 	@Test
 	public void testExchange() {
-		Vines vines = VinesParser.fromJson(waveformMessage);
+		Vines vines = VinesMessageParser.fromJson(waveformMessage);
 		Assert.assertEquals("Wave", vines.getData().getExchange());
 	}
 	

@@ -2,6 +2,7 @@ package com.ibm.streamsx.health.vines.service;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
 
 import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;
@@ -12,22 +13,58 @@ import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
+import com.ibm.streams.operator.logging.TraceLevel;
+import com.ibm.streamsx.health.ingest.types.connector.SubscribeConnector;
+import com.ibm.streamsx.health.ingest.types.model.Observation;
+import com.ibm.streamsx.topology.Topology;
 import com.ibm.streamsx.topology.context.ContextProperties;
+import com.ibm.streamsx.topology.context.StreamsContextFactory;
 import com.ibm.streamsx.topology.context.StreamsContext.Type;
 
 public class VinesAdapterServiceRunner {
 
+	private static final String SUBMIT_PARAMS = "submitParams";
+	private static final String IS_DEBUG_ENABLED = "isDebugEnabled";
+	
 	public static void main(String[] args) throws Exception {
 		Map<String, Object> config = new HashMap<>();
+		Map<String, Object> cmdLineOptions;
+		
 		try {
-			Map<String, Object> submitParams = getCmdLineConfigs(args);
-			config.put(ContextProperties.SUBMISSION_PARAMS, submitParams);
+			cmdLineOptions = getCmdLineConfigs(args);
 		} catch(ParseException e) {
 			System.out.println(e.getMessage());
 			return;
 		}
+
+		boolean isDebug = (boolean)cmdLineOptions.get(IS_DEBUG_ENABLED);
+		
+		@SuppressWarnings("unchecked")
+		Map<String, Object> submitParams = (HashMap<String, Object>)cmdLineOptions.get(SUBMIT_PARAMS);
+		config.put(ContextProperties.SUBMISSION_PARAMS, submitParams);
+		
+		if(isDebug) {
+			config.put(ContextProperties.TRACING_LEVEL, TraceLevel.TRACE);
+		}
 		
 		new VinesAdapterService().run(Type.DISTRIBUTED, config);
+		
+		if(isDebug) {
+			// launch a debug service to print raw messages to the console
+			Topology rawMsgTopo = new Topology("VinesRawMsgDebug");
+			rawMsgTopo.subscribe(VinesAdapterService.VINES_DEBUG_TOPIC, String.class).print();
+			StreamsContextFactory.getStreamsContext(Type.DISTRIBUTED).submit(rawMsgTopo).get();
+			
+			// launch a debug service to print Observation tuples to the console
+			Topology obsTopo = new Topology("VinesObservationDebug");
+			SubscribeConnector.subscribe(obsTopo, VinesAdapterService.VINES_TOPIC).print();
+			StreamsContextFactory.getStreamsContext(Type.DISTRIBUTED).submit(obsTopo).get();
+			
+			// launch a debug service to print errors to the console
+			Topology errTopo = new Topology("VinesErrorDebug");
+			errTopo.subscribe(VinesAdapterService.VINES_ERROR_TOPIC, String.class).print();
+			StreamsContextFactory.getStreamsContext(Type.DISTRIBUTED).submit(errTopo).get();
+		}
 	}
 
 	@SuppressWarnings("static-access")
@@ -66,6 +103,12 @@ public class VinesAdapterServiceRunner {
 										.withLongOpt("exchangeName")
 										.withDescription("Specify the RabbitMQ exchange name (optional)")
 										.create("e");
+		
+		Option debug = OptionBuilder.withArgName("debug")
+										.withLongOpt("debug")
+										.withDescription("Enables tracing and launches a service to connect to the debug port")
+										.create("d");
+		
 		Option help = OptionBuilder.withLongOpt("help").withDescription("Display help").create();
 		
 		options.addOption(hostAndPort);
@@ -74,6 +117,7 @@ public class VinesAdapterServiceRunner {
 		options.addOption(queueName);
 		options.addOption(exchange);
 		options.addOption(help);
+		options.addOption(debug);
 		
 		CommandLineParser parser = new BasicParser();
 		CommandLine cmd = null;
@@ -86,14 +130,19 @@ public class VinesAdapterServiceRunner {
 			throw(e);
 		}
 			
+		HashMap<String, Object> cmdLineOptions = new HashMap<>();
+		
 		HashMap<String, Object> rabbitMQParams = new HashMap<>();
 		rabbitMQParams.put("hostAndPort", cmd.getOptionValue("h"));
 		rabbitMQParams.put("username", cmd.getOptionValue("u"));
 		rabbitMQParams.put("password", cmd.getOptionValue("p"));
 		rabbitMQParams.put("queueName", cmd.getOptionValue("q"));
 		rabbitMQParams.put("exchangeName", cmd.getOptionValue("e", ""));
-				
-		return rabbitMQParams;
-	}
 
+		cmdLineOptions.put(SUBMIT_PARAMS, rabbitMQParams);
+		cmdLineOptions.put(IS_DEBUG_ENABLED, cmd.hasOption("debug"));
+		
+		return cmdLineOptions;
+	}
+	
 }

@@ -1,13 +1,19 @@
 package com.ibm.streamsx.health.vines;
 
+import java.io.ObjectStreamException;
+import java.text.DateFormat;
 import java.text.ParseException;
-import java.util.ArrayList;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import org.apache.commons.lang.math.NumberUtils;
+import org.apache.log4j.Logger;
 
-import com.ibm.streamsx.datetime.convert.ISO8601;
-import com.ibm.streamsx.health.ingest.types.connector.AbstractObservationMapper;
 import com.ibm.streamsx.health.ingest.types.model.Device;
 import com.ibm.streamsx.health.ingest.types.model.Observation;
 import com.ibm.streamsx.health.ingest.types.model.Reading;
@@ -23,42 +29,60 @@ import com.ibm.streamsx.health.vines.model.TermValueString;
 import com.ibm.streamsx.health.vines.model.Terms;
 import com.ibm.streamsx.health.vines.model.Vines;
 import com.ibm.streamsx.health.vines.model.WaveformHelper;
+import com.ibm.streamsx.topology.function.Function;
 
-public class VinesToChefMapper extends AbstractObservationMapper<Vines> {
+public class VinesToObservationParser implements Function<Vines, VinesParserResult> {
 
 	private static final long serialVersionUID = 1L;
 	public static final String SOURCE_TYPE = "channel";
+	private static final Logger logger = Logger.getLogger(VinesToObservationParser.class);
 	
-	@Override
-	public List<Observation> map(Vines v) {
-		List<Observation> observations = null;
+	private static final String DATE_TIME_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSS";
+	
+	private DateTimeFormatter formatter;
+	
+	public Object readResolve() throws ObjectStreamException {
+		formatter = DateTimeFormatter.ISO_DATE_TIME;
 		
-		// determine if message is a vitals or waveform message		
-		Terms terms = v.getData().getBody().getTerms();
-		
-		// waveform messages only contain a single channel,
-		// vitals messages can contain more than one channel
-		if(terms.size() > 1) {
-			// more than 1 channel indicates 
-			// this is a vitals message
-			observations = mapVitalMessage(v);	
-		} else if(terms.size() == 1) {
-			// may be either vitals or waveform so check for
-			// MDC_ATTR_WAV term, which is always present in
-			// waveform message
-			Channel channel = terms.get(terms.getChannelNames().get(0));
-			if(channel.containsKey("MDC_ATTR_WAV")) {
-				observations = mapWaveformMessage(v);
-			} else {
-				observations = mapVitalMessage(v);
-			}
-		}
-		return observations;
+		return this;
 	}
 	
-	private List<Observation> mapVitalMessage(Vines v) {
-		List<Observation> observations = new ArrayList<Observation>();
-
+	@Override
+	public VinesParserResult apply(Vines v) {
+		VinesParserResult parserResult = new VinesParserResult(v);
+		
+		try {
+			// determine if message is a vitals or waveform message		
+			Terms terms = v.getData().getBody().getTerms();
+			
+			// waveform messages only contain a single channel,
+			// vitals messages can contain more than one channel
+			if(terms.size() > 1) {
+				// more than 1 channel indicates 
+				// this is a vitals message
+				mapVitalMessage(v, parserResult);	
+			} else if(terms.size() == 1) {
+				// may be either vitals or waveform so check for
+				// MDC_ATTR_WAV term, which is always present in
+				// waveform message
+				Channel channel = terms.get(terms.getChannelNames().get(0));
+				if(channel.containsKey("MDC_ATTR_WAV")) {
+					mapWaveformMessage(v, parserResult);
+				} else {
+					mapVitalMessage(v, parserResult);
+				}
+			}
+		} catch (Exception e) {
+			String msg = "Error parsing Vines message: " + v.getRawMessage();
+			logger.error(v.getRawMessage());
+			e.printStackTrace();
+			parserResult.addErrorMesage(msg);
+		}
+		
+		return parserResult;
+	}
+	
+	private void mapVitalMessage(Vines v, VinesParserResult parserResult) {
 		// generate Patient ID
 		String patientId = "";
 
@@ -100,25 +124,27 @@ public class VinesToChefMapper extends AbstractObservationMapper<Vines> {
 						reading.setUom(t.getUOM());
 						reading.setReadingType(termName);
 						try {
-							reading.setTimestamp(ISO8601.fromIso8601ToMillis(t.getDate()));
+							reading.setTimestamp(toEpoch(t.getDate()));
 						} catch(ParseException e) {
-							// TODO - handle exception
+							String msg = "Error parsing timestamp: error=" + e.getLocalizedMessage() + ", timestamp=" + t.getDate();
+							logger.error(msg, e);
+							e.printStackTrace();
+							parserResult.addErrorMesage(msg);
 						}
 						
-						observations.add(new Observation(device, patientId, readingSource, reading));
+						parserResult.addObservation(new Observation(device, patientId, readingSource, reading));
 					}
 				} else {
 					// Array terms not expected in normal vines messages
+					String msg = "Error parsing Vines message: Array terms not expected in normal vines messages.";
+					logger.error(msg);
+					parserResult.addErrorMesage(msg);
 				}
 			}
 		}
-		
-		return observations;
 	}
 	
-	private List<Observation> mapWaveformMessage(Vines v) {
-		List<Observation> observations = new ArrayList<Observation>();
-		
+	private void mapWaveformMessage(Vines v, VinesParserResult parserResult) {	
 		// generate Patient ID
 		String patientId = "";
 		Patient patient = v.getData().getPatient();
@@ -133,10 +159,13 @@ public class VinesToChefMapper extends AbstractObservationMapper<Vines> {
 		long startTime = 0;
 		long period = 0;
 		try {
-			startTime = ISO8601.fromIso8601ToMillis(v.getData().getBody().getStartTime());			
+			startTime = toEpoch(v.getData().getBody().getStartTime());			
 		} catch(ParseException e) {
-			// TODO - handle exception
-		}
+			String msg = "Error parsing timestamp: error=" + e.getLocalizedMessage() + ", timestamp=" + v.getData().getBody().getStartTime();
+			logger.error(msg);
+			e.printStackTrace();
+			parserResult.addErrorMesage(msg);
+		} 
 		
 		Terms terms = v.getData().getBody().getTerms();
 		Channel channel = terms.getChannel(terms.getChannelNames().get(0));
@@ -168,6 +197,14 @@ public class VinesToChefMapper extends AbstractObservationMapper<Vines> {
 			}
 		}
 
+		// get the UOM
+		iterm = channel.getTerm("MDC_ATTR_SCALE_RANGE");
+		String uom = "";
+		if(iterm instanceof Term) {
+			Term term = (Term)iterm;
+			uom = term.getUOM();
+		}
+		
 		// map waveform samples to observations
 		iterm = channel.getTerm("MDC_ATTR_WAV");
 		if(iterm instanceof TermArray) {
@@ -189,8 +226,9 @@ public class VinesToChefMapper extends AbstractObservationMapper<Vines> {
 									reading.setReadingType(waveName);
 									reading.setValue(waveform.get(i));
 									reading.setTimestamp(startTime + period*i);
+									reading.setUom(uom);
 									
-									observations.add(new Observation(device, patientId, readingSource, reading));
+									parserResult.addObservation(new Observation(device, patientId, readingSource, reading));
 								}
 							}
 						}
@@ -198,21 +236,16 @@ public class VinesToChefMapper extends AbstractObservationMapper<Vines> {
 				}
 			}
 		}
-		
-		return observations;
 	}
 	
 	private String getDeviceId(Vines v) {
 		return v.getData().getHeader().getDeviceId();
 	}
+	
+	private long toEpoch(String date) throws ParseException {
+		ZonedDateTime zdt = LocalDateTime.parse(date, formatter).atZone(ZoneId.systemDefault());
+		long epoch = zdt.toInstant().toEpochMilli();
+		
+		return epoch;
+	}
 }
-
-
-
-
-
-
-
-
-
-
