@@ -63,6 +63,16 @@ task cleanToolkit {
     }
 }
 
+task buildIngestToolkit(type: GradleBuild) {
+    buildFile = '../../ingest/common/com.ibm.streamsx.health.ingest/build.gradle'
+    tasks = ['build']
+}
+
+task buildSimulateToolkit(type: GradleBuild) {
+    buildFile = '../../simulate/com.ibm.streamsx.health.simulate.beacon/build.gradle'
+    tasks = ['build']
+}
+
 task cleanup(type: Delete) {
     // clean web deps
     delete fileTree(dir : "etc/html/health/assets/js")
@@ -106,6 +116,7 @@ task extractDeps(type: Copy) {
     into '.toolkits'
 }
 
+compileJava.dependsOn buildIngestToolkit, buildSimulateToolkit
 build.dependsOn downloadJS, downloadCSS, extractDeps, buildToolkit
 build.finalizedBy getDeps
 clean.dependsOn cleanup, cleanToolkit
