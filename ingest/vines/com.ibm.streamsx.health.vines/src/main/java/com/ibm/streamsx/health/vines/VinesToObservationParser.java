@@ -1,15 +1,15 @@
 package com.ibm.streamsx.health.vines;
 
 import java.io.ObjectStreamException;
-import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.format.DateTimeParseException;
 import java.util.List;
+import java.util.Locale;
 
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.log4j.Logger;
@@ -37,12 +37,21 @@ public class VinesToObservationParser implements Function<Vines, VinesParserResu
 	public static final String SOURCE_TYPE = "channel";
 	private static final Logger logger = Logger.getLogger(VinesToObservationParser.class);
 	
-	private static final String DATE_TIME_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSS";
+	String DATE_TIME_PATTERN = ""
+			+ "[yyyy-MM-dd'T'HH:mm:ss.SSSSSSS[X]]"
+			+ "[yyyy-MM-dd'T'HH:mm:ss.SSSSSS[X]]"
+			+ "[yyyy-MM-dd'T'HH:mm:ss.SSSSS[X]]"
+			+ "[yyyy-MM-dd'T'HH:mm:ss.SSSS[X]]"
+			+ "[yyyy-MM-dd'T'HH:mm:ss.SSS[X]]"
+			+ "[yyyy-MM-dd'T'HH:mm:ss.SS[X]]"
+			+ "[yyyy-MM-dd'T'HH:mm:ss[.S][X]]";
 	
 	private DateTimeFormatter formatter;
 	
 	public Object readResolve() throws ObjectStreamException {
-		formatter = DateTimeFormatter.ISO_DATE_TIME;
+		formatter = new DateTimeFormatterBuilder()
+				.appendPattern(DATE_TIME_PATTERN)
+				.toFormatter(Locale.ENGLISH);
 		
 		return this;
 	}
@@ -239,13 +248,23 @@ public class VinesToObservationParser implements Function<Vines, VinesParserResu
 	}
 	
 	private String getDeviceId(Vines v) {
-		return v.getData().getHeader().getDeviceId();
+		return v.getData().getBody().getDeviceId();
 	}
 	
 	private long toEpoch(String date) throws ParseException {
-		ZonedDateTime zdt = LocalDateTime.parse(date, formatter).atZone(ZoneId.systemDefault());
-		long epoch = zdt.toInstant().toEpochMilli();
-		
-		return epoch;
+		try {
+			// assume date contains timezone information
+			OffsetDateTime odt = OffsetDateTime.parse(date, formatter);			
+			return odt.toInstant().toEpochMilli();
+		} catch (DateTimeParseException e) {
+			try {
+				// date may be missing timezone, use system default
+				LocalDateTime ldt = LocalDateTime.parse(date, formatter);
+				return ldt.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+			} catch (DateTimeParseException e1) {
+				e.printStackTrace();
+				throw e1;
+			}
+		}
 	}
 }

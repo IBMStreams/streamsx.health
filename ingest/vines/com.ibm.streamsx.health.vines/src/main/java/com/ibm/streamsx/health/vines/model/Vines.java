@@ -24,6 +24,14 @@ public class Vines implements Serializable {
 	public Data getData() {
 		return Data;
 	}
+
+	public void set_id(RootId _id) {
+		this._id = _id;
+	}
+	
+	public void setData(Data data) {
+		Data = data;
+	}
 	
 	@Override
 	public String toString() {
