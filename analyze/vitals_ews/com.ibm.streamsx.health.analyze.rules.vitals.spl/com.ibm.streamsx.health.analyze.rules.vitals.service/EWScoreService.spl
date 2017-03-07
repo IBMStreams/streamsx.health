@@ -95,6 +95,9 @@ composite EWScoreService
 					}
 
 				}
+				
+				config
+					placement: partitionIsolation;
 
 			}
 
