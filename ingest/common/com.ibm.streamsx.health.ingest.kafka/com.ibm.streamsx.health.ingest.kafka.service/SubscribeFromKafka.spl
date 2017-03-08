@@ -1,0 +1,42 @@
+namespace com.ibm.streamsx.health.ingest.kafka.service ;
+
+use com.ibm.streamsx.messaging.kafka::KafkaConsumer ;
+use com.ibm.streamsx.topology.topic::Publish ;
+use com.ibm.streamsx.health.ingest.types::PublishJson_T ;
+
+/**
+ * This service helps publish json messages from the Health toolkit to Kafka
+ * 
+ * kafkaTopic - the topic queue on the Kafka server where the message should be read from
+ * topic - the topic to publish for other Streams application to consume this data
+ * 
+ * The service is set up to run with MessageHub.  Comment out the "jaasFile" attribute if authentication
+ * is not needed for sending data to your Kafka server.
+ */
+
+composite SubscribeJsonFromKafka
+{
+	param
+		expression<rstring> $kafkaTopic : getSubmissionTimeValue("kafkaTopic");
+		expression<rstring> $topic : getSubmissionTimeValue("topic");
+		expression<rstring> $jaasFile : "etc/jaas.conf";
+		
+	graph
+		stream<PublishJson_T> KafkaStream =
+			KafkaConsumer()
+		{
+			param
+				propertiesFile : getThisToolkitDir() + "/etc/consumer.properties" ;
+				topic : $kafkaTopic ;
+				jaasFile : $jaasFile ;
+				messageAttribute: "jsonString";
+		}
+
+		() as Publish_2 = Publish(KafkaStream)
+		{
+			param
+				topic : $topic ;
+		}
+
+}
+

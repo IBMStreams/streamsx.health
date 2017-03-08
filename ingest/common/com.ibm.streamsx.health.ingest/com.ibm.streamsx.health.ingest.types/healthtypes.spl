@@ -22,6 +22,13 @@ type ReadingSource_T = rstring id, rstring sourceType, rstring deviceId;
 
 type Device_T = rstring id, rstring locationId;
 
+
+/**
+ * Represent EMR records
+ */
+type ClinicalNoteEvent = rstring patientId, rstring eventType,
+	rstring eventName, int64 ts, float64 value, rstring uom ;
+
 /**
  * Schema type for service publish
  */
