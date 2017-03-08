@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<info:toolkitInfoModel xmlns:common="http://www.ibm.com/xmlns/prod/streams/spl/common" xmlns:info="http://www.ibm.com/xmlns/prod/streams/spl/toolkitInfo">
+  <info:identity>
+    <info:name>VisualizationDemo</info:name>
+    <info:description></info:description>
+    <info:version>1.0.0</info:version>
+    <info:requiredProductVersion>4.2.0.0</info:requiredProductVersion>
+  </info:identity>
+  <info:dependencies>
+    <info:toolkit>
+      <common:name>com.ibm.streamsx.inet</common:name>
+      <common:version>2.8.1</common:version>
+    </info:toolkit>
+    <info:toolkit>
+      <common:name>com.ibm.streamsx.messaging</common:name>
+      <common:version>[5.1.0,6.0.0)</common:version>
+    </info:toolkit>
+    <info:toolkit>
+      <common:name>com.ibm.streamsx.health.ingest</common:name>
+      <common:version>[1.0.0,2.0.0)</common:version>
+    </info:toolkit>
+    <info:toolkit>
+      <common:name>com.ibm.streamsx.topology</common:name>
+      <common:version>[1.4.4,2.0.0)</common:version>
+    </info:toolkit>
+    <info:toolkit>
+      <common:name>com.ibm.streamsx.json</common:name>
+      <common:version>[1.2.0,2.0.0)</common:version>
+    </info:toolkit>
+    <info:toolkit>
+      <common:name>com.ibm.streamsx.health.analyze.vital</common:name>
+      <common:version>[1.0.0,2.0.0)</common:version>
+    </info:toolkit>
+  </info:dependencies>
+  <info:sabFiles>
+    <info:exclude path=".toolkits/**"/>
+  </info:sabFiles>
+</info:toolkitInfoModel>

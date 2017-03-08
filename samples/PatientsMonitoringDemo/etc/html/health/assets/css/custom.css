@@ -1,0 +1,147 @@
+.heart {
+	max-height: 100px;
+	max-width: 100px;
+	margin: 20px;
+}
+
+.patientText {
+	position: relative;
+	top: 0;
+	left: 0;
+	width: 100%;
+}
+
+.alertMessagesBox {
+	border: 1px solid #000;
+	border-radius: 10px;
+	margin-top: 10px;
+}
+
+.alertMessagesTitle {
+	font-size: 30px;
+	color: #C72653;
+	font-weight: bold;
+	text-align: center;
+}
+
+.alertMessages {
+	font-size: 20px;
+	color: #2554C7;
+	padding-left: 5px;
+}
+
+.alertMessages ul {
+	list-style: none;
+	margin-left: 0;
+	padding-left: 0;
+}
+
+.alertMessages li {
+	padding-left: 1em;
+	text-indent: -1em;
+}
+
+.alertMessages li:before {
+	content: "\21D2";
+	padding-right: 5px;
+	font-weight: bold;
+}
+
+.vitalBox {
+	background-color: #152935; 
+	border: 3px solid black; 
+	/* width: 220px; */  
+	height: 120px; 
+	font-family: arial; 
+	color: #FFF;
+	margin: 5px;
+}
+
+.vitalBoxAlerted {
+	background-color: #C11B17;
+}
+
+.vitalName {
+	font-size: 20px; 
+	margin-left: 5px; 
+	margin-top: 0px; 
+	margin-bottom: 0px;
+}
+
+.vitalValue {
+	font-size: 50px; 
+	text-align: center; 
+	margin-bottom: 0px;
+}
+
+.vitalUOM {
+	text-align: right; 
+	font-size: 20px; 
+	margin-right:0px;
+	margin-top:-25px;
+}
+
+.heartrate {
+	color: #7cc7ff;
+}
+
+.temperature {
+	color: #ee82ee;
+}
+
+.spo2 {
+	color: #8cd211;
+}
+
+.abp {
+	color: #fdd600;
+}
+
+.profilePic {
+	width: 100px;
+	height: 100px;
+}
+
+.fill { 
+    min-height: 100%;
+    height: 100%;
+}
+
+.icon {
+  width: 80px;
+  height: auto;
+ }
+
+.small-icon {
+ height: 20px;
+ width: 20px;
+}
+ 
+.patient-card {
+ border: 5px solid black;
+ border-radius: 10px;
+ width: auto;
+ text-align: center;
+ margin: 5px;
+}
+
+.patient-card.normal {
+ border-color: green;
+}
+
+.patient-card.alrt {
+ border-color: orange;
+}
+
+.alert-icon-row {
+ margin-top: 10px;
+ margin-bottom: 20px;
+}
+
+.bed-icon-row {
+ margin-bottom: 10px;
+}
+
+.patient-id-row {
+ font-weight: bold;
+}

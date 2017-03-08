@@ -24,26 +24,22 @@ public class ABPSystolicDataGenerator extends AbstractVitalsGenerator {
 
 	@Override
 	Double getHighMin() {
-		// TODO Auto-generated method stub
-		return null;
+		return 160.0;
 	}
 
 	@Override
 	Double getHighMax() {
-		// TODO Auto-generated method stub
-		return null;
+		return 200.0;
 	}
 
 	@Override
 	Double getLowMin() {
-		// TODO Auto-generated method stub
-		return null;
+		return 10.0;
 	}
 
 	@Override
 	Double getLowMax() {
-		// TODO Auto-generated method stub
-		return null;
+		return 40.0;
 	}
 
 	@Override
