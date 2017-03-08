@@ -104,6 +104,18 @@ public class VinesToObservationParser implements Function<Vines, VinesParserResu
 		Device device = new Device();
 		device.setId(getDeviceId(v));
 		
+		String date = "";
+		long epochTime = 0l;
+		try {
+			date = v.getData().getBody().getUpdatedTime();
+			epochTime = toEpoch(date);
+		} catch (ParseException e) {
+			String msg = "Error parsing timestamp: error=" + e.getLocalizedMessage() + ", timestamp=" + date;
+			logger.error(msg, e);
+			e.printStackTrace();
+			parserResult.addErrorMesage(msg);
+		}
+		
 		Terms terms = v.getData().getBody().getTerms();
 		for(String channelName : terms.getChannelNames()) {
 			Channel channel = terms.getChannel(channelName);
@@ -132,14 +144,7 @@ public class VinesToObservationParser implements Function<Vines, VinesParserResu
 						reading.setValue(Double.valueOf(value));
 						reading.setUom(t.getUOM());
 						reading.setReadingType(termName);
-						try {
-							reading.setTimestamp(toEpoch(t.getDate()));
-						} catch(ParseException e) {
-							String msg = "Error parsing timestamp: error=" + e.getLocalizedMessage() + ", timestamp=" + t.getDate();
-							logger.error(msg, e);
-							e.printStackTrace();
-							parserResult.addErrorMesage(msg);
-						}
+						reading.setTimestamp(epochTime);
 						
 						parserResult.addObservation(new Observation(device, patientId, readingSource, reading));
 					}
@@ -165,10 +170,10 @@ public class VinesToObservationParser implements Function<Vines, VinesParserResu
 		Device device = new Device();
 		device.setId(getDeviceId(v));
 
-		long startTime = 0;
+		long updatedTime = 0;
 		long period = 0;
 		try {
-			startTime = toEpoch(v.getData().getBody().getStartTime());			
+			updatedTime = toEpoch(v.getData().getBody().getUpdatedTime());			
 		} catch(ParseException e) {
 			String msg = "Error parsing timestamp: error=" + e.getLocalizedMessage() + ", timestamp=" + v.getData().getBody().getStartTime();
 			logger.error(msg);
@@ -234,7 +239,7 @@ public class VinesToObservationParser implements Function<Vines, VinesParserResu
 									Reading reading = new Reading();
 									reading.setReadingType(waveName);
 									reading.setValue(waveform.get(i));
-									reading.setTimestamp(startTime + period*i);
+									reading.setTimestamp(updatedTime + period*i);
 									reading.setUom(uom);
 									
 									parserResult.addObservation(new Observation(device, patientId, readingSource, reading));
