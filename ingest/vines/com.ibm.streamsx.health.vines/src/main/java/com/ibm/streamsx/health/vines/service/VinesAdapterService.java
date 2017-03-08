@@ -4,14 +4,19 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.ibm.streamsx.health.ingest.types.connector.IdentityMapper;
 import com.ibm.streamsx.health.ingest.types.connector.PublishConnector;
-import com.ibm.streamsx.health.vines.VinesParser;
-import com.ibm.streamsx.health.vines.VinesToChefMapper;
-import com.ibm.streamsx.health.vines.model.Vines;
+import com.ibm.streamsx.health.ingest.types.model.Observation;
+import com.ibm.streamsx.health.vines.VinesMessageParser;
+import com.ibm.streamsx.health.vines.VinesParserResult;
+import com.ibm.streamsx.health.vines.VinesToObservationParser;
 import com.ibm.streamsx.topology.TStream;
 import com.ibm.streamsx.topology.Topology;
 import com.ibm.streamsx.topology.context.StreamsContext.Type;
 import com.ibm.streamsx.topology.context.StreamsContextFactory;
+import com.ibm.streamsx.topology.function.Function;
 import com.ibm.streamsx.topology.spl.SPL;
 import com.ibm.streamsx.topology.spl.SPLSchemas;
 
@@ -38,6 +43,8 @@ import com.ibm.streamsx.topology.spl.SPLSchemas;
 public class VinesAdapterService {
 	
 	public static final String VINES_TOPIC = "ingest-vines";
+	public static final String VINES_ERROR_TOPIC = "ingest-vines-error";
+	public static final String VINES_DEBUG_TOPIC = "ingest-vines-debug";
 	
 	private Topology topo;
 	
@@ -46,6 +53,7 @@ public class VinesAdapterService {
 		
 		topo.addJarDependency(System.getenv("STREAMS_INSTALL") + "/ext/lib/commons-lang-2.4.jar");
 		topo.addJarDependency(System.getenv("STREAMS_INSTALL") + "/toolkits/com.ibm.streamsx.datetime/impl/lib/com.ibm.streamsx.datetime.jar");
+		topo.addJarDependency("../../../common/com.ibm.streamsx.health.ingest/lib/com.ibm.streamsx.health.ingest.jar");
 		
 		SPL.addToolkit(topo, new File(System.getenv("STREAMS_INSTALL") + "/toolkits/com.ibm.streamsx.messaging"));
 		SPL.addToolkit(topo, new File(System.getenv("STREAMS_INSTALL") + "/toolkits/com.ibm.streamsx.json"));
@@ -60,10 +68,19 @@ public class VinesAdapterService {
 		rabbitMQParams.put("messageAttribute", SPLSchemas.STRING.getAttribute(0).getName());
 		
 		TStream<String> srcStream = SPL.invokeSource(topo, "com.ibm.streamsx.messaging.rabbitmq::RabbitMQSource", rabbitMQParams, SPLSchemas.STRING).toStringStream();
-		TStream<Vines> vinesStream = srcStream.transform(VinesParser::fromJson);
+		TStream<VinesParserResult> parserStream = srcStream.transform(VinesMessageParser::fromJson).transform(new VinesToObservationParser());
 		
-		PublishConnector<Vines> connector = new PublishConnector<>(new VinesToChefMapper(), VINES_TOPIC);
+		// Observation stream
+		TStream<Observation> vinesStream = parserStream.multiTransform(new ObservationFunction());
+		PublishConnector<Observation> connector = new PublishConnector<>(new IdentityMapper(), VINES_TOPIC);
 		connector.mapAndPublish(vinesStream);
+		
+		// Error stream
+		TStream<String> errStream = parserStream.transform(new ErrorFunction());
+		errStream.publish(VINES_ERROR_TOPIC);
+
+		// Debug stream
+		srcStream.publish(VINES_DEBUG_TOPIC);
 	}
 	
 	public Topology getTopology() {
@@ -72,5 +89,35 @@ public class VinesAdapterService {
 	
 	public Object run(Type contextType, Map<String, Object> config) throws Exception {
 		return StreamsContextFactory.getStreamsContext(contextType).submit(topo, config).get();
+	}
+	
+	private static class ObservationFunction implements Function<VinesParserResult, Iterable<Observation>> {
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public Iterable<Observation> apply(VinesParserResult parserResult) {
+			return parserResult.getObservations();
+		}
+		
+	}
+	
+	private static class ErrorFunction implements Function<VinesParserResult, String> {
+		private static final long serialVersionUID = 1L;
+
+		private static Gson gson = new Gson();
+		
+		@Override
+		public String apply(VinesParserResult result) {
+			if(result.getErrorMessages().size() > 0) {
+				JsonObject jsonObj = new JsonObject();
+				jsonObj.add("errorMessages", gson.toJsonTree(result.getErrorMessages()));
+				jsonObj.add("rawMessage", gson.toJsonTree(result.getRawMessage()));
+				
+				return gson.toJson(jsonObj);
+			}
+			
+			return null;
+		} 
+		
 	}
 }
