@@ -19,5 +19,6 @@ The following project contains the generated SPL code of the ODM rules:
 The EWSScoreService is the demo service to show how you can use the generated SPL code 
 
 To build the service:
+
 1.  `cd com.ibm.streamsx.health.analyze.rules.vitals.spl`
 1.  `gradle build`
