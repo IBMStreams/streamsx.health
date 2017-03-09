@@ -15,12 +15,17 @@ use com.ibm.streamsx.health.ingest.types::PublishJson_T ;
 
 composite EWScoreService
 {
+
+	param
+		expression<rstring> $topic : getSubmissionTimeValue("topic","ingest-beacon");
+
+
 	graph
 		(stream<Observation_T> IngestSubscribe_1_out0) as IngestSubscribe_1 =
 			IngestSubscribe()
 		{
 			param
-				topic : "ingest-beacon" ;
+				topic : $topic ;
 		}
 
 		(stream<rstring patientId, int64 ts, rstring readingType, float64 value>

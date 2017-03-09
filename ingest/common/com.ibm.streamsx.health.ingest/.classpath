@@ -9,6 +9,6 @@
 			<attribute name="optional" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="var" path="STREAMS_JAVA_FUNCTAIONAL_API"/>
+	<classpathentry kind="var" path="STREAMS_JAVA_FUNCTIONAL_API"/>
 	<classpathentry kind="output" path="impl/java/bin"/>
 </classpath>
