@@ -26,7 +26,6 @@ public class Patient
     public readonly int ewsScore;
     public float hr;
     public string id;
-    public string name;
     public readonly int newsScore;
     public float respRate;
     public float spo2;
