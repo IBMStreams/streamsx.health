@@ -1,0 +1,144 @@
+namespace com.ibm.streamsx.health.analyze.rules.vitals.service ;
+
+use com.ibm.streamsx.health.ingest.connector::IngestSubscribe ;
+use com.ibm.streamsx.health.ingest.types::Reading_T ;
+use com.ibm.streamsx.health.ingest.types::Observation_T ;
+use
+	com.ibm.streamsx.health.analyze.rules.vitals.com.ibm.streamsx.health.analyze.rules.model::* ;
+use
+	com.ibm.streamsx.health.analyze.rules.vitals.com.ibm.streamsx.health.analyze.rules.model::Patient ;
+use
+	com.ibm.streamsx.health.analyze.rules.vitals::streamsx_health_analyze_rules_vitals ;
+use com.ibm.streamsx.json::TupleToJSON ;
+use com.ibm.streamsx.topology.topic::Publish ;
+use com.ibm.streamsx.health.ingest.types::PublishJson_T ;
+
+
+/**
+ * The EWSScoreService is generated from ODM Rules stored in the streamsx-health-analyze-rules-vitals project.
+ * This is an example service to demonstrate how to use the generated rules.  By default the service
+ * ingest data from the "ingest-beacon" service.  
+ *
+ * The service requires input data in the Observation_T format.  This service calculate a moving average of the
+ * readings for  a 10 second window every second.  
+ * 
+ * The service exports data with this topic:  analytics-ews
+ * The service exports data of schema `Patient o_patient` in JSON format.
+ * 
+ */
+composite EWScoreService
+{
+
+	param
+		expression<rstring> $topic : getSubmissionTimeValue("topic","ingest-beacon");
+
+
+	graph
+		(stream<Observation_T> IngestSubscribe_1_out0) as IngestSubscribe_1 =
+			IngestSubscribe()
+		{
+			param
+				topic : $topic ;
+		}
+
+		(stream<rstring patientId, int64 ts, rstring readingType, float64 value>
+			Aggregate_2_out0) as Aggregate_2 = Aggregate(Functor_3_out0 as inputStream)
+		{
+			window
+				inputStream : sliding, time(10), time(1), partitioned ;
+			param
+				partitionBy : readingType ;
+			output
+				Aggregate_2_out0 : value = Average(value) ;
+		}
+
+		(stream<rstring patientId, int64 ts, rstring readingType, float64 value>
+			Functor_3_out0) as Functor_3 = Functor(IngestSubscribe_1_out0)
+		{
+			output
+				Functor_3_out0 : ts = reading.ts, readingType = reading.readingType,
+					value = reading.value ;
+		}
+
+		(stream<Patient i_patient> VitalsCollector_out0) as VitalsCollector =
+			Custom(Aggregate_2_out0)
+		{
+			logic
+				state :
+				{
+					mutable Patient patient ;
+					mutable int64 lastTs ;
+				}
+
+				onTuple Aggregate_2_out0 :
+				{
+					// TODO:  This is an example service to calculate
+					// EWS score based on Physionet data.  This is to provide
+					// default values in the case when the information is not available.
+					// Clean this up to get this information from device.
+					patient.id =(ustring) patientId ;
+					patient.avpu = ALERT ;
+					patient.name = "Sam James"u ;
+					patient.supplementOxygen = false ;
+					patient.respRate =(float32) 15.0 ;
+					lastTs = Aggregate_2_out0.ts ;
+					if(readingType == "ABPsys")
+					{
+						patient.bpSystolic =(float32) value ;
+					}
+
+					else if(readingType == "ABPdias")
+					{
+						patient.bpDiastolic =(float32) value ;
+					}
+
+					else if(readingType == "HR")
+					{
+						patient.hr =(float32) value ;
+					}
+
+					else if(readingType == "SpO2")
+					{
+						patient.spo2 =(float32) value ;
+					}
+
+					else if(readingType == "Temperature")
+					{
+					// convert from F to C
+						patient.temperature =((float32) value -(float32) 32.0) *(float32) 5.0
+							/(float32) 9.0 ;
+					}
+
+					if(patient.respRate >(float32) 1.0 && patient.spo2 >(float32) 1.0 &&
+						patient.temperature >(float32) 1.0 && patient.bpSystolic >(float32) 1.0
+						&& patient.hr >(float32) 1.0)
+					{
+						submit(patient, 0u) ;
+					}
+
+				}
+				
+				config
+					placement: partitionIsolation;
+
+			}
+
+		(stream<Patient o_patient> streamsx_health_analyze_rules_vitals_6_out0) as
+			streamsx_health_analyze_rules_vitals_6 =
+				streamsx_health_analyze_rules_vitals(VitalsCollector_out0)
+			{
+			}
+
+		(stream<PublishJson_T> TupleToJSON_7_out0) as TupleToJSON_7 =
+				TupleToJSON(streamsx_health_analyze_rules_vitals_6_out0)
+			{
+			}
+
+		() as Publish_8 = Publish(TupleToJSON_7_out0)
+			{
+				param
+					topic : "analytics-ews" ;
+			}
+
+	}
+

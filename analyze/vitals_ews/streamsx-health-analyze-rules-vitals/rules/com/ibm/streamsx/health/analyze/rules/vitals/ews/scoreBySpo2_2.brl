@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ilog.rules.studio.model.brl:ActionRule xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ilog.rules.studio.model.brl="http://ilog.rules.studio/model/brl.ecore">
+  <name>scoreBySpo2_2</name>
+  <uuid>d9818da2-a0e8-4a1a-ba82-efc3a72f2aef</uuid>
+  <locale>en_US</locale>
+  <definition><![CDATA[if the SpO2 of patient is between 85 and 89 then
+	add patient ews score by 2 ;]]></definition>
+</ilog.rules.studio.model.brl:ActionRule>

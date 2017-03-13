@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ilog.rules.studio.model.brl:ActionRule xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ilog.rules.studio.model.brl="http://ilog.rules.studio/model/brl.ecore">
+  <name>scoreByTemperature1</name>
+  <uuid>f8761098-6c9d-46e1-8661-9c1153c6ba7b</uuid>
+  <locale>en_US</locale>
+  <definition><![CDATA[if the temperature of patient is between 38 and 38.9 or the temperature of patient is between 35 and 35.9 then
+	add patient ews score by 1; ]]></definition>
+</ilog.rules.studio.model.brl:ActionRule>

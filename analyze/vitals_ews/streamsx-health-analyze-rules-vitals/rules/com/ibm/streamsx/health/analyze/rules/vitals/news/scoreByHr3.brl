@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ilog.rules.studio.model.brl:ActionRule xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ilog.rules.studio.model.brl="http://ilog.rules.studio/model/brl.ecore">
+  <name>scoreByHr3</name>
+  <uuid>162a8006-a40f-46c4-afd6-15b5b276580b</uuid>
+  <locale>en_US</locale>
+  <definition><![CDATA[if the heart rate of patient is more than 130 or the heart rate of patient is less than 41 then
+	add patient news score by 3;]]></definition>
+</ilog.rules.studio.model.brl:ActionRule>

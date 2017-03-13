@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ilog.rules.studio.model.brl:ActionRule xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ilog.rules.studio.model.brl="http://ilog.rules.studio/model/brl.ecore">
+  <name>scoreBySysBp2</name>
+  <uuid>71d53cac-4ad6-41af-8d87-f0a6c8582901</uuid>
+  <locale>en_US</locale>
+  <definition><![CDATA[if systolic blood pressure of patient is between 91 and 100 then
+	add patient news score by 2; ]]></definition>
+</ilog.rules.studio.model.brl:ActionRule>

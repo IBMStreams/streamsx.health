@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ilog.rules.studio.model.brl:ActionRule xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ilog.rules.studio.model.brl="http://ilog.rules.studio/model/brl.ecore">
+  <name>scoreBySysBp1</name>
+  <uuid>382d513e-7b16-4123-a7c1-5c7ba42c3a52</uuid>
+  <locale>en_US</locale>
+  <definition><![CDATA[if systolic blood pressure of patient is between 80 and 99 then
+	add patient ews score by 1;]]></definition>
+</ilog.rules.studio.model.brl:ActionRule>

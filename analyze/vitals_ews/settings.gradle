@@ -1,0 +1,4 @@
+fileTree('.') {
+  include '**/build.gradle'
+}.collect { relativePath(it.parent).replace(File.separator, ':') }
+ .each { include(it) }

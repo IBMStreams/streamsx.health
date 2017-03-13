@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launchConfiguration type="ilog.rules.studio.launching.JRulesProject">
+<booleanAttribute key="ilog.rules.studio.launching.USE_EXTRACTOR" value="false"/>
+<stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value=""/>
+<stringAttribute key="ilog.rules.studio.launching.EXTRACTOR" value=""/>
+<mapAttribute key="ilog.rules.studio.launching.RULESET_PARAMETERS_TYPES"/>
+<mapAttribute key="ilog.rules.studio.launching.RULESET_PARAMETERS_NAMES"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="streamsx-health-analyze-rules-vitals"/>
+<mapAttribute key="ilog.rules.studio.launching.RULESET_PARAMETERS_FUNCT_SIGN"/>
+<mapAttribute key="ilog.rules.studio.launching.RULESET_PARAMETERS_SIMPLE_VALUES"/>
+<mapAttribute key="ilog.rules.studio.launching.RULESET_PARAMETERS_FUNCT_VALUES"/>
+</launchConfiguration>

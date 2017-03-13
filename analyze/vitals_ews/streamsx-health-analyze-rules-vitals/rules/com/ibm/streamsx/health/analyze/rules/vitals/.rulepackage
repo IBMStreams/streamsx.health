@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ilog.rules.studio.model.base:RulePackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ilog.rules.studio.model.base="http://ilog.rules.studio/model/base.ecore">
+  <name>vitals</name>
+  <uuid>306a9587-7e69-4f49-aeb1-595db2e1aa67</uuid>
+</ilog.rules.studio.model.base:RulePackage>
