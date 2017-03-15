@@ -21,6 +21,7 @@ repositories {
 dependencies {
     compile fileTree(dir: System.getenv("STREAMS_INSTALL") + '/lib', include: ['*.jar'])
     compile fileTree(dir: 'opt/downloaded', include: ['*.jar'])
+    compile project(':ingest:common:com.ibm.streamsx.health.ingest')
 }
 
 task buildToolkit {
@@ -30,12 +31,7 @@ task buildToolkit {
     }
 }
 
-task buildIngestToolkit(type: GradleBuild) {
-    buildFile = '../../../ingest/common/com.ibm.streamsx.health.ingest/build.gradle'
-    tasks = ['build']
-}
-
-task buildServices(dependsOn: ['buildIngestToolkit', 'buildToolkit']) {
+task buildServices(dependsOn: [':ingest:common:com.ibm.streamsx.health.ingest:buildToolkit', 'buildToolkit']) {
     doLast {
         def serviceToolkitPath = jsonToolkitPath + ':' + topologyToolkitPath + ':' + healthIngestToolkitPath
         compileApp('com.ibm.streamsx.health.analyze.rules.vitals.service', 'EWScoreService', serviceToolkitPath)

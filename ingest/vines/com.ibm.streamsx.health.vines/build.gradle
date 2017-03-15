@@ -8,15 +8,10 @@ dependencies {
 	compile fileTree(dir: System.getenv("STREAMS_INSTALL") + '/lib', include: ['*.jar'])
 	compile files(System.getenv("STREAMS_INSTALL") + '/toolkits/com.ibm.streamsx.topology/lib/com.ibm.streamsx.topology.jar')
     compile files(System.getenv("STREAMS_INSTALL") + '/toolkits/com.ibm.streamsx.datetime/impl/lib/com.ibm.streamsx.datetime.jar')
-    compile fileTree(dir: '../../common/com.ibm.streamsx.health.ingest/lib', include: ['*.jar'])
+    compile project(':ingest:common:com.ibm.streamsx.health.ingest')
     compile group: 'commons-cli', name: 'commons-cli', version: '1.2'
     compile group: 'com.google.guava', name: 'guava', version: '21.0'
 	testCompile 'junit:junit:4.12'
-}
-
-task buildIngestToolkit(type: GradleBuild) {
-    buildFile = '../../common/com.ibm.streamsx.health.ingest/build.gradle'
-    tasks = ['build']
 }
 
 test {
@@ -36,5 +31,5 @@ task cleanUp() {
     }
 }
 
-compileJava.dependsOn buildIngestToolkit, copyToLib
+compileJava.dependsOn copyToLib
 clean.finalizedBy(cleanUp)

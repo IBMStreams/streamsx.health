@@ -3,7 +3,6 @@ apply from: '../../common.gradle'
 
 def STREAMS_INSTALL = System.getenv("STREAMS_INSTALL")
 def topologyToolkitPath = STREAMS_INSTALL + '/toolkits/com.ibm.streamsx.topology'
-def healthIngestToolkitPath = '../../ingest/common/com.ibm.streamsx.health.ingest'
 
 repositories { 
     mavenCentral() 
@@ -12,13 +11,8 @@ repositories {
 dependencies {
     compile fileTree(dir: System.getenv("STREAMS_INSTALL") + '/lib', include: ['*.jar'])
     compile fileTree(dir: topologyToolkitPath + '/lib', include: ['*.jar'])
-    compile fileTree(dir: healthIngestToolkitPath + '/lib', include: ['*.jar'])
     compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.5'
-}
-
-task buildIngestToolkit(type: GradleBuild) {
-    buildFile = '../../ingest/common/com.ibm.streamsx.health.ingest/build.gradle'
-    tasks = ['build']
+    compile project(':ingest:common:com.ibm.streamsx.health.ingest')
 }
 
 task buildService(type: JavaExec, dependsOn: 'classes') {
@@ -33,6 +27,5 @@ task cleanUp() {
 	}
 }
 
-compileJava.dependsOn buildIngestToolkit
 build.finalizedBy(buildService)
 clean.dependsOn cleanUp
