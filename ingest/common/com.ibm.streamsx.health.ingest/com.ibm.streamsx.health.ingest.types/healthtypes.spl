@@ -10,19 +10,19 @@
 namespace com.ibm.streamsx.health.ingest.types ;
 
 
-type Reading_T = int64 ts, ReadingType_T readingType, float64 value, rstring uom;
+type Reading = int64 ts, ReadingType readingType, float64 value, rstring uom;
 
-type ReadingType_T = rstring system, rstring code;
+type ReadingType = rstring system, rstring code;
 
-type Observation_T = Device_T device, rstring patientId, ReadingSource_T readingSource, Reading_T reading;
+type Observation = Device_T device, rstring patientId, ReadingSource readingSource, Reading reading;
 	
-type Patient_T = rstring id, rstring name, rstring gender, rstring DOB, rstring status ;	
+type Patient = rstring id, rstring name, rstring gender, rstring DOB, rstring status ;	
 	
-type Location_T = rstring id, rstring name, rstring locationType;	
+type Location = rstring id, rstring name, rstring locationType;	
 
-type ReadingSource_T = rstring id, rstring sourceType, rstring deviceId;
+type ReadingSource = rstring id, rstring sourceType, rstring deviceId;
 
-type Device_T = rstring id, rstring locationId;
+type Device = rstring id, rstring locationId;
 
 
 /**
@@ -34,7 +34,7 @@ type ClinicalNoteEvent = rstring patientId, rstring eventType,
 /**
  * Schema type for service publish
  */
-type PublishJson_T = rstring jsonString ;
+type PublishJson = rstring jsonString ;
 
 
 

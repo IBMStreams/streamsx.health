@@ -2,7 +2,6 @@ package com.ibm.streamsx.health.vines.service;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
 
 import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;
@@ -15,11 +14,10 @@ import org.apache.commons.cli.ParseException;
 
 import com.ibm.streams.operator.logging.TraceLevel;
 import com.ibm.streamsx.health.ingest.types.connector.SubscribeConnector;
-import com.ibm.streamsx.health.ingest.types.model.Observation;
 import com.ibm.streamsx.topology.Topology;
 import com.ibm.streamsx.topology.context.ContextProperties;
-import com.ibm.streamsx.topology.context.StreamsContextFactory;
 import com.ibm.streamsx.topology.context.StreamsContext.Type;
+import com.ibm.streamsx.topology.context.StreamsContextFactory;
 
 public class VinesAdapterServiceRunner {
 

@@ -8,7 +8,7 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/com.ibm.streamsx.health.ingest"/>
 	<classpathentry kind="lib" path="/opt/ibm/InfoSphere_Streams/4.2.0.0/ext/lib/commons-lang-2.4.jar"/>
-	<classpathentry kind="lib" path="/com.ibm.streamsx.datetime/impl/lib/com.ibm.streamsx.datetime.jar"/>
 	<classpathentry kind="lib" path="build/output/lib/commons-cli-1.2.jar"/>
+	<classpathentry kind="lib" path="build/output/lib/guava-21.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
