@@ -1,5 +1,9 @@
 package com.ibm.streamsx.health.simulate.beacon.generators;
 
+import com.ibm.streamsx.health.ingest.types.model.ReadingType;
+import com.ibm.streamsx.health.ingest.types.model.ReadingTypeCode;
+import com.ibm.streamsx.health.ingest.types.model.ReadingTypeSystem;
+
 public class ABPSystolicDataGenerator extends AbstractVitalsGenerator {
 	private static final long serialVersionUID = 1L;
 
@@ -43,8 +47,8 @@ public class ABPSystolicDataGenerator extends AbstractVitalsGenerator {
 	}
 
 	@Override
-	String getReadingType() {
-		return "ABPsys";
+	ReadingType getReadingType() {
+		return new ReadingType(ReadingTypeSystem.STREAMS_CODE_SYSTEM, ReadingTypeCode.BP_SYSTOLIC.getCode());
 	}
 
 	@Override

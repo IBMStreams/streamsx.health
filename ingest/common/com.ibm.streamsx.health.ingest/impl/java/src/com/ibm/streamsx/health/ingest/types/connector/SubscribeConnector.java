@@ -25,16 +25,16 @@ public class SubscribeConnector {
 	
 	public static TStream<Observation> subscribe(TopologyElement te, String topic) {
 		return SPLStreams.subscribe(te, topic, JSONSchemas.JSON)
-				.transform(new GsonToObservationConverter());
+				.transform(new JsonToObservationConverter());
 	}
 	
-	private static class GsonToObservationConverter implements Function<Tuple, Observation> {
+	private static class JsonToObservationConverter implements Function<Tuple, Observation> {
 
 		private static final long serialVersionUID = 1L;
 
 		private transient Gson gson;
 
-		public GsonToObservationConverter() {
+		public JsonToObservationConverter() {
 			initGson();
 		}
 

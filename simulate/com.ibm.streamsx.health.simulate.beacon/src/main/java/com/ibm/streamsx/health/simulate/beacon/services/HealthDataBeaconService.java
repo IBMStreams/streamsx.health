@@ -8,9 +8,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import com.ibm.streamsx.health.ingest.types.connector.IdentityMapper;
 import com.ibm.streamsx.health.ingest.types.connector.PublishConnector;
 import com.ibm.streamsx.health.ingest.types.model.Observation;
+import com.ibm.streamsx.health.ingest.types.model.ReadingTypeCode;
 import com.ibm.streamsx.health.simulate.beacon.generators.ABPDiastolicDataGenerator;
 import com.ibm.streamsx.health.simulate.beacon.generators.ABPSystolicDataGenerator;
 import com.ibm.streamsx.health.simulate.beacon.generators.HealthcareDataGenerator;
@@ -56,8 +56,8 @@ public class HealthDataBeaconService {
 	}
 
 	public void build() {
-		TStream<Observation> ecgStream = topo.periodicSource(new HealthcareDataGenerator(DEFAULT_PATIENT_ID, "resources/data/ecglead1.csv"), WAVEFORM_PERIOD, WAVEFORM_PERIOD_TIMEUNIT);
-		TStream<Observation> respStream = topo.periodicSource(new HealthcareDataGenerator(DEFAULT_PATIENT_ID, "resources/data/resp.csv"), WAVEFORM_PERIOD, WAVEFORM_PERIOD_TIMEUNIT);
+		TStream<Observation> ecgStream = topo.periodicSource(new HealthcareDataGenerator(DEFAULT_PATIENT_ID, "resources/data/ecglead1.csv", ReadingTypeCode.ECG_LEAD_I.getCode()), WAVEFORM_PERIOD, WAVEFORM_PERIOD_TIMEUNIT);
+		TStream<Observation> respStream = topo.periodicSource(new HealthcareDataGenerator(DEFAULT_PATIENT_ID, "resources/data/resp.csv", ReadingTypeCode.RESP_RATE.getCode()), WAVEFORM_PERIOD, WAVEFORM_PERIOD_TIMEUNIT);
 		TStream<Observation> abpDiasStream = topo.periodicSource(new ABPDiastolicDataGenerator(DEFAULT_PATIENT_ID), VITALS_PERIOD, VITALS_PERIOD_TIMEUNIT);
 		TStream<Observation> abpSysStream = topo.periodicSource(new ABPSystolicDataGenerator(DEFAULT_PATIENT_ID), VITALS_PERIOD, VITALS_PERIOD_TIMEUNIT);
 		TStream<Observation> hrStream = topo.periodicSource(new HeartRateDataGenerator(DEFAULT_PATIENT_ID), VITALS_PERIOD, VITALS_PERIOD_TIMEUNIT);
@@ -74,9 +74,9 @@ public class HealthDataBeaconService {
 		
 		TStream<Observation> allStreams = ecgStream.union(observations);
 		TStream<Observation> multiplePatientStream = allStreams.multiTransform(new Multiplier(numPatientsSupplier, patientPrefixSupplier));		
+		multiplePatientStream.print();
 		
-		PublishConnector<Observation> connector = new PublishConnector<>(new IdentityMapper(), getPublishedTopic());
-		connector.mapAndPublish(multiplePatientStream);
+		PublishConnector.publishObservation(multiplePatientStream, getPublishedTopic());
 	}
 	
 	public void run(Type contextType, Map<String, Object> submissionParams) throws Exception {
@@ -128,6 +128,6 @@ public class HealthDataBeaconService {
 	
 	public static void main(String[] args) throws Exception {
 		Map<String, Object> params = new HashMap<>();
-		new HealthDataBeaconService(System.getProperty("user.dir")).run(Type.BUNDLE, params);
+		new HealthDataBeaconService(System.getProperty("user.dir")).run(Type.DISTRIBUTED, params);
 	}
 }
