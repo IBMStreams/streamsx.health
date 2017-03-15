@@ -9,12 +9,15 @@
 // end_generated_IBM_copyright_prolog                                         
 namespace com.ibm.streamsx.health.ingest.types ;
 
+public rstring STREAMS_SYSTEM_NAME() {
+	return "streamsx.health/1.0";
+}
 
 type Reading = int64 ts, ReadingType readingType, float64 value, rstring uom;
 
 type ReadingType = rstring system, rstring code;
 
-type Observation = Device_T device, rstring patientId, ReadingSource readingSource, Reading reading;
+type Observation = Device device, rstring patientId, ReadingSource readingSource, Reading reading;
 	
 type Patient = rstring id, rstring name, rstring gender, rstring DOB, rstring status ;	
 	
