@@ -1,8 +1,9 @@
 namespace com.ibm.streamsx.health.analyze.rules.vitals.service ;
 
 use com.ibm.streamsx.health.ingest.connector::IngestSubscribe ;
-use com.ibm.streamsx.health.ingest.types::Reading_T ;
-use com.ibm.streamsx.health.ingest.types::Observation_T ;
+use com.ibm.streamsx.health.ingest.types::Reading ;
+use com.ibm.streamsx.health.ingest.types::ReadingType ;
+use com.ibm.streamsx.health.ingest.types::Observation ;
 use
 	com.ibm.streamsx.health.analyze.rules.vitals.com.ibm.streamsx.health.analyze.rules.model::* ;
 use
@@ -11,8 +12,8 @@ use
 	com.ibm.streamsx.health.analyze.rules.vitals::streamsx_health_analyze_rules_vitals ;
 use com.ibm.streamsx.json::TupleToJSON ;
 use com.ibm.streamsx.topology.topic::Publish ;
-use com.ibm.streamsx.health.ingest.types::PublishJson_T ;
-
+use com.ibm.streamsx.health.ingest.types::PublishJson ;
+use com.ibm.streamsx.health.ingest.types.resolver::* ;
 
 /**
  * The EWSScoreService is generated from ODM Rules stored in the streamsx-health-analyze-rules-vitals project.
@@ -34,14 +35,14 @@ composite EWScoreService
 
 
 	graph
-		(stream<Observation_T> IngestSubscribe_1_out0) as IngestSubscribe_1 =
+		(stream<Observation> IngestSubscribe_1_out0) as IngestSubscribe_1 =
 			IngestSubscribe()
 		{
 			param
 				topic : $topic ;
 		}
 
-		(stream<rstring patientId, int64 ts, rstring readingType, float64 value>
+		(stream<rstring patientId, int64 ts, ReadingType readingType, float64 value>
 			Aggregate_2_out0) as Aggregate_2 = Aggregate(Functor_3_out0 as inputStream)
 		{
 			window
@@ -52,7 +53,7 @@ composite EWScoreService
 				Aggregate_2_out0 : value = Average(value) ;
 		}
 
-		(stream<rstring patientId, int64 ts, rstring readingType, float64 value>
+		(stream<rstring patientId, int64 ts, ReadingType readingType, float64 value>
 			Functor_3_out0) as Functor_3 = Functor(IngestSubscribe_1_out0)
 		{
 			output
@@ -82,27 +83,27 @@ composite EWScoreService
 					patient.supplementOxygen = false ;
 					patient.respRate =(float32) 15.0 ;
 					lastTs = Aggregate_2_out0.ts ;
-					if(readingType == "ABPsys")
+					if(isBPSystolic(readingType.code))
 					{
 						patient.bpSystolic =(float32) value ;
 					}
 
-					else if(readingType == "ABPdias")
+					else if(isBPDiastolic(readingType.code))
 					{
 						patient.bpDiastolic =(float32) value ;
 					}
 
-					else if(readingType == "HR")
+					else if(isHeartRate(readingType.code))
 					{
 						patient.hr =(float32) value ;
 					}
 
-					else if(readingType == "SpO2")
+					else if(isSpO2(readingType.code))
 					{
 						patient.spo2 =(float32) value ;
 					}
 
-					else if(readingType == "Temperature")
+					else if(isTemperature(readingType.code))
 					{
 					// convert from F to C
 						patient.temperature =((float32) value -(float32) 32.0) *(float32) 5.0
@@ -129,7 +130,7 @@ composite EWScoreService
 			{
 			}
 
-		(stream<PublishJson_T> TupleToJSON_7_out0) as TupleToJSON_7 =
+		(stream<PublishJson> TupleToJSON_7_out0) as TupleToJSON_7 =
 				TupleToJSON(streamsx_health_analyze_rules_vitals_6_out0)
 			{
 			}
