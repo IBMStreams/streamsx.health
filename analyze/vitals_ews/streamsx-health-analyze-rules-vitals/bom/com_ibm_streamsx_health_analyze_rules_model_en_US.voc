@@ -28,8 +28,6 @@ com.ibm.streamsx.health.analyze.rules.model.Patient.incrementEwsScore(int)#phras
 com.ibm.streamsx.health.analyze.rules.model.Patient.incrementEwsScore(int)#phrase.action[1] = add {this} ews score by {0}
 com.ibm.streamsx.health.analyze.rules.model.Patient.incrementNewsScore(int)#phrase.action[0] = {this}.incrementNewsScore({0})
 com.ibm.streamsx.health.analyze.rules.model.Patient.incrementNewsScore(int)#phrase.action[1] = add {this} news score by {0}
-com.ibm.streamsx.health.analyze.rules.model.Patient.name#phrase.action = set the name of {this} to {name}
-com.ibm.streamsx.health.analyze.rules.model.Patient.name#phrase.navigation = {name} of {this}
 com.ibm.streamsx.health.analyze.rules.model.Patient.newsScore#phrase.navigation = {news score} of {this}
 com.ibm.streamsx.health.analyze.rules.model.Patient.respRate#phrase.action = set the respiratory rate of {this} to {respiratory rate}
 com.ibm.streamsx.health.analyze.rules.model.Patient.respRate#phrase.navigation = {respiratory rate} of {this}

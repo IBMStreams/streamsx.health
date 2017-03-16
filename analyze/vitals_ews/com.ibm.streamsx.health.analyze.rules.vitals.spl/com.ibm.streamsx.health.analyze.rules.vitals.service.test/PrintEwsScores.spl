@@ -3,8 +3,7 @@ namespace com.ibm.streamsx.health.analyze.rules.vitals.service.test ;
 use com.ibm.streamsx.topology.topic::Subscribe ;
 use com.ibm.streamsx.json::JSONToTuple ;
 use com.ibm.streamsx.health.ingest.types::PublishJson ;
-use
-	com.ibm.streamsx.health.analyze.rules.vitals.com.ibm.streamsx.health.analyze.rules.model::Patient ;
+use com.ibm.streamsx.health.analyze.rules.vitals.service::PatientSummary ;
 
 composite PrintEwsScores
 {
@@ -16,7 +15,7 @@ composite PrintEwsScores
 				streamType : PublishJson;
 		}
 
-		(stream<Patient o_patient> JSONToTuple_2_out0) as JSONToTuple_2 =
+		(stream<PatientSummary> JSONToTuple_2_out0) as JSONToTuple_2 =
 			JSONToTuple(Subscribe_1_out0)
 		{
 		}

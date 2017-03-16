@@ -1,3 +1,12 @@
+// begin_generated_IBM_copyright_prolog                                       
+//                                                                            
+// This is an automatically generated copyright prolog.                       
+// After initializing,  DO NOT MODIFY OR MOVE                                 
+//****************************************************************************
+// Copyright (C) 2016 International Business Machines Corporation             
+// All Rights Reserved                                                        
+//****************************************************************************
+// end_generated_IBM_copyright_prolog   
 namespace com.ibm.streamsx.health.analyze.rules.vitals.service ;
 
 use com.ibm.streamsx.health.ingest.connector::IngestSubscribe ;
@@ -14,6 +23,8 @@ use com.ibm.streamsx.json::TupleToJSON ;
 use com.ibm.streamsx.topology.topic::Publish ;
 use com.ibm.streamsx.health.ingest.types::PublishJson ;
 use com.ibm.streamsx.health.ingest.types.resolver::* ;
+use com.ibm.streamsx.topology.topic::Subscribe ;
+
 
 /**
  * The EWSScoreService is generated from ODM Rules stored in the streamsx-health-analyze-rules-vitals project.
@@ -29,11 +40,9 @@ use com.ibm.streamsx.health.ingest.types.resolver::* ;
  */
 composite EWScoreService
 {
-
 	param
-		expression<rstring> $topic : getSubmissionTimeValue("topic","ingest-beacon");
-
-
+		expression<rstring> $topic : getSubmissionTimeValue("topic",
+			"ingest-beacon") ;
 	graph
 		(stream<Observation> IngestSubscribe_1_out0) as IngestSubscribe_1 =
 			IngestSubscribe()
@@ -73,15 +82,13 @@ composite EWScoreService
 
 				onTuple Aggregate_2_out0 :
 				{
-					// TODO:  This is an example service to calculate
-					// EWS score based on Physionet data.  This is to provide
-					// default values in the case when the information is not available.
-					// Clean this up to get this information from device.
+				// TODO:  The EWS service does not take into account
+				// the alertness or if oxygen is supplemented for the patient.
+				// This information comes from clinical notes and will be integrated
+				// at a later time.
 					patient.id =(ustring) patientId ;
 					patient.avpu = ALERT ;
-					patient.name = "Sam James"u ;
 					patient.supplementOxygen = false ;
-					patient.respRate =(float32) 15.0 ;
 					lastTs = Aggregate_2_out0.ts ;
 					if(isBPSystolic(readingType.code))
 					{
@@ -110,18 +117,27 @@ composite EWScoreService
 							/(float32) 9.0 ;
 					}
 
-					if(patient.respRate >(float32) 1.0 && patient.spo2 >(float32) 1.0 &&
-						patient.temperature >(float32) 1.0 && patient.bpSystolic >(float32) 1.0
-						&& patient.hr >(float32) 1.0)
+					else if(isRespiratoryRate(readingType.code))
+					{
+						patient.respRate =(float32) value ;
+					}
+
+					if(isTraceable(Trace.debug))
+					{
+						appTrc(Trace.debug,(rstring) patient) ;
+					}
+
+					if(patient.respRate != (float32) 0.0 && patient.spo2 != (float32) 0.0 &&
+						patient.temperature != (float32) 0.0 && patient.bpSystolic !=(float32) 0.0
+						&& patient.hr !=(float32) 0.0)
 					{
 						submit(patient, 0u) ;
 					}
 
 				}
-				
-				config
-					placement: partitionIsolation;
 
+				config
+					placement : partitionIsolation ;
 			}
 
 		(stream<Patient o_patient> streamsx_health_analyze_rules_vitals_6_out0) as
@@ -131,7 +147,7 @@ composite EWScoreService
 			}
 
 		(stream<PublishJson> TupleToJSON_7_out0) as TupleToJSON_7 =
-				TupleToJSON(streamsx_health_analyze_rules_vitals_6_out0)
+				TupleToJSON(Functor2_8_out0 as inPort0Alias)
 			{
 			}
 
@@ -139,6 +155,18 @@ composite EWScoreService
 			{
 				param
 					topic : "analytics-ews" ;
+			}
+
+		(stream<PatientSummary> Functor2_8_out0) as Functor2_8 =
+				Functor(streamsx_health_analyze_rules_vitals_6_out0)
+			{
+				output
+					Functor2_8_out0 : avpu = o_patient.avpu, bpDiastolic =
+						o_patient.bpDiastolic, bpSystolic = o_patient.bpSystolic, ewsScore =
+						o_patient.ewsScore, hr = o_patient.hr, id = o_patient.id, newsScore =
+						o_patient.newsScore, respRate = o_patient.respRate, spo2 =
+						o_patient.spo2, supplementOxygen = o_patient.supplementOxygen,
+						temperature = o_patient.temperature ;
 			}
 
 	}
