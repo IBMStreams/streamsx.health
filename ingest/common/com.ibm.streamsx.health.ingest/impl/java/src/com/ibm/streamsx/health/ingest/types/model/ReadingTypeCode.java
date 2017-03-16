@@ -36,10 +36,10 @@ public enum ReadingTypeCode {
 		return code;
 	}
 	
-	public static String toName(String code) {
+	public static ReadingTypeCode fromCode(String code) {
 		for(ReadingTypeCode value : values()) {
 			if(value.code.equals(code))
-				return value.toString();
+				return value;
 		}
 		
 		return null;
