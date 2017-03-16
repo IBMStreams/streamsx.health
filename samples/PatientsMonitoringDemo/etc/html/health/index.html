@@ -179,6 +179,15 @@
 </div>
 
 <script type="text/javascript">
+
+ var HR_CODE = "8867-4";
+ var TEMP_CODE = "8310-5";
+ var SPO2_CODE = "2710-2";
+ var BPSYS_CODE = "8480-6";
+ var BPDIA_CODE = "8462-4";
+ var ECGLEADI_CODE = "X100-8";
+ var RESP_CODE = "9279-1";
+ 
  var activeTags = ["active", "inactive"];
  var ageTags = ["child", "youth", "adult", "senior"];
  var careTags = ["minimum", "moderate", "maximum", "intensive"]; 
@@ -415,14 +424,14 @@ function updateVital(patientId, vitalType, elem) {
 }
 
 function updateABP(patientId) {
-	  $.get('/health/VitalsData/ports/input/0/tuples?partition=' + patientId + '&partition=ABPsys', function(data, status) {
+	  $.get('/health/VitalsData/ports/input/0/tuples?partition=' + patientId + '&partition=' + BPSYS_CODE, function(data, status) {
 		if(data.length == 0)
 			return;
 		
 		var obs = data[0];
 		var abpSysNumeral = numeral(obs.reading.value);
 		
-		$.get('/health/VitalsData/ports/input/0/tuples?partition=' + patientId + '&partition=ABPdias', function(data, status) {
+		$.get('/health/VitalsData/ports/input/0/tuples?partition=' + patientId + '&partition=' + BPDIA_CODE, function(data, status) {
 			if(data.length == 0)
 				return;
 			
@@ -468,10 +477,10 @@ $('#patientModal').on('show.bs.modal', function (event) {
 	  	  
 	  // retrieve HR data
 	  var vitalIntervalTime = 1000;
-	  timers.push(setInterval(function() {updateVital(patientId, 'HR', $('#hrVitalValue'))}, vitalIntervalTime));
+	  timers.push(setInterval(function() {updateVital(patientId, HR_CODE, $('#hrVitalValue'))}, vitalIntervalTime));
 	  timers.push(setInterval(function() {updateABP(patientId)}, vitalIntervalTime));
-	  timers.push(setInterval(function() {updateVital(patientId, 'Temperature', $('#tempVitalValue'))}, vitalIntervalTime));
-	  timers.push(setInterval(function() {updateVital(patientId, 'SpO2', $('#spo2VitalValue'))}, vitalIntervalTime));
+	  timers.push(setInterval(function() {updateVital(patientId, TEMP_CODE, $('#tempVitalValue'))}, vitalIntervalTime));
+	  timers.push(setInterval(function() {updateVital(patientId, SPO2_CODE, $('#spo2VitalValue'))}, vitalIntervalTime));
 	  
 	 var statusTimer = setInterval(function() {
     	  // retrive alert messages
@@ -509,8 +518,8 @@ $('#patientModal').on('show.bs.modal', function (event) {
 	 timers.push(statusTimer);
 	 	
 	// display waveforms
-	var ecgGraph = getWaveformGraph(patientId, "ECGLeadI", "ecgWaveform");
-//     var respGraph = getWaveformGraph(patientId, "RESP", "respWaveform");
+	var ecgGraph = getWaveformGraph(patientId, ECGLEADI_CODE, "ecgWaveform");
+//     var respGraph = getWaveformGraph(patientId, RESP_CODE, "respWaveform");
 
     doc.add_root(ecgGraph.figure);
 })

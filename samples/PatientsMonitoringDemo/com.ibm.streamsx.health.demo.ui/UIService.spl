@@ -6,6 +6,7 @@ use com.ibm.streamsx.health.ingest.connector::* ;
 use com.ibm.streamsx.topology.topic::* ;
 use com.ibm.streamsx.json::* ;
 use com.ibm.streamsx.health.analyze.vital::* ;
+use com.ibm.streamsx.health.ingest.types.resolver::* ;
 
 public composite UIService
 {
@@ -20,19 +21,17 @@ public composite UIService
 				port : 8080 ;
 				context : "health" ;
 				contextResourceBase : getThisToolkitDir() + "/etc/html/health" ;
-//				contextResourceBase : "/home/streamsadmin/git/streamsx.health/samples/VisualizationDemo/etc/html/health";
 			config
 				placement : partitionColocation("ui") ;
 		}
 
-		(stream<PublishJson_T> HTTPTupleInjection_3_out0) as Simulate =
+		(stream<PublishJson> HTTPTupleInjection_3_out0) as Simulate =
 			HTTPTupleInjection()
 		{
 			param
 				port : 8080 ;
 				context : "health" ;
 				contextResourceBase : getThisToolkitDir() + "/etc/html/health" ;
-//				contextResourceBase : "/home/streamsadmin/git/streamsx.health/samples/VisualizationDemo/etc/html/health";
 			config
 				placement : partitionColocation("ui") ;
 		}
@@ -60,7 +59,7 @@ public composite UIService
 
 		}
 
-		(stream<Observation_T> IngestSubscribe_7_out0) as IngestSubscribe_7 =
+		(stream<Observation> IngestSubscribe_7_out0) as IngestSubscribe_7 =
 			IngestSubscribe()
 		{
 			param
@@ -76,7 +75,6 @@ public composite UIService
 				port : 8080 ;
 				context : "health" ;
 				contextResourceBase : getThisToolkitDir() + "/etc/html/health" ;
-//				contextResourceBase : "/home/streamsadmin/git/streamsx.health/samples/VisualizationDemo/etc/html/health";
 			config
 				placement : partitionColocation("ui") ;
 		}
@@ -86,25 +84,25 @@ public composite UIService
 		{
 		}
 
-		(stream<PublishJson_T> Subscribe_1_out0) as Subscribe_1 = Subscribe()
+		(stream<PublishJson> Subscribe_1_out0) as Subscribe_1 = Subscribe()
 		{
 			param
 				topic :
 					com.ibm.streamsx.health.analyze.vital.connectors::TOPIC_VITALSRANGECHECK() ;
-				streamType : PublishJson_T ;
+				streamType : PublishJson ;
 		}
 
-		(stream<Observation_T, tuple<rstring patient_id, rstring readingType>>
+		(stream<Observation, tuple<rstring patient_id, rstring readingType>>
 			Functor_11_out0) as Functor_11 = Functor(IngestSubscribe_7_out0 as
 			inPort0Alias)
 		{
 			param
-				filter :(reading.readingType == "HR" || reading.readingType == "ABPsys" ||
-					reading.readingType == "ABPdias" || reading.readingType == "Temperature"
-					|| reading.readingType == "SpO2") ;
+				filter :(isHeartRate(reading.readingType.code) || isBPSystolic(reading.readingType.code) ||
+					isBPDiastolic(reading.readingType.code) || isTemperature(reading.readingType.code)
+					|| isSpO2(reading.readingType.code)) ;
 			output
 				Functor_11_out0 : patient_id = patientId, readingType =
-					reading.readingType ;
+					reading.readingType.code ;
 		}
 
 		() as WaveformData = HTTPTupleView(Aggregate_12_out0 as inPort0Alias)
@@ -116,20 +114,18 @@ public composite UIService
 				port : 8080 ;
 				context : "health" ;
 				contextResourceBase : getThisToolkitDir() + "/etc/html/health" ;
-//				contextResourceBase : "/home/streamsadmin/git/streamsx.health/samples/VisualizationDemo/etc/html/health";
 			config
 				placement : partitionColocation("ui") ;
 		}
 
-		(stream<Observation_T, tuple<rstring patient_id, rstring readingType>>
+		(stream<Observation, tuple<rstring patient_id, rstring readingType>>
 			Functor_12_out0) as Functor_12 = Functor(IngestSubscribe_7_out0)
 		{
 			param
-				filter :(reading.readingType == "ECGLeadI" || reading.readingType ==
-					"RESP") &&(patientId == "patient-1") ;
+				filter :(isECGLeadI(reading.readingType.code) || isRespiratoryRate(reading.readingType.code)) && (patientId == "patient-1") ;
 			output
 				Functor_12_out0 : patient_id = patientId, readingType =
-					reading.readingType ;
+					reading.readingType.code ;
 		}
 
 		(stream<list<Functor_11_out0> observations, rstring patient_id,

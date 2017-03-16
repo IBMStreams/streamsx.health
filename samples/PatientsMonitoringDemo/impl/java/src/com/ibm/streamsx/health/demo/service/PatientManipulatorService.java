@@ -1,20 +1,24 @@
 package com.ibm.streamsx.health.demo.service;
 
+import static com.ibm.streamsx.health.ingest.types.resolver.ObservationTypeResolver.isBPDiastolic;
+import static com.ibm.streamsx.health.ingest.types.resolver.ObservationTypeResolver.isBPSystolic;
+import static com.ibm.streamsx.health.ingest.types.resolver.ObservationTypeResolver.isHeartRate;
+import static com.ibm.streamsx.health.ingest.types.resolver.ObservationTypeResolver.isSpO2;
+import static com.ibm.streamsx.health.ingest.types.resolver.ObservationTypeResolver.isTemperature;
+
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.math.random.RandomDataImpl;
-
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.ibm.streamsx.health.ingest.types.connector.IdentityMapper;
 import com.ibm.streamsx.health.ingest.types.connector.PublishConnector;
 import com.ibm.streamsx.health.ingest.types.connector.SubscribeConnector;
 import com.ibm.streamsx.health.ingest.types.model.Observation;
 import com.ibm.streamsx.health.ingest.types.model.Reading;
+import com.ibm.streamsx.health.ingest.types.model.ReadingTypeCode;
 import com.ibm.streamsx.health.simulate.beacon.generators.ABPDiastolicDataGenerator;
 import com.ibm.streamsx.health.simulate.beacon.generators.ABPSystolicDataGenerator;
 import com.ibm.streamsx.health.simulate.beacon.generators.AbstractVitalsGenerator;
@@ -22,6 +26,7 @@ import com.ibm.streamsx.health.simulate.beacon.generators.HeartRateDataGenerator
 import com.ibm.streamsx.health.simulate.beacon.generators.SpO2DataGenerator;
 import com.ibm.streamsx.health.simulate.beacon.generators.TemperatureDataGenerator;
 import com.ibm.streamsx.health.simulate.beacon.generators.VitalsDataRange;
+import com.ibm.streamsx.health.simulate.beacon.services.HealthDataBeaconService;
 import com.ibm.streamsx.topology.TSink;
 import com.ibm.streamsx.topology.TStream;
 import com.ibm.streamsx.topology.Topology;
@@ -57,8 +62,8 @@ public class PatientManipulatorService {
 	
 	public PatientManipulatorService(String subscriptionTopic) {
 		topo = new Topology("PatientManipulatorService");
-		topo.addJarDependency(System.getProperty("user.dir") + "/../../ingest/common/com.ibm.streamsx.health.ingest/lib/com.ibm.streamsx.health.ingest.jar");
-		topo.addJarDependency(System.getProperty("user.dir") + "/../../simulate/com.ibm.streamsx.health.simulate.beacon/build/libs/com.ibm.streamsx.health.simulate.beacon.jar");
+		topo.addClassDependency(Observation.class);
+		topo.addClassDependency(HealthDataBeaconService.class);
 		this.subscriptionTopic = subscriptionTopic;
 	}
 
@@ -69,8 +74,7 @@ public class PatientManipulatorService {
 		TStream<Observation> modifiedObs = obsStream.modify(new Manipulator());
 		controlSink.colocate(modifiedObs);
 		
-		PublishConnector<Observation> connector = new PublishConnector<>(new IdentityMapper(), getPublishedTopic());
-		connector.mapAndPublish(modifiedObs);
+		PublishConnector.publishObservation(modifiedObs, getPublishedTopic());
 	}
 
 	public String getPublishedTopic() {
@@ -93,11 +97,11 @@ public class PatientManipulatorService {
 		
 		public Object readResolve() {
 			generators = new HashMap<String, AbstractVitalsGenerator>();
-			generators.put("HR", new HeartRateDataGenerator("", VitalsDataRange.HIGH));
-			generators.put("ABPsys", new ABPSystolicDataGenerator("", VitalsDataRange.HIGH));
-			generators.put("ABPdias", new ABPDiastolicDataGenerator("", VitalsDataRange.HIGH));
-			generators.put("Temperature", new TemperatureDataGenerator("", VitalsDataRange.HIGH));
-			generators.put("SpO2", new SpO2DataGenerator("", VitalsDataRange.LOW));
+			generators.put(ReadingTypeCode.HEART_RATE.name(), new HeartRateDataGenerator("", VitalsDataRange.HIGH));
+			generators.put(ReadingTypeCode.BP_SYSTOLIC.name(), new ABPSystolicDataGenerator("", VitalsDataRange.HIGH));
+			generators.put(ReadingTypeCode.BP_DIASTOLIC.name(), new ABPDiastolicDataGenerator("", VitalsDataRange.HIGH));
+			generators.put(ReadingTypeCode.TEMPERATURE.name(), new TemperatureDataGenerator("", VitalsDataRange.HIGH));
+			generators.put(ReadingTypeCode.SPO2.name(), new SpO2DataGenerator("", VitalsDataRange.LOW));
 			
 			return this;
 		}
@@ -107,22 +111,16 @@ public class PatientManipulatorService {
 			String patientId = obs.getPatientId();			
 			if(PatientsManager.getInstance().has(patientId)) {
 				Reading reading = obs.getReading();
-				switch(obs.getReading().getReadingType()) {
-				case "HR":
-					reading.setValue(generators.get("HR").get().getReading().getValue());
-					break;
-				case "ABPsys":
-					reading.setValue(generators.get("ABPsys").get().getReading().getValue());
-					break;
-				case "ABPdias":
-					reading.setValue(generators.get("ABPdias").get().getReading().getValue());
-					break;
-				case "Temperature":
-					reading.setValue(generators.get("Temperature").get().getReading().getValue());
-					break;
-				case "SpO2":
-					reading.setValue(generators.get("SpO2").get().getReading().getValue());
-					break;
+				if(isHeartRate(obs)) {
+					reading.setValue(generators.get(ReadingTypeCode.HEART_RATE.name()).get().getReading().getValue());
+				} else if(isBPSystolic(obs)) {
+					reading.setValue(generators.get(ReadingTypeCode.BP_SYSTOLIC.name()).get().getReading().getValue());
+				} else if(isBPDiastolic(obs)) {
+					reading.setValue(generators.get(ReadingTypeCode.BP_DIASTOLIC.name()).get().getReading().getValue());
+				} else if(isTemperature(obs)) {
+					reading.setValue(generators.get(ReadingTypeCode.TEMPERATURE.name()).get().getReading().getValue());
+				} else if(isSpO2(obs)) {
+					reading.setValue(generators.get(ReadingTypeCode.SPO2.name()).get().getReading().getValue());
 				}
 			}
 			
