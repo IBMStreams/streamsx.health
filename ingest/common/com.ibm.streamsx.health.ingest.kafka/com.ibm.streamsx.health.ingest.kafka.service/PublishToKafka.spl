@@ -12,7 +12,7 @@ namespace com.ibm.streamsx.health.ingest.kafka.service ;
 
 use com.ibm.streamsx.messaging.kafka::KafkaProducer ;
 use com.ibm.streamsx.topology.topic::Subscribe ;
-use com.ibm.streamsx.health.ingest.types::PublishJson_T ;
+use com.ibm.streamsx.health.ingest.types::PublishJson ;
 
 /**
  * This service helps publish json messages from the Health toolkit to Kafka
@@ -41,11 +41,11 @@ composite PublishJsonToKafka
 				messageAttribute: "jsonString";
 		}
 
-		(stream<PublishJson_T> Subscribe_2_out0) as Subscribe_2 = Subscribe()
+		(stream<PublishJson> Subscribe_2_out0) as Subscribe_2 = Subscribe()
 		{
 			param
 				topic : $topic ;
-				streamType : PublishJson_T ;
+				streamType : PublishJson ;
 		}
 
 }

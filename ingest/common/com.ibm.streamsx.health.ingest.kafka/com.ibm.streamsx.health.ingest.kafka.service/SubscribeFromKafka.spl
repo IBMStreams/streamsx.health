@@ -12,7 +12,7 @@ namespace com.ibm.streamsx.health.ingest.kafka.service ;
 
 use com.ibm.streamsx.messaging.kafka::KafkaConsumer ;
 use com.ibm.streamsx.topology.topic::Publish ;
-use com.ibm.streamsx.health.ingest.types::PublishJson_T ;
+use com.ibm.streamsx.health.ingest.types::PublishJson ;
 
 /**
  * This service helps publish json messages from the Health toolkit to Kafka
@@ -32,7 +32,7 @@ composite SubscribeJsonFromKafka
 		expression<rstring> $jaasFile : "etc/jaas.conf";
 		
 	graph
-		stream<PublishJson_T> KafkaStream =
+		stream<PublishJson> KafkaStream =
 			KafkaConsumer()
 		{
 			param
