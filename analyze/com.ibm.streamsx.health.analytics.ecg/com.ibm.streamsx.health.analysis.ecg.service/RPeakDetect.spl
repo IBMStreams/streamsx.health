@@ -6,7 +6,7 @@ use com.ibm.streamsx.topology.topic::Publish ;
 use com.ibm.streamsx.health.analysis.ecg::* ;
 use com.ibm.streamsx.health.ingest.types::* ;
 use com.ibm.streamsx.json::JSONToTuple ;
-use com.ibm.streamsx.health.ingest.types::Observation_T ;
+use com.ibm.streamsx.health.ingest.types::Observation ;
 use com.ibm.streamsx.health.ingest.connector::IngestSubscribe ;
 public rstring RPeakDetectServiceTopic()
 {
@@ -52,14 +52,14 @@ composite RPeakDetectService
 				Functor_5_out0 : ts = reading.ts, value =(int32) reading.value ;
 		}
 
-		(stream<Observation_T> Filter_7_out0) as Filter_7 =
+		(stream<Observation> Filter_7_out0) as Filter_7 =
 			Filter(IngestSubscribe_8_out0)
 		{
 			param
 				filter : readingSource.id == $readingSourceId ;
 		}
 
-		(stream<Observation_T> IngestSubscribe_8_out0) as IngestSubscribe_8 =
+		(stream<Observation> IngestSubscribe_8_out0) as IngestSubscribe_8 =
 			IngestSubscribe()
 		{
 			param
