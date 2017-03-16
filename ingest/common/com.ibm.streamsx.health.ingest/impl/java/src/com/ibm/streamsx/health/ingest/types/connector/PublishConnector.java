@@ -13,41 +13,19 @@ import java.io.ObjectStreamException;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.ibm.streams.operator.OutputTuple;
 import com.ibm.streamsx.health.ingest.types.model.Observation;
 import com.ibm.streamsx.topology.TStream;
-import com.ibm.streamsx.topology.function.BiFunction;
 import com.ibm.streamsx.topology.function.Function;
-import com.ibm.streamsx.topology.json.JSONSchemas;
-import com.ibm.streamsx.topology.spl.SPLStream;
-import com.ibm.streamsx.topology.spl.SPLStreams;
 
-public class PublishConnector<T> {
+public class PublishConnector {
 
-	private AbstractObservationMapper<T> mapper;
-	private String publishTopic;
-		
-	public PublishConnector(AbstractObservationMapper<T> mapper, String publishTopic) {
-		this.mapper = mapper;
-		this.publishTopic = publishTopic;
+	public static void publishObservation(TStream<Observation> inputStream, String publishTopic) {
+		mapAndPublish(inputStream, new IdentityMapper(), publishTopic);
 	}
 	
-	public void mapAndPublish(TStream<T> inputStream) {
+	public static <T> void mapAndPublish(TStream<T> inputStream, AbstractObservationMapper<T> mapper, String publishTopic) {
 		TStream<String> jsonStream = inputStream.multiTransform(mapper).transform(new ObservationToJsonConverter());
-		SPLStream splStream = SPLStreams.convertStream(jsonStream, new GsonToSPLConverter(), JSONSchemas.JSON);
-		//splStream.print();
-		splStream.publish(publishTopic);
-	}
-	
-	private static class GsonToSPLConverter implements BiFunction<String, OutputTuple, OutputTuple> {
-
-		private static final long serialVersionUID = 1L;
-
-		@Override
-		public OutputTuple apply(String gsonStr, OutputTuple outTuple) {
-			outTuple.setString("jsonString", gsonStr);
-			return outTuple;
-		}		
+		JsonPublisher.publish(jsonStream, publishTopic);
 	}
 	
 	private static class ObservationToJsonConverter implements Function<Observation, String> {

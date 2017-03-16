@@ -4,6 +4,7 @@ import com.ibm.streamsx.health.ingest.types.model.Device;
 import com.ibm.streamsx.health.ingest.types.model.Observation;
 import com.ibm.streamsx.health.ingest.types.model.Reading;
 import com.ibm.streamsx.health.ingest.types.model.ReadingSource;
+import com.ibm.streamsx.health.ingest.types.model.ReadingType;
 import com.ibm.streamsx.topology.function.Supplier;
 
 public abstract class AbstractVitalsGenerator implements Supplier<Observation> {
@@ -58,7 +59,7 @@ public abstract class AbstractVitalsGenerator implements Supplier<Observation> {
 	abstract Double getHighMax();
 	abstract Double getLowMin();
 	abstract Double getLowMax();
-	abstract String getReadingType();
+	abstract ReadingType getReadingType();
 	abstract String getUOM();
 	
 	public String getDeviceId() {

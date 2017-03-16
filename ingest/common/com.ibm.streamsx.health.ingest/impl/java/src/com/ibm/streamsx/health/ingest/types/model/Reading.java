@@ -14,38 +14,38 @@ import java.io.Serializable;
 public class Reading implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	private long timestamp;
-	private String readingType;
+	private long ts;
+	private ReadingType readingType;
 	private double value;
 	private String uom;
 
 	public Reading() {
-		timestamp = -1;
-		readingType = "";
+		ts = -1;
+		readingType = new ReadingType();
 		value = -1;
 		uom = "";
 	}
 	
 	public Reading(Reading reading) {
-		this.timestamp = reading.timestamp;
+		this.ts = reading.ts;
 		this.readingType = reading.readingType;
 		this.value = reading.value;
 		this.uom = reading.uom;
 	}
 
 	public long getTimestamp() {
-		return timestamp;
+		return ts;
 	}
 
 	public void setTimestamp(long timestamp) {
-		this.timestamp = timestamp;
+		this.ts = timestamp;
 	}
 
-	public String getReadingType() {
+	public ReadingType getReadingType() {
 		return readingType;
 	}
 
-	public void setReadingType(String readingType) {
+	public void setReadingType(ReadingType readingType) {
 		this.readingType = readingType;
 	}
 
@@ -67,7 +67,7 @@ public class Reading implements Serializable {
 
 	@Override
 	public String toString() {
-		return "Reading [timestamp=" + timestamp + ", readingType=" + readingType + ", value=" + value + ", uom=" + uom
+		return "Reading [ts=" + ts + ", readingType=" + readingType + ", value=" + value + ", uom=" + uom
 				+ "]";
 	}
 

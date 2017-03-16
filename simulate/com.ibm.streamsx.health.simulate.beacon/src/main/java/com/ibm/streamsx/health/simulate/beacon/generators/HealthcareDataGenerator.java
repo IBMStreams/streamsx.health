@@ -11,6 +11,8 @@ import com.ibm.streamsx.health.ingest.types.model.Device;
 import com.ibm.streamsx.health.ingest.types.model.Observation;
 import com.ibm.streamsx.health.ingest.types.model.Reading;
 import com.ibm.streamsx.health.ingest.types.model.ReadingSource;
+import com.ibm.streamsx.health.ingest.types.model.ReadingType;
+import com.ibm.streamsx.health.ingest.types.model.ReadingTypeSystem;
 import com.ibm.streamsx.topology.function.Supplier;
 
 public class HealthcareDataGenerator implements Supplier<Observation> {
@@ -21,11 +23,13 @@ public class HealthcareDataGenerator implements Supplier<Observation> {
 	
 	private String patientId;
 	private String filename;
+	private String readingTypeCode;
 	private transient List<Observation> observations;
 	
-	public HealthcareDataGenerator(String patientId, String filename) {
-  	this.patientId = patientId;
+	public HealthcareDataGenerator(String patientId, String filename, String readingTypeCode) {
+		this.patientId = patientId;
 		this.filename = filename;
+		this.readingTypeCode = readingTypeCode;
 	}
 	
 	public Object readResolve() throws Exception {
@@ -55,7 +59,7 @@ public class HealthcareDataGenerator implements Supplier<Observation> {
 		BufferedReader reader = new BufferedReader(new InputStreamReader(is));
 		
 		// skip first 2 lines
-		String[] obsTypes = reader.readLine().replace("'", "").split(",");
+		reader.readLine();
 		String[] uom = reader.readLine().replace("'", "").split(",");
 		
 		String line = null;
@@ -64,7 +68,7 @@ public class HealthcareDataGenerator implements Supplier<Observation> {
 			for(int i = 1; i < values.length; i++) {
 				Reading reading = new Reading();
 				reading.setTimestamp(Long.valueOf(values[0]));
-				reading.setReadingType(obsTypes[i]);
+				reading.setReadingType(new ReadingType(ReadingTypeSystem.STREAMS_CODE_SYSTEM, readingTypeCode));
 				reading.setUom(uom[i]);
 				reading.setValue(Double.valueOf(values[i]));	
 				

@@ -10,6 +10,7 @@ dependencies {
     compile files(System.getenv("STREAMS_INSTALL") + '/toolkits/com.ibm.streamsx.datetime/impl/lib/com.ibm.streamsx.datetime.jar')
     compile project(':ingest:common:com.ibm.streamsx.health.ingest')
     compile group: 'commons-cli', name: 'commons-cli', version: '1.2'
+    compile group: 'com.google.guava', name: 'guava', version: '21.0'
 	testCompile 'junit:junit:4.12'
 }
 

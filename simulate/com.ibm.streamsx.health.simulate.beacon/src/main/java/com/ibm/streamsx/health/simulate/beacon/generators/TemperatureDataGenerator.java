@@ -1,5 +1,9 @@
 package com.ibm.streamsx.health.simulate.beacon.generators;
 
+import com.ibm.streamsx.health.ingest.types.model.ReadingType;
+import com.ibm.streamsx.health.ingest.types.model.ReadingTypeCode;
+import com.ibm.streamsx.health.ingest.types.model.ReadingTypeSystem;
+
 public class TemperatureDataGenerator extends AbstractVitalsGenerator {
 	private static final long serialVersionUID = 1L;
 
@@ -53,8 +57,8 @@ public class TemperatureDataGenerator extends AbstractVitalsGenerator {
 	}
 
 	@Override
-	String getReadingType() {
-		return "Temperature";
+	ReadingType getReadingType() {
+		return new ReadingType(ReadingTypeSystem.STREAMS_CODE_SYSTEM, ReadingTypeCode.TEMPERATURE.getCode());
 	}
 
 	@Override

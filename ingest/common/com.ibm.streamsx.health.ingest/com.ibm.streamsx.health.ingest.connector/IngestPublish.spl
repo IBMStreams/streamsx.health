@@ -11,15 +11,15 @@ namespace com.ibm.streamsx.health.ingest.connector ;
 
 use com.ibm.streamsx.json::TupleToJSON ;
 use com.ibm.streamsx.topology.topic::Publish ;
-use com.ibm.streamsx.health.ingest.types::PublishJson_T ;
-use com.ibm.streamsx.health.ingest.types::Observation_T ;
+use com.ibm.streamsx.health.ingest.types::PublishJson ;
+use com.ibm.streamsx.health.ingest.types::Observation ;
 
-public composite IngestPublish(input stream<Observation_T> In0 )
+public composite IngestPublish(input stream<Observation> In0 )
 {
 	param
 		expression<rstring> $topic ;
 	graph
-		(stream<PublishJson_T> TupleToJSON_1_out0) as TupleToJSON_1 =
+		(stream<PublishJson> TupleToJSON_1_out0) as TupleToJSON_1 =
 			TupleToJSON(In0)
 		{
 		}

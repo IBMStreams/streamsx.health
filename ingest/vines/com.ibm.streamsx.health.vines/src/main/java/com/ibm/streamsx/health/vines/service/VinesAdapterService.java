@@ -4,9 +4,11 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang.math.NumberUtils;
+
+import com.google.common.io.Resources;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.ibm.streamsx.health.ingest.types.connector.IdentityMapper;
 import com.ibm.streamsx.health.ingest.types.connector.PublishConnector;
 import com.ibm.streamsx.health.ingest.types.model.Observation;
 import com.ibm.streamsx.health.vines.VinesMessageParser;
@@ -51,9 +53,9 @@ public class VinesAdapterService {
 	public VinesAdapterService() throws Exception {
 		topo = new Topology("ViNESAdapter");
 		
-		topo.addJarDependency(System.getenv("STREAMS_INSTALL") + "/ext/lib/commons-lang-2.4.jar");
-		topo.addJarDependency(System.getenv("STREAMS_INSTALL") + "/toolkits/com.ibm.streamsx.datetime/impl/lib/com.ibm.streamsx.datetime.jar");
-		topo.addJarDependency("../../../common/com.ibm.streamsx.health.ingest/lib/com.ibm.streamsx.health.ingest.jar");
+		topo.addClassDependency(Resources.class);
+		topo.addClassDependency(NumberUtils.class);
+		topo.addClassDependency(Observation.class);
 		
 		SPL.addToolkit(topo, new File(System.getenv("STREAMS_INSTALL") + "/toolkits/com.ibm.streamsx.messaging"));
 		SPL.addToolkit(topo, new File(System.getenv("STREAMS_INSTALL") + "/toolkits/com.ibm.streamsx.json"));
@@ -72,8 +74,7 @@ public class VinesAdapterService {
 		
 		// Observation stream
 		TStream<Observation> vinesStream = parserStream.multiTransform(new ObservationFunction());
-		PublishConnector<Observation> connector = new PublishConnector<>(new IdentityMapper(), VINES_TOPIC);
-		connector.mapAndPublish(vinesStream);
+		PublishConnector.publishObservation(vinesStream, VINES_TOPIC);
 		
 		// Error stream
 		TStream<String> errStream = parserStream.transform(new ErrorFunction());

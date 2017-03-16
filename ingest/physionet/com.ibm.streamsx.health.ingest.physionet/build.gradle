@@ -1,8 +1,7 @@
 apply plugin: 'java'
-apply from: '../../../common.gradle'
+apply from: "$rootProject.projectDir/common.gradle"
 
 def STREAMS_INSTALL = System.getenv("STREAMS_INSTALL")
-def healthIngestToolkitPath = '../../common/com.ibm.streamsx.health.ingest'
 def jsonToolkitPath = STREAMS_INSTALL + '/toolkits/com.ibm.streamsx.json'
 def topologyToolkitPath = STREAMS_INSTALL + '/toolkits/com.ibm.streamsx.topology'
 def dateTimeToolkitPath = STREAMS_INSTALL + '/toolkits/com.ibm.streamsx.datetime'
@@ -35,7 +34,7 @@ task buildToolkit {
 
 task buildServices {
     doLast {
-        def serviceToolkitPath = healthIngestToolkitPath + ':' + ':' + jsonToolkitPath + ':' + topologyToolkitPath + ':' + ':' + dateTimeToolkitPath 
+        def serviceToolkitPath = "${project(':ingest:common:com.ibm.streamsx.health.ingest').projectDir}" + ':' + ':' + jsonToolkitPath + ':' + topologyToolkitPath + ':' + ':' + dateTimeToolkitPath 
         compileApp('com.ibm.streamsx.health.ingest.physionet.service', 'PhysionetIngestService', serviceToolkitPath) 
     }
 }

@@ -19,11 +19,11 @@ use com.ibm.streamsx.health.ingest.types::*;
 composite PhysionetIngestTest
 {
 	graph
-		(stream<PublishJson_T> Subscribe_1_out0) as Subscribe_1 = Subscribe()
+		(stream<PublishJson> Subscribe_1_out0) as Subscribe_1 = Subscribe()
 		{
 			param
 				topic : TOPIC() ;
-				streamType : PublishJson_T ;
+				streamType : PublishJson ;
 		}
 
 		() as Custom_2 = Custom(JSONToTuple_3_out0 as inputStream)
@@ -36,7 +36,7 @@ composite PhysionetIngestTest
 
 		}
 
-		(stream<Observation_T> JSONToTuple_3_out0) as JSONToTuple_3 =
+		(stream<Observation> JSONToTuple_3_out0) as JSONToTuple_3 =
 			JSONToTuple(Subscribe_1_out0)
 		{
 		}

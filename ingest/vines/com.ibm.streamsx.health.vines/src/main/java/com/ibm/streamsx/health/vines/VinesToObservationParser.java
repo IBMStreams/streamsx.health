@@ -1,5 +1,6 @@
 package com.ibm.streamsx.health.vines;
 
+import java.io.InputStream;
 import java.io.ObjectStreamException;
 import java.text.ParseException;
 import java.time.LocalDateTime;
@@ -14,10 +15,13 @@ import java.util.Locale;
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.log4j.Logger;
 
+import com.google.common.io.Resources;
 import com.ibm.streamsx.health.ingest.types.model.Device;
 import com.ibm.streamsx.health.ingest.types.model.Observation;
 import com.ibm.streamsx.health.ingest.types.model.Reading;
 import com.ibm.streamsx.health.ingest.types.model.ReadingSource;
+import com.ibm.streamsx.health.ingest.types.model.ReadingType;
+import com.ibm.streamsx.health.ingest.types.model.ReadingTypeSystem;
 import com.ibm.streamsx.health.vines.model.Channel;
 import com.ibm.streamsx.health.vines.model.ITerm;
 import com.ibm.streamsx.health.vines.model.ITermValue;
@@ -35,6 +39,9 @@ public class VinesToObservationParser implements Function<Vines, VinesParserResu
 
 	private static final long serialVersionUID = 1L;
 	public static final String SOURCE_TYPE = "channel";
+	public static final String VINES_SYSTEM_NAME = "vines";
+	
+	private static final String MAPPING_FILE = "ieee2loinc.csv";
 	private static final Logger logger = Logger.getLogger(VinesToObservationParser.class);
 	
 	String DATE_TIME_PATTERN = ""
@@ -48,14 +55,27 @@ public class VinesToObservationParser implements Function<Vines, VinesParserResu
 	
 	private DateTimeFormatter formatter;
 	
+	private transient VinesToStreamsCodeLookupTable lookupTable;
+	
 	public Object readResolve() throws ObjectStreamException {
 		formatter = new DateTimeFormatterBuilder()
 				.appendPattern(DATE_TIME_PATTERN)
 				.toFormatter(Locale.ENGLISH);
 		
+		try {
+			InputStream inputStream = Resources.getResource(MAPPING_FILE).openStream();
+			lookupTable = new VinesToStreamsCodeLookupTable(inputStream);
+		} catch (Exception e) {
+			ObjectStreamException ose = new ObjectStreamException() {
+				private static final long serialVersionUID = 1L;
+			};
+			ose.addSuppressed(e);
+			throw ose;
+		}
+		
 		return this;
 	}
-	
+
 	@Override
 	public VinesParserResult apply(Vines v) {
 		VinesParserResult parserResult = new VinesParserResult(v);
@@ -104,10 +124,9 @@ public class VinesToObservationParser implements Function<Vines, VinesParserResu
 		Device device = new Device();
 		device.setId(getDeviceId(v));
 		
-		String date = "";
+		String date = v.getData().getBody().getStartTime();
 		long epochTime = 0l;
 		try {
-			date = v.getData().getBody().getUpdatedTime();
 			epochTime = toEpoch(date);
 		} catch (ParseException e) {
 			String msg = "Error parsing timestamp: error=" + e.getLocalizedMessage() + ", timestamp=" + date;
@@ -143,8 +162,8 @@ public class VinesToObservationParser implements Function<Vines, VinesParserResu
 						
 						reading.setValue(Double.valueOf(value));
 						reading.setUom(t.getUOM());
-						reading.setReadingType(termName);
 						reading.setTimestamp(epochTime);
+						reading.setReadingType(getReadingType(termName));
 						
 						parserResult.addObservation(new Observation(device, patientId, readingSource, reading));
 					}
@@ -170,10 +189,10 @@ public class VinesToObservationParser implements Function<Vines, VinesParserResu
 		Device device = new Device();
 		device.setId(getDeviceId(v));
 
-		long updatedTime = 0;
+		long startTime = 0;
 		long period = 0;
 		try {
-			updatedTime = toEpoch(v.getData().getBody().getUpdatedTime());			
+			startTime = toEpoch(v.getData().getBody().getStartTime());			
 		} catch(ParseException e) {
 			String msg = "Error parsing timestamp: error=" + e.getLocalizedMessage() + ", timestamp=" + v.getData().getBody().getStartTime();
 			logger.error(msg);
@@ -237,9 +256,9 @@ public class VinesToObservationParser implements Function<Vines, VinesParserResu
 								
 								for(int i = 0; i < waveform.size(); ++i) {
 									Reading reading = new Reading();
-									reading.setReadingType(waveName);
+									reading.setReadingType(getReadingType(waveName));
 									reading.setValue(waveform.get(i));
-									reading.setTimestamp(updatedTime + period*i);
+									reading.setTimestamp(startTime + period*i);
 									reading.setUom(uom);
 									
 									parserResult.addObservation(new Observation(device, patientId, readingSource, reading));
@@ -250,6 +269,18 @@ public class VinesToObservationParser implements Function<Vines, VinesParserResu
 				}
 			}
 		}
+	}
+
+	private ReadingType getReadingType(String vinesName) {
+		ReadingType readingType;
+		String code = lookupTable.lookupPlatformCode(vinesName);
+		if(code != null) {
+			readingType = new ReadingType(ReadingTypeSystem.STREAMS_CODE_SYSTEM, code);
+		} else {
+			readingType = new ReadingType(VINES_SYSTEM_NAME, vinesName);
+		}
+		
+		return readingType;
 	}
 	
 	private String getDeviceId(Vines v) {

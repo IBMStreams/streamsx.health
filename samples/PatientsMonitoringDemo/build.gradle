@@ -22,8 +22,8 @@ sourceSets {
 repositories { mavenCentral() }
 
 dependencies {
-	compile fileTree(dir : '../../simulate/com.ibm.streamsx.health.simulate.beacon/build/libs', include : ['*.jar'])
-	compile fileTree(dir : '../../ingest/common/com.ibm.streamsx.health.ingest/lib', include : ['*.jar'])
+    compile project(':simulate:com.ibm.streamsx.health.simulate.beacon')
+    compile project(':ingest:common:com.ibm.streamsx.health.ingest')
 	compile fileTree(dir: System.getenv("STREAMS_INSTALL") + '/lib', include: ['*.jar'])
 	compile fileTree(dir: System.getenv("STREAMS_INSTALL") + '/toolkits/com.ibm.streamsx.topology/lib', include : ['*.jar'])
 	compile group: 'commons-cli', name: 'commons-cli', version: '1.3.1'
@@ -61,16 +61,6 @@ task cleanToolkit {
     doLast {
         splCleanToolkit()
     }
-}
-
-task buildIngestToolkit(type: GradleBuild) {
-    buildFile = '../../ingest/common/com.ibm.streamsx.health.ingest/build.gradle'
-    tasks = ['build']
-}
-
-task buildSimulateToolkit(type: GradleBuild) {
-    buildFile = '../../simulate/com.ibm.streamsx.health.simulate.beacon/build.gradle'
-    tasks = ['build']
 }
 
 task cleanup(type: Delete) {
@@ -111,12 +101,11 @@ task getDeps(type: Copy) {
 }
 
 task extractDeps(type: Copy) {
-    def deps = file('.toolkits/toolkit_deps.tar.gz')
-    from tarTree(deps)
+    def deps = file('.toolkits/toolkit_deps.zip')
+    from zipTree(deps)
     into '.toolkits'
 }
 
-compileJava.dependsOn buildIngestToolkit, buildSimulateToolkit
 build.dependsOn downloadJS, downloadCSS, extractDeps, buildToolkit
 build.finalizedBy getDeps
 clean.dependsOn cleanup, cleanToolkit

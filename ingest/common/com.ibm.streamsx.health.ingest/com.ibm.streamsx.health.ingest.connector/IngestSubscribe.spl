@@ -11,22 +11,22 @@ namespace com.ibm.streamsx.health.ingest.connector ;
 
 use com.ibm.streamsx.topology.topic::Subscribe ;
 use com.ibm.streamsx.json::JSONToTuple ;
-use com.ibm.streamsx.health.ingest.types::PublishJson_T ;
-use com.ibm.streamsx.health.ingest.types::Observation_T ;
+use com.ibm.streamsx.health.ingest.types::PublishJson ;
+use com.ibm.streamsx.health.ingest.types::Observation ;
 
 public composite IngestSubscribe(output Out0 )
 {
 	param
 		expression<rstring> $topic ;
 	graph
-		(stream<PublishJson_T> Subscribe_1_out0) as Subscribe_1 = Subscribe()
+		(stream<PublishJson> Subscribe_1_out0) as Subscribe_1 = Subscribe()
 		{
 			param
 				topic : $topic ;
-				streamType : PublishJson_T ;
+				streamType : PublishJson ;
 		}
 
-		(stream<Observation_T> Out0) as JSONToTuple_2 = JSONToTuple(Subscribe_1_out0)
+		(stream<Observation> Out0) as JSONToTuple_2 = JSONToTuple(Subscribe_1_out0)
 		{
 		}
 
