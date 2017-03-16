@@ -35,4 +35,13 @@ public enum ReadingTypeCode {
 	public String getCode() {
 		return code;
 	}
+	
+	public static String toName(String code) {
+		for(ReadingTypeCode value : values()) {
+			if(value.code.equals(code))
+				return value.toString();
+		}
+		
+		return null;
+	}
 }
