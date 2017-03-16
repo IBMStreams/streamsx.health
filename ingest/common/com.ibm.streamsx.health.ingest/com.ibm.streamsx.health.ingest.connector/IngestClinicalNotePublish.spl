@@ -20,7 +20,7 @@ public composite IngestClinicalNotePublish(input stream<ClinicalNoteEvent> In0 )
 	param
 		expression<rstring> $topic ;
 	graph
-		(stream<PublishJson_T> TupleToJSON_1_out0) as TupleToJSON_1 =
+		(stream<PublishJson> TupleToJSON_1_out0) as TupleToJSON_1 =
 			TupleToJSON(In0)
 		{
 		}
