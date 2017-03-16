@@ -124,10 +124,9 @@ public class VinesToObservationParser implements Function<Vines, VinesParserResu
 		Device device = new Device();
 		device.setId(getDeviceId(v));
 		
-		String date = "";
+		String date = v.getData().getBody().getStartTime();
 		long epochTime = 0l;
 		try {
-			date = v.getData().getBody().getUpdatedTime();
 			epochTime = toEpoch(date);
 		} catch (ParseException e) {
 			String msg = "Error parsing timestamp: error=" + e.getLocalizedMessage() + ", timestamp=" + date;
@@ -190,10 +189,10 @@ public class VinesToObservationParser implements Function<Vines, VinesParserResu
 		Device device = new Device();
 		device.setId(getDeviceId(v));
 
-		long updatedTime = 0;
+		long startTime = 0;
 		long period = 0;
 		try {
-			updatedTime = toEpoch(v.getData().getBody().getUpdatedTime());			
+			startTime = toEpoch(v.getData().getBody().getStartTime());			
 		} catch(ParseException e) {
 			String msg = "Error parsing timestamp: error=" + e.getLocalizedMessage() + ", timestamp=" + v.getData().getBody().getStartTime();
 			logger.error(msg);
@@ -259,7 +258,7 @@ public class VinesToObservationParser implements Function<Vines, VinesParserResu
 									Reading reading = new Reading();
 									reading.setReadingType(getReadingType(waveName));
 									reading.setValue(waveform.get(i));
-									reading.setTimestamp(updatedTime + period*i);
+									reading.setTimestamp(startTime + period*i);
 									reading.setUom(uom);
 									
 									parserResult.addObservation(new Observation(device, patientId, readingSource, reading));

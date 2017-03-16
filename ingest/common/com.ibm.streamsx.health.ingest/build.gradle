@@ -1,5 +1,5 @@
 apply plugin: 'java'
-apply from: '../../../common.gradle'
+apply from: "$rootProject.projectDir/common.gradle"
 
 repositories {
     mavenCentral()
