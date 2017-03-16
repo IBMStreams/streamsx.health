@@ -1,5 +1,5 @@
 apply plugin: 'java'
-apply from: '../../common.gradle'
+apply from: "$rootProject.projectDir/common.gradle"
 
 def STREAMS_INSTALL = System.getenv("STREAMS_INSTALL")
 def jsonToolkitPath = STREAMS_INSTALL + '/toolkits/com.ibm.streamsx.json'
