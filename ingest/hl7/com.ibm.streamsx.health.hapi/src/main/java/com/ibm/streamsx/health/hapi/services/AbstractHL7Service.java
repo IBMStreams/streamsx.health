@@ -28,18 +28,19 @@ abstract public class AbstractHL7Service implements Serializable{
 	
 
 	protected void addDependencies(Topology topology) {
-		topology.addJarDependency("opt/lib/hapi-base-2.2.jar");
-		topology.addJarDependency("opt/lib/hapi-structures-v21-2.2.jar");
-		topology.addJarDependency("opt/lib/hapi-structures-v22-2.2.jar");
-		topology.addJarDependency("opt/lib/hapi-structures-v23-2.2.jar");
-		topology.addJarDependency("opt/lib/hapi-structures-v231-2.2.jar");
-		topology.addJarDependency("opt/lib/hapi-structures-v24-2.2.jar");
-		topology.addJarDependency("opt/lib/hapi-structures-v25-2.2.jar");
-		topology.addJarDependency("opt/lib/hapi-structures-v251-2.2.jar");
-		topology.addJarDependency("opt/lib/hapi-structures-v26-2.2.jar");
-		topology.addJarDependency("opt/lib/log4j-1.2.17.jar");
-		topology.addJarDependency("opt/lib/slf4j-api-1.6.6.jar");
-		topology.addJarDependency("opt/lib/slf4j-log4j12-1.6.6.jar");
+		topology.addJarDependency("release/opt/lib/hapi-base-2.2.jar");
+		topology.addJarDependency("release/opt/lib/hapi-structures-v21-2.2.jar");
+		topology.addJarDependency("release/opt/lib/hapi-structures-v22-2.2.jar");
+		topology.addJarDependency("release/opt/lib/hapi-structures-v23-2.2.jar");
+		topology.addJarDependency("release/opt/lib/hapi-structures-v231-2.2.jar");
+		topology.addJarDependency("release/opt/lib/hapi-structures-v24-2.2.jar");
+		topology.addJarDependency("release/opt/lib/hapi-structures-v25-2.2.jar");
+		topology.addJarDependency("release/opt/lib/hapi-structures-v251-2.2.jar");
+		topology.addJarDependency("release/opt/lib/hapi-structures-v26-2.2.jar");
+		topology.addJarDependency("release/opt/lib/log4j-1.2.17.jar");
+		topology.addJarDependency("release/opt/lib/slf4j-api-1.6.6.jar");
+		topology.addJarDependency("release/opt/lib/slf4j-log4j12-1.6.6.jar");
+		topology.addJarDependency("release/opt/lib/gson-1.7.2.jar");
 	}
 	
 	protected int getPort(){
