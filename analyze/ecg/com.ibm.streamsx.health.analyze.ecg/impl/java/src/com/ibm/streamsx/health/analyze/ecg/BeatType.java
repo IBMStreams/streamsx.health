@@ -1,4 +1,4 @@
-package com.ibm.streamsx.health.analysis.ecg;
+package com.ibm.streamsx.health.analyze.ecg;
 
 import java.util.HashMap;
 import java.util.Map;

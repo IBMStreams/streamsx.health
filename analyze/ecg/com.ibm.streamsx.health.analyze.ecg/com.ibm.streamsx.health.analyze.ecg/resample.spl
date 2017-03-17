@@ -1,4 +1,4 @@
-namespace com.ibm.streamsx.health.analysis.ecg;
+namespace com.ibm.streamsx.health.analyze.ecg;
 
 use com.ibm.streams.timeseries.preprocessing::ReSample ;
 

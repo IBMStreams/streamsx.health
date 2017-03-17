@@ -34,7 +34,7 @@ task buildToolkit {
 task buildServices(dependsOn: [':ingest:common:com.ibm.streamsx.health.ingest:buildToolkit', 'buildToolkit']) {
     doLast {
         def serviceToolkitPath = jsonToolkitPath + ':' + topologyToolkitPath + ':' + "${project(':ingest:common:com.ibm.streamsx.health.ingest').projectDir}" + ':' + timeseriesToolkitPath
-        compileApp('com.ibm.streamsx.health.analysis.ecg.service', 'RPeakDetectService', serviceToolkitPath)
+        compileApp('com.ibm.streamsx.health.analyze.ecg.service', 'RPeakDetectService', serviceToolkitPath)
     }
 }
 

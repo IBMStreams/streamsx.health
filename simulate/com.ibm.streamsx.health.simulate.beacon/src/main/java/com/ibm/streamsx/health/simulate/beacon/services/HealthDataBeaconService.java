@@ -128,6 +128,6 @@ public class HealthDataBeaconService {
 	
 	public static void main(String[] args) throws Exception {
 		Map<String, Object> params = new HashMap<>();
-		new HealthDataBeaconService(System.getProperty("user.dir")).run(Type.DISTRIBUTED, params);
+		new HealthDataBeaconService(System.getProperty("user.dir")).run(Type.BUNDLE, params);
 	}
 }
