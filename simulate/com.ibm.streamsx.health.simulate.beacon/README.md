@@ -1,4 +1,4 @@
-# ECG Simulator
+# Healthcare Data Simulator Service
 
 This service simulates vital and waveform data for one or more patients. The types of data being generated includes: 
 
