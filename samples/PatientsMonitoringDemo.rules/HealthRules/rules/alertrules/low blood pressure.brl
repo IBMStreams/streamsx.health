@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ilog.rules.studio.model.brl:ActionRule xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ilog.rules.studio.model.brl="http://ilog.rules.studio/model/brl.ecore">
+  <name>low blood pressure</name>
+  <uuid>0294f1cb-9d61-4755-8b9c-22a896cc5516</uuid>
+  <locale>en_US</locale>
+  <definition><![CDATA[if the bp diastolic of 'the patient' is less than 50 or the bp systolic of 'the patient' is less than 80
+then
+	add "ABPsys,ABPdias:Patient has low blood pressure" to the messages of 'the patient' ;
+	setAlert 'the patient'  ;]]></definition>
+</ilog.rules.studio.model.brl:ActionRule>

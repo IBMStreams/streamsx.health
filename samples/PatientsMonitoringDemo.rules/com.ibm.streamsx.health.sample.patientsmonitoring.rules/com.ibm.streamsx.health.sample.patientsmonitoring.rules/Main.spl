@@ -1,0 +1,46 @@
+// begin_generated_IBM_copyright_prolog                                       
+//                                                                            
+// This is an automatically generated copyright prolog.                       
+// After initializing,  DO NOT MODIFY OR MOVE                                 
+//****************************************************************************
+// Copyright (C) 2016 International Business Machines Corporation             
+// All Rights Reserved                                                        
+//****************************************************************************
+// end_generated_IBM_copyright_prolog 
+
+namespace com.ibm.streamsx.health.sample.patientsmonitoring.rules  ;
+
+use com.ibm.streamsx.health.ingest.connector::IngestSubscribe ;
+use com.ibm.streamsx.health.ingest.types::PublishJson ;
+use com.ibm.streamsx.health.ingest.types::Observation ;
+use com.ibm.streamsx.health.ingest.types.resolver::*;
+
+composite Main
+{
+	graph
+		(stream<Observation> IngestSubscribe_1_out0) as IngestSubscribe_1 =
+			IngestSubscribe()
+		{
+			param
+				topic : "patient-manipulator-topic" ;
+		}
+
+		() as Custom_2 = Custom(Filter_3_out0 as inPort0Alias)
+		{
+			logic
+				onTuple inPort0Alias :
+				{
+					printStringLn((rstring) inPort0Alias) ;
+				}
+
+		}
+
+		(stream<Observation> Filter_3_out0) as Filter_3 =
+			Filter(IngestSubscribe_1_out0)
+		{
+			param
+				filter : !isRespiratoryRate(IngestSubscribe_1_out0.reading.readingType.code) && !isECGLeadI(IngestSubscribe_1_out0.reading.readingType.code) ;
+		}
+
+}
+

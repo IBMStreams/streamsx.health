@@ -1,0 +1,29 @@
+# Vocabulary Properties
+uuid = 4ba28d0b-f7cf-40a3-95d4-172e6944ead6
+
+# demo.Patient
+demo.Patient#concept.label = patient
+demo.Patient.addToMessages(java.lang.String)#phrase.action = add {0} to the messages of {this}
+demo.Patient.age#phrase.action = set the age of {this} to {age}
+demo.Patient.age#phrase.navigation[0] = {age} of {this}
+demo.Patient.age#phrase.navigation[1] = {this}'s {age}
+demo.Patient.alert#phrase.navigation = {this} has an alert
+demo.Patient.bpDiastolic#phrase.action = set the bp diastolic of {this} to {bp diastolic}
+demo.Patient.bpDiastolic#phrase.navigation = {bp diastolic} of {this}
+demo.Patient.bpSystolic#phrase.action = set the bp systolic of {this} to {bp systolic}
+demo.Patient.bpSystolic#phrase.navigation = {bp systolic} of {this}
+demo.Patient.heartRate#phrase.action = set the heart rate of {this} to {heart rate}
+demo.Patient.heartRate#phrase.navigation[0] = {heart rate} of {this}
+demo.Patient.heartRate#phrase.navigation[1] = {this}'s {heart rate}
+demo.Patient.hrAverage#phrase.action = set the hr average of {this} to {hr average}
+demo.Patient.hrAverage#phrase.navigation = {hr average} of {this}
+demo.Patient.messages#phrase.navigation = {message} of {this}
+demo.Patient.name#phrase.action = set the name of {this} to {name}
+demo.Patient.name#phrase.navigation = {name} of {this}
+demo.Patient.roomInfo#phrase.action = set the room info of {this} to {room info}
+demo.Patient.roomInfo#phrase.navigation = {room info} of {this}
+demo.Patient.setAlert()#phrase.action = setAlert {this}
+demo.Patient.spO2#phrase.action = set the sp O2 of {this} to {sp O2}
+demo.Patient.spO2#phrase.navigation = {sp O2} of {this}
+demo.Patient.temperature#phrase.action = set the temperature of {this} to {temperature}
+demo.Patient.temperature#phrase.navigation = {temperature} of {this}
