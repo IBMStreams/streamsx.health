@@ -55,6 +55,10 @@ dependencies {
 	// https://mvnrepository.com/artifact/log4j/log4j
 	compile group: 'log4j', name: 'log4j', version: '1.2.17'
 	
+	// https://mvnrepository.com/artifact/com.google.code.gson/gson
+	compile group: 'com.google.code.gson', name: 'gson', version: '1.7.2'
+	
+	
 	compile name: 'com.ibm.streams.operator'
 	compile name: 'com.ibm.streams.operator.samples'
 	compile name: 'com.ibm.streamsx.topology'
