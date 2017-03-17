@@ -9,14 +9,10 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import com.ibm.streamsx.health.ingest.types.connector.PublishConnector;
+import com.ibm.streamsx.health.ingest.types.connector.SubscribeConnector;
 import com.ibm.streamsx.health.ingest.types.model.Observation;
 import com.ibm.streamsx.health.ingest.types.model.ReadingTypeCode;
-import com.ibm.streamsx.health.simulate.beacon.generators.ABPDiastolicDataGenerator;
-import com.ibm.streamsx.health.simulate.beacon.generators.ABPSystolicDataGenerator;
-import com.ibm.streamsx.health.simulate.beacon.generators.HealthcareDataGenerator;
-import com.ibm.streamsx.health.simulate.beacon.generators.HeartRateDataGenerator;
-import com.ibm.streamsx.health.simulate.beacon.generators.SpO2DataGenerator;
-import com.ibm.streamsx.health.simulate.beacon.generators.TemperatureDataGenerator;
+import com.ibm.streamsx.health.simulate.beacon.generators.*;
 import com.ibm.streamsx.topology.TStream;
 import com.ibm.streamsx.topology.Topology;
 import com.ibm.streamsx.topology.context.ContextProperties;
@@ -38,10 +34,12 @@ public class HealthDataBeaconService {
 	public static final String DEFAULT_PATIENT_PREFIX = "patient-";
 	private static final String DEFAULT_PATIENT_ID = "patient-1";
 
-	private static final long WAVEFORM_PERIOD = 8;
-	private static final TimeUnit WAVEFORM_PERIOD_TIMEUNIT = TimeUnit.MILLISECONDS;
+	private static final long ECG_PERIOD = 8;
+	private static final TimeUnit ECG_PERIOD_TIMEUNIT = TimeUnit.MILLISECONDS;
 	private static final long VITALS_PERIOD = 100;
 	private static final TimeUnit VITALS_PERIOD_TIMEUNIT = TimeUnit.MILLISECONDS;
+	private static final long RESP_PERIOD = 1024;
+	private static final TimeUnit RESP_PERIOD_TIMEUNIT = TimeUnit.MILLISECONDS;
 	
 	private Topology topo;
 	private Supplier<String> patientPrefixSupplier;
@@ -56,8 +54,8 @@ public class HealthDataBeaconService {
 	}
 
 	public void build() {
-		TStream<Observation> ecgStream = topo.periodicSource(new HealthcareDataGenerator(DEFAULT_PATIENT_ID, "resources/data/ecglead1.csv", ReadingTypeCode.ECG_LEAD_I.getCode()), WAVEFORM_PERIOD, WAVEFORM_PERIOD_TIMEUNIT);
-		TStream<Observation> respStream = topo.periodicSource(new HealthcareDataGenerator(DEFAULT_PATIENT_ID, "resources/data/resp.csv", ReadingTypeCode.RESP_RATE.getCode()), WAVEFORM_PERIOD, WAVEFORM_PERIOD_TIMEUNIT);
+		TStream<Observation> ecgIStream = topo.periodicSource(new HealthcareDataGenerator(DEFAULT_PATIENT_ID, "src/main/resources/ecgI.csv", ReadingTypeCode.ECG_LEAD_I.getCode()), ECG_PERIOD, ECG_PERIOD_TIMEUNIT);
+		TStream<Observation> respStream = topo.periodicSource(new HealthcareDataGenerator(DEFAULT_PATIENT_ID, "src/main/resources/resp.csv", ReadingTypeCode.RESP_RATE.getCode()), RESP_PERIOD, RESP_PERIOD_TIMEUNIT);
 		TStream<Observation> abpDiasStream = topo.periodicSource(new ABPDiastolicDataGenerator(DEFAULT_PATIENT_ID), VITALS_PERIOD, VITALS_PERIOD_TIMEUNIT);
 		TStream<Observation> abpSysStream = topo.periodicSource(new ABPSystolicDataGenerator(DEFAULT_PATIENT_ID), VITALS_PERIOD, VITALS_PERIOD_TIMEUNIT);
 		TStream<Observation> hrStream = topo.periodicSource(new HeartRateDataGenerator(DEFAULT_PATIENT_ID), VITALS_PERIOD, VITALS_PERIOD_TIMEUNIT);
@@ -72,7 +70,7 @@ public class HealthDataBeaconService {
 		observations.add(spo2Stream);
 		observations.add(temperatureStream);
 		
-		TStream<Observation> allStreams = ecgStream.union(observations);
+		TStream<Observation> allStreams = ecgIStream.union(observations);
 		TStream<Observation> multiplePatientStream = allStreams.multiTransform(new Multiplier(numPatientsSupplier, patientPrefixSupplier));		
 		multiplePatientStream.print();
 		

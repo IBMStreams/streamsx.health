@@ -21,7 +21,6 @@ public class VitalsDataGenerator implements Iterable<Double>, Iterator<Double>, 
 	
 	public VitalsDataGenerator(Double min, Double max) {
 		this.min = min;
-		//this.max = max;
 		delta = max - min;
 		count = 0.0;
 	}
@@ -40,8 +39,6 @@ public class VitalsDataGenerator implements Iterable<Double>, Iterator<Double>, 
 		
 		Double val = ThreadLocalRandom.current().nextDouble(MIN_RAND_VALUE, MAX_RAND_VALUE);
 		return val * (delta/2.0) * Math.cos(Math.toRadians(count/(1/speed))) * Math.cos(Math.toRadians(count/(2/speed))) * Math.cos(Math.toRadians(count/(3/speed))) + min + delta/2.0;
-//		Double val = ThreadLocalRandom.current().nextDouble(0.75, 1.0);
-//		return val*(delta/2.0)*Math.sin(count/288) + min + delta/2.0;
 	}
 	
 	public void setSpeed(Double speed) {
