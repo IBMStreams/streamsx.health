@@ -13,11 +13,18 @@ dependencies {
     compile fileTree(dir: topologyToolkitPath + '/lib', include: ['*.jar'])
     compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.5'
     compile project(':ingest:common:com.ibm.streamsx.health.ingest')
+    compile group: 'commons-cli', name: 'commons-cli', version: '1.3.1'
 }
 
 task buildService(type: JavaExec, dependsOn: 'classes') {
 	main = 'com.ibm.streamsx.health.simulate.beacon.services.HealthDataBeaconService'
 	classpath = sourceSets.main.runtimeClasspath
+}
+
+task getDeps(type: Copy) {
+    from configurations.compile
+    into "$buildDir/output/libs"
+    exclude '*streams*'
 }
 
 task cleanUp() {
@@ -27,5 +34,9 @@ task cleanUp() {
 	}
 }
 
-build.finalizedBy(buildService)
+task execute(type: JavaExec) {
+  main = 'com.ibm.streamsx.health.simulate.beacon.services.HealthDataBeaconService'
+  classpath = configurations.runtime + files("$buildDir/libs/com.ibm.streamsx.health.simulate.beacon.jar") 
+}
+
 clean.dependsOn cleanUp

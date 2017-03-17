@@ -8,11 +8,23 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+
 import com.ibm.streamsx.health.ingest.types.connector.PublishConnector;
-import com.ibm.streamsx.health.ingest.types.connector.SubscribeConnector;
 import com.ibm.streamsx.health.ingest.types.model.Observation;
 import com.ibm.streamsx.health.ingest.types.model.ReadingTypeCode;
-import com.ibm.streamsx.health.simulate.beacon.generators.*;
+import com.ibm.streamsx.health.simulate.beacon.generators.ABPDiastolicDataGenerator;
+import com.ibm.streamsx.health.simulate.beacon.generators.ABPSystolicDataGenerator;
+import com.ibm.streamsx.health.simulate.beacon.generators.HealthcareDataGenerator;
+import com.ibm.streamsx.health.simulate.beacon.generators.HeartRateDataGenerator;
+import com.ibm.streamsx.health.simulate.beacon.generators.SpO2DataGenerator;
+import com.ibm.streamsx.health.simulate.beacon.generators.TemperatureDataGenerator;
 import com.ibm.streamsx.topology.TStream;
 import com.ibm.streamsx.topology.Topology;
 import com.ibm.streamsx.topology.context.ContextProperties;
@@ -125,7 +137,45 @@ public class HealthDataBeaconService {
 	}
 	
 	public static void main(String[] args) throws Exception {
+		Option numPatientsOption = Option.builder("n")
+										.longOpt("num-patients")
+										.hasArg()
+										.argName("number of patients")
+										.required(false)
+										.build();
+										
+		Option patientPrefixOption = Option.builder("p")
+										.longOpt("patient prefix")
+										.hasArg()
+										.argName("patient prefix")
+										.required(false)
+										.build();
+
+		Options options = new Options();
+		options.addOption(numPatientsOption);
+		options.addOption(patientPrefixOption);
+		
+		CommandLineParser parser = new DefaultParser();
+		CommandLine cmd = null;
+		try {
+			cmd = parser.parse(options, args);
+		} catch (ParseException e) {
+			HelpFormatter formatter = new HelpFormatter();
+			formatter.printHelp("help", options);
+			
+			throw(e);
+		}
+
 		Map<String, Object> params = new HashMap<>();
-		new HealthDataBeaconService(System.getProperty("user.dir")).run(Type.BUNDLE, params);
+		if(cmd.hasOption("n")) {
+			params.put("num.patients", Integer.valueOf(cmd.getOptionValue("n")));
+		}
+		
+		if(cmd.hasOption("p")) {
+			params.put("patient.prefix", cmd.getOptionValue("p"));
+		}
+		
+		HealthDataBeaconService svc = new HealthDataBeaconService(System.getProperty("user.dir"));
+		svc.run(Type.DISTRIBUTED, params);
 	}
 }
