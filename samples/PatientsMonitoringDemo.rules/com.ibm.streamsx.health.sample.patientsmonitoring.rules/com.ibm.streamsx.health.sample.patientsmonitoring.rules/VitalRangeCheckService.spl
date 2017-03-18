@@ -114,7 +114,7 @@ composite VitalsCheck(input In0 ; output Out0)
 
 }
 
-composite VitalRangeCheckService
+public composite VitalRangeCheckService
 {
 	graph
 		(stream<Observation> Readings) as IngestSubscribe_1 = IngestSubscribe()

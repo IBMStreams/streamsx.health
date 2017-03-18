@@ -24,6 +24,7 @@ repositories { mavenCentral() }
 dependencies {
     compile project(':simulate:com.ibm.streamsx.health.simulate.beacon')
     compile project(':ingest:common:com.ibm.streamsx.health.ingest')
+    compile project(':samples:PatientsMonitoringDemo.rules:com.ibm.streamsx.health.sample.patientsmonitoring.rules')
 	compile fileTree(dir: System.getenv("STREAMS_INSTALL") + '/lib', include: ['*.jar'])
 	compile fileTree(dir: System.getenv("STREAMS_INSTALL") + '/toolkits/com.ibm.streamsx.topology/lib', include : ['*.jar'])
 	compile group: 'commons-cli', name: 'commons-cli', version: '1.3.1'
