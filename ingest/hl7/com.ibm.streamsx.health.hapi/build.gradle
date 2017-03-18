@@ -93,6 +93,7 @@ task copyLibDev(type: Copy) {
 
 task deps << {
 	tasks.copyLibDev.execute()
+	tasks.copyLib.execute()
 }
 
 
