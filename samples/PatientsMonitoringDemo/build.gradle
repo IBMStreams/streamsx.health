@@ -107,6 +107,6 @@ task extractDeps(type: Copy) {
     into '.toolkits'
 }
 
-build.dependsOn downloadJS, downloadCSS, buildToolkit
+build.dependsOn downloadJS, downloadCSS, extractDeps, buildToolkit
 build.finalizedBy getDeps
 clean.dependsOn cleanup, cleanToolkit
