@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ilog.rules.studio.model.brl:ActionRule xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ilog.rules.studio.model.brl="http://ilog.rules.studio/model/brl.ecore">
+  <name>heart rate within range</name>
+  <uuid>d90b4235-7801-4723-b229-c23614183421</uuid>
+  <locale>en_US</locale>
+  <definition><![CDATA[if the heart rate of 'the patient' is less than 60 or the heart rate of 'the patient' is more than 120
+then
+	add "HR:Heart rate must be between 60 and 120!" to the messages of 'the patient' ; 
+	setAlert 'the patient' ;
+	
+	
+	]]></definition>
+</ilog.rules.studio.model.brl:ActionRule>

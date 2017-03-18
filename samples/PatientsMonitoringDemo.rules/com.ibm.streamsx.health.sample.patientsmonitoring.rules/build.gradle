@@ -1,0 +1,60 @@
+apply plugin: 'java'
+apply from: "$rootProject.projectDir/common.gradle"
+
+def STREAMS_INSTALL = System.getenv("STREAMS_INSTALL")
+def jsonToolkitPath = STREAMS_INSTALL + '/toolkits/com.ibm.streamsx.json'
+def rulesCompilerToolkitPath = STREAMS_INSTALL + '/toolkits/com.ibm.streams.rulescompiler'
+def topologyToolkitPath = STREAMS_INSTALL + '/toolkits/com.ibm.streamsx.topology'
+def healthIngestToolkitPath = '../../../ingest/common/com.ibm.streamsx.health.ingest'
+
+sourceSets {
+    main {
+        java {
+            srcDir 'impl/java/src'
+        }
+    }
+}
+
+repositories { 
+    mavenCentral() 
+}
+
+dependencies {
+    compile fileTree(dir: System.getenv("STREAMS_INSTALL") + '/lib', include: ['*.jar'])
+    compile fileTree(dir: 'opt/downloaded', include: ['*.jar'])
+    compile project(':ingest:common:com.ibm.streamsx.health.ingest')
+}
+
+task buildToolkit {
+    doLast {
+	tasks.copyJarToImpl.execute()
+        splMakeToolkit()
+    }
+}
+
+task buildServices(dependsOn: [':ingest:common:com.ibm.streamsx.health.ingest:buildToolkit', 'buildToolkit']) {
+    doLast {
+        def serviceToolkitPath = jsonToolkitPath + ':' + rulesCompilerToolkitPath + ':' + topologyToolkitPath + ':' + healthIngestToolkitPath
+        compileApp('com.ibm.streamsx.health.sample.patientsmonitoring.rules', 'VitalRangeCheckService', serviceToolkitPath)
+    }
+}
+
+task cleanToolkit {
+    doLast {
+        splCleanToolkit()
+        delete 'output'
+    }   
+}
+
+task copyJarToImpl(type: Copy) {
+    from fileTree(dir : 'build/libs', include : ['*.jar'])
+    into 'impl/lib'
+}
+
+task deleteDeps(type: Delete) {
+    delete fileTree(dir: 'impl/lib', include: ['*.jar'])
+    delete 'impl/java/bin'
+}
+
+build.dependsOn buildToolkit, buildServices
+clean.dependsOn deleteDeps, cleanToolkit

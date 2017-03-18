@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ilog.rules.studio.model.brl:ActionRule xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ilog.rules.studio.model.brl="http://ilog.rules.studio/model/brl.ecore">
+  <name>spo2 levels</name>
+  <uuid>77648843-7652-4f74-90f8-9edc81664d1b</uuid>
+  <locale>en_US</locale>
+  <definition><![CDATA[if the sp O2 of 'the patient' is less than 90
+then
+	add "SpO2:spO2 should be greater than 90%" to the messages of 'the patient' ;
+	setAlert 'the patient' ;]]></definition>
+</ilog.rules.studio.model.brl:ActionRule>

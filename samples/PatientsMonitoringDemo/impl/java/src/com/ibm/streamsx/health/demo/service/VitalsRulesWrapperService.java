@@ -19,11 +19,11 @@ public class VitalsRulesWrapperService {
 		SPL.addToolkit(topo, new File(System.getenv("STREAMS_INSTALL") + "/toolkits/com.ibm.streams.rulescompiler"));
 		SPL.addToolkit(topo, new File("../../ingest/common/com.ibm.streamsx.health.ingest"));
 		SPL.addToolkit(topo, new File(System.getenv("STREAMS_INSTALL") + "/toolkits/com.ibm.streamsx.json"));
-		SPL.addToolkit(topo, new File(System.getProperty("user.dir") + "/.toolkits/com.ibm.streamsx.health.analyze.vital"));
+		SPL.addToolkit(topo, new File("../PatientsMonitoringDemo.rules/com.ibm.streamsx.health.sample.patientsmonitoring.rules"));
 	}
 	
 	public void build() {
-		SPL.invokeOperator(topo, "VitalsRules", "com.ibm.streamsx.health.analyze.vital::VitalRangeCheckService", null, null, new HashMap<String, Object>());
+		SPL.invokeOperator(topo, "VitalsRules", "com.ibm.streamsx.health.sample.patientsmonitoring.rules::VitalRangeCheckService", null, null, new HashMap<String, Object>());
 	}
 	
 	public void run(Type type, Map<String, Object> submissionParams) throws Exception {

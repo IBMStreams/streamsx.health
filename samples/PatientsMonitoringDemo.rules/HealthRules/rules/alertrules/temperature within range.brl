@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ilog.rules.studio.model.brl:ActionRule xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ilog.rules.studio.model.brl="http://ilog.rules.studio/model/brl.ecore">
+  <name>temperature within range</name>
+  <uuid>5e92496c-b80a-44cd-9879-7b40c5f90ed3</uuid>
+  <locale>en_US</locale>
+  <definition><![CDATA[if the temperature of 'the patient' is less than 97 or the temperature of 'the patient' is more than 99
+then
+	add "Temperature:Patient body temperature is out of range" to the messages of 'the patient' ;
+	setAlert 'the patient'  ;]]></definition>
+</ilog.rules.studio.model.brl:ActionRule>
