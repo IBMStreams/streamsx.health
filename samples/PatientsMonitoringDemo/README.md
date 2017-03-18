@@ -20,6 +20,7 @@ This sample depends on the following microservices and toolkits:
 To build this sample, it is expected that your environment is set up to use the Java Application API from the com.ibm.streamsx.topology project.
 
 The following environment variables need to be set.  The sample will work with Streams 4.2.0.0 and up:
+
 STREAMS_SPLPATH=/opt/ibm/InfoSphere_Streams/4.2.0.0/toolkits
 STREAMS_INSTALL=/opt/ibm/InfoSphere_Streams/4.2.0.0
 STREAMS_DOMAIN_ID=StreamsDomain
@@ -27,9 +28,11 @@ STREAMS_INSTANCE_ID=StreamsInstance
 
 To build:
 
+```
 git clone https://github.com/IBMStreams/streamsx.health.git
 cd streamsx.health
 ./gradlew build
+```
 
 This will take a few minutes for the Healtcare Streaming Platform to build.
 
@@ -37,12 +40,15 @@ This will take a few minutes for the Healtcare Streaming Platform to build.
 
 To run the sample:
 
+```
 cd streamsx.health/samples/PatientsMonitoringDemo
 ../../gradlew execute
+```
 
 This will take a few minutes as when run the Java Topology applications, compile additional applications and submit the applications onto the streams instance as specified by the STREAMS_INSTANCE_ID environment variable.
 
 If the job submissions are successful, you will see the following jobs submitted:
+
 * com.ibm.streamsx.health.demo.service::UIservice
 * com.ibm.streamsx.health.simulate.beacon.service::HealthDataBeaconService
 * com.ibm.streamsx.health.demo.service::PatientManipulatorService
