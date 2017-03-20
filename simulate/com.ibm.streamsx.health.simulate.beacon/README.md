@@ -35,8 +35,8 @@ This service does not ingest any data.
 
 ## Publish Topic: "ingest-beacon"
 
-**Published Topic Name:** ingest-beacon
-**Output JSON Schema:** [Observation Type](https://github.com/IBMStreams/streamsx.health/wiki/Observation-Data-Type)
+ * **Published Topic Name:** ingest-beacon
+ * **Output JSON Schema:** [Observation Type](https://github.com/IBMStreams/streamsx.health/wiki/Observation-Data-Type)
 
 ```
 {
