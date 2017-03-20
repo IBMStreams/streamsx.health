@@ -71,6 +71,11 @@ Run the following command to build the service:
 
 # Execute
 
+The service properties can be set in the `beacon.properties` file. The following properties are available: 
+
+  * **numPatients** - Number of patients to simulate (default is `1`)
+  * **patientIDPrefix** - The prefix to use when generating the patient ID (default is `patient-`)
+
 Run the following command to compile the SAB and launch the service: 
 
  `gradle execute`

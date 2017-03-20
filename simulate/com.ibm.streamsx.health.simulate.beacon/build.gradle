@@ -4,6 +4,9 @@ apply from: '../../common.gradle'
 def STREAMS_INSTALL = System.getenv("STREAMS_INSTALL")
 def topologyToolkitPath = STREAMS_INSTALL + '/toolkits/com.ibm.streamsx.topology'
 
+ext.beaconProps = new Properties()
+beaconProps.load(file('./beacon.properties').newReader())
+
 repositories { 
     mavenCentral() 
 }
@@ -36,7 +39,12 @@ task cleanUp() {
 
 task execute(type: JavaExec) {
   main = 'com.ibm.streamsx.health.simulate.beacon.services.HealthDataBeaconService'
-  classpath = configurations.runtime + files("$buildDir/libs/com.ibm.streamsx.health.simulate.beacon.jar") 
+  classpath = configurations.runtime + files("$buildDir/libs/com.ibm.streamsx.health.simulate.beacon.jar")
+  args = [
+    '-n', beaconProps['numPatients'],
+    '-p', beaconProps['patientIDPrefix']
+  ]
 }
 
+compileJava.dependsOn getDeps
 clean.dependsOn cleanUp
