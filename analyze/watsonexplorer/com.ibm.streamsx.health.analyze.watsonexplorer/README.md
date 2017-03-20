@@ -1,3 +1,5 @@
+# Watson Explorer Analytic Services
+
 The **com.ibm.streamsx.health.analytics.watsonexplorer** project contains the following analytic micro services: 
 
   * **Medication Event Service**: Given a patient ID and an optional date range, this service will query a Watson Explorer collection and retrieve all mentioned medications. For each instance of a medication that is retrieved, the service will submit a `ClinicalEvent` tuple. 
