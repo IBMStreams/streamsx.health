@@ -2,15 +2,15 @@
 
 This service simulates vital and waveform data for one or more patients. The types of data being generated includes: 
 
-  * Heart Rate
-  * BP Systolic
-  * BP Diastolic
-  * Temperature
-  * SpO2
-  * Respiratory Rate
-  * ECG Lead I
-
-Each *vital* data (Heart Rate, BP, Temperature, SpO2) are generated at a rate of 10 samples/sec each. The **ECG Lead I** waveform is generated at a rate of 125 samples/sec. The **Respiratory Rate** is generated at a rate of 1 sample/sec.
+| Data | Sample Rate |
+| :---: | :---: |
+| Heart Rate | 10 samples/sec |
+| BP Systolic | 10 samples/sec |
+| BP Diastolic | 10 samples/sec |
+| Temperature | 10 samples/sec |
+| Sp02 | 10 samples/sec |
+| Respiratory Rate | 1 sample/sec |
+| ECG Lead I | 125 samples/sec |
 
 The simulator produces data using the `Observation` type. The data is output using the **PublishConnector**, which outputs the `Observation` type in JSON. By default, the simulator generates data for a single patient, with a patient ID of "patient-1". The simulator can be configured to simulate more than 1 patient. Simulating data for multiple patients works as follows: 
 
