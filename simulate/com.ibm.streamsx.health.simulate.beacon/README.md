@@ -40,24 +40,24 @@ This service does not ingest any data.
 
 ```
 {
-  "patientId" : "string",
+  "patientId" : string,
   "device" : {
-    "id" : "string",
-    "locationId" : "string"
+    "id" : string,
+    "locationId" : string
   },
   "readingSource" : {
-    "id" : "string",
-    "sourceType" : "string",
-    "deviceId" : "string"
+    "id" : string,
+    "sourceType" : string,
+    "deviceId" : string
   },
   "reading" : {
-    "ts" : Numeric,
+    "ts" : numeric,
     "readingType" : {
-      "system" : "string",
-      "code" : "string"
+      "system" : string,
+      "code" : string
     },
-    "value" : Numeric,
-    "uom" : "string"
+    "value" : numeric,
+    "uom" : string
   }
 }
 ```
