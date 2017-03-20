@@ -121,24 +121,13 @@ public class VinesToObservationParser implements Function<Vines, VinesParserResu
 
 		Patient patient = v.getData().getPatient();
 		if(patient != null) {
-			patientId = patient.get_id();			
+			patientId = patient.getMRN();			
 		}
 		
 		// generate device type (same for all observations)
 		Device device = new Device();
 		device.setId(getDeviceId(v));
-		
-		String date = v.getData().getBody().getStartTime();
-		long epochTime = 0l;
-		try {
-			epochTime = toEpoch(date);
-		} catch (ParseException e) {
-			String msg = "Error parsing timestamp: error=" + e.getLocalizedMessage() + ", timestamp=" + date;
-			logger.error(msg, e);
-			e.printStackTrace();
-			parserResult.addErrorMesage(msg);
-		}
-		
+			
 		Terms terms = v.getData().getBody().getTerms();
 		for(String channelName : terms.getChannelNames()) {
 			Channel channel = terms.getChannel(channelName);
@@ -157,11 +146,21 @@ public class VinesToObservationParser implements Function<Vines, VinesParserResu
 
 					Term t = (Term)term;
 					ITermValue itv = t.getValue();
-					if(itv instanceof TermValueString) {
-					
+					if(itv instanceof TermValueString) {						
 						String value = ((TermValueString)itv).getValue();
 						if(!NumberUtils.isNumber(value)) {
-							continue; // skip term as there is no value
+							continue; // skip term as there is no numeric value
+						}
+						
+						String date = t.getDate();
+						long epochTime = 0l;
+						try {
+							epochTime = toEpoch(date);
+						} catch (ParseException e) {
+							String msg = "Error parsing timestamp: error=" + e.getLocalizedMessage() + ", timestamp=" + date;
+							logger.error(msg, e);
+							e.printStackTrace();
+							parserResult.addErrorMesage(msg);
 						}
 						
 						reading.setValue(Double.valueOf(value));
