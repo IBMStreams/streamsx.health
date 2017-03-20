@@ -67,6 +67,17 @@ Run the following command to build all of the services:
 
 ## Execute
 
+The service properties can be set in the `medication.service.properties` file. The following properties are available:
+
+  * **host** - The host name used to access Watson Explorer
+  * **port** - The port number of the REST service. Default is `8393`.
+  * **subscriptionTopic** - The name of the topic that the service should subscribe to
+  * **medicationCollection** - The name of the collection that contains the documents to query for medication events. Default is `health-medication`.
+  * **patientFieldName** - The index field name in the documents that contains the patient ID. Default is `patient_id`.
+  * **wexToolkitPath** - The path to the Watson Explorer toolkit. Running `gradle build` automatically downloads the Watson Explorer toolkit into the *etc/toolkits* directory. This field does not need to be changed unless a specific version of the Watson Explorer toolkit needs to be used. 
+  * **debug** - Enables service tracing and launching a "Print" service to capture the output. This is useful for troubleshooting problems with the service. Default is `false`.
+
+
 Run the following command to execute the Medication Event Service:
 
 `gradle executeMedicationService`
@@ -106,6 +117,16 @@ Run the following command to execute the Medication Event Service:
     ```
 
 ## Execute
+
+The service properties can be set in the `medication.service.properties` file. The following properties are available:
+
+  * **host** - The host name used to access Watson Explorer
+  * **port** - The port number of the REST service. Default is `8393`.
+  * **subscriptionTopic** - The name of the topic that the service should subscribe to
+  * **symptomCollection** - The name of the collection that contains the documents to query for symptom events. Default is `health-symptom`.
+  * **patientFieldName** - The index field name in the documents that contains the patient ID. Default is `patient_id`.
+  * **wexToolkitPath** - The path to the Watson Explorer toolkit. Running `gradle build` automatically downloads the Watson Explorer toolkit into the *etc/toolkits* directory. This field does not need to be changed unless a specific version of the Watson Explorer toolkit needs to be used. 
+  * **debug** - Enables service tracing and launching a "Print" service to capture the output. This is useful for troubleshooting problems with the service. Default is `false`. 
 
 Run the following command to execute the Symptom Event Service:
 
