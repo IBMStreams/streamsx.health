@@ -76,7 +76,7 @@ The service properties can be set in the `beacon.properties` file. The following
 | Property | Description | Default |
 | --- | --- | :---: |
 | **numPatients** | Number of patients to simulate. | `1` |
-| **patientIDPrefix** | The prefix t use when generating the patient ID. | `patient-` |
+| **patientIDPrefix** | The prefix to use when generating the patient ID. | `patient-` |
 
 Run the following command to compile the SAB and launch the service: 
 
