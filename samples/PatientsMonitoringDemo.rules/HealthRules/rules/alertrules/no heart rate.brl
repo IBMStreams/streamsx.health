@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ilog.rules.studio.model.brl:ActionRule xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ilog.rules.studio.model.brl="http://ilog.rules.studio/model/brl.ecore">
+  <name>no heart rate</name>
+  <uuid>0d96ea12-d1b0-41bf-95f7-576f498db202</uuid>
+  <locale>en_US</locale>
+  <definition><![CDATA[if 'the patient' 's heart rate is less than 20
+then 
+	setAlert 'the patient' ;
+	add "HR:Patient needs ambulance" to the messages of 'the patient' ;  ]]></definition>
+</ilog.rules.studio.model.brl:ActionRule>

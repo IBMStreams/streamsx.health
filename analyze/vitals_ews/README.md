@@ -2,7 +2,7 @@
 
 This service calculates the early warning score for a patient.  This service provides two warning scores:
 * [Early Warning Score (EWS)](https://en.wikipedia.org/wiki/Early_warning_score)
-* [National Early Warning Score (NEWS)] (https://www.rcplondon.ac.uk/projects/outputs/national-early-warning-score-news)
+* [National Early Warning Score (NEWS)](https://www.rcplondon.ac.uk/projects/outputs/national-early-warning-score-news)
 
 The rules for determining  patient's EWS are written on business rules using Operation Decision Manager (ODM).  
 The rules are written in natural language and then translated to running SPL code using the ODM Rules compiler.

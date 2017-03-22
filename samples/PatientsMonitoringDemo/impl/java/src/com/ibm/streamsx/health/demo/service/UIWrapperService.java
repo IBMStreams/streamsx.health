@@ -22,6 +22,7 @@ public class UIWrapperService {
 		SPL.addToolkit(topo, new File("../../ingest/common/com.ibm.streamsx.health.ingest"));
 		SPL.addToolkit(topo, new File(System.getProperty("user.dir") + "/.toolkits/com.ibm.streamsx.health.analyze.vital"));
 		SPL.addToolkit(topo, new File(System.getProperty("user.dir") + "/.toolkits/com.ibm.streamsx.inet"));
+		SPL.addToolkit(topo, new File("../PatientsMonitoringDemo.rules/com.ibm.streamsx.health.sample.patientsmonitoring.rules"));
 	}
 	
 	public void build() {

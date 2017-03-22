@@ -2,7 +2,6 @@ package com.ibm.streamsx.health.analyze.rules.model;
 
 public class Patient {
 	
-	private String name;
 	private String id;
 	
 	// vitals
@@ -40,14 +39,6 @@ public class Patient {
 	// National Early Warning Score (https://www.mdcalc.com/national-early-warning-score-news)
 	private int scoreNews;
 	
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
 
 	public String getId() {
 		return id;

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<projectDescription>
+	<name>HealthRules</name>
+	<comment></comment>
+	<projects>
+		<project>health-xom</project>
+	</projects>
+	<buildSpec>
+		<buildCommand>
+			<name>ilog.rules.studio.model.ruleBuilder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
+	</buildSpec>
+	<natures>
+		<nature>ilog.rules.studio.model.ruleNature</nature>
+	</natures>
+</projectDescription>

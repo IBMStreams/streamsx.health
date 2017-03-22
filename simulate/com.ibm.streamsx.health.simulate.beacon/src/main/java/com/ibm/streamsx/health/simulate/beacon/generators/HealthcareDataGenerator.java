@@ -67,7 +67,8 @@ public class HealthcareDataGenerator implements Supplier<Observation> {
 			String[] values = line.split(",");
 			for(int i = 1; i < values.length; i++) {
 				Reading reading = new Reading();
-				reading.setTimestamp(Long.valueOf(values[0]));
+				Double tsMilli = Double.valueOf(values[0]) * 1000; // convert to milliseconds
+				reading.setTimestamp(tsMilli.longValue());
 				reading.setReadingType(new ReadingType(ReadingTypeSystem.STREAMS_CODE_SYSTEM, readingTypeCode));
 				reading.setUom(uom[i]);
 				reading.setValue(Double.valueOf(values[i]));	

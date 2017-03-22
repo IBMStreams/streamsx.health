@@ -1,4 +1,15 @@
+// begin_generated_IBM_copyright_prolog                                       
+//                                                                            
+// This is an automatically generated copyright prolog.                       
+// After initializing,  DO NOT MODIFY OR MOVE                                 
+//****************************************************************************
+// Copyright (C) 2016 International Business Machines Corporation             
+// All Rights Reserved                                                        
+//****************************************************************************
+// end_generated_IBM_copyright_prolog   
+
 namespace com.ibm.streamsx.health.analyze.rules.vitals.com.ibm.streamsx.health.analyze.rules.model;
+use com.ibm.streams.rulescompiler::*;
 use com.ibm.streamsx.health.analyze.rules.vitals.com.ibm.streamsx.health.analyze.rules.model::*;
 
 type Consciousness =
@@ -17,7 +28,6 @@ type Patient =
 	int32 ewsScore,
 	float32 hr,
 	ustring id,
-	ustring name,
 	int32 newsScore,
 	float32 respRate,
 	float32 spo2,

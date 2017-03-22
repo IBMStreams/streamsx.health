@@ -1,0 +1,89 @@
+namespace com.ibm.streamsx.health.analyze.ecg;
+
+use com.ibm.streams.timeseries.preprocessing::ReSample ;
+
+
+type QRSDetector_T = int64 qrsTimestamp, int32 qrsDelay, rstring qrsClassification, float64 rrMinusOneInterval, float64 rrInterval;
+
+
+type InputData_t = int64 ts, int32 value;
+type InnerList_t = list<int64> tsList, list<float64> valueList ;
+type ResultData_t = InputData_t ;
+
+// functions
+boolean init(mutable InnerList_t c)
+{
+	clearM(c.tsList) ;
+	clearM(c.valueList) ;
+	return false ;
+}
+
+boolean process(InputData_t inputData, mutable InnerList_t c)
+{
+	appendM(c.tsList,(int64)(inputData.ts)) ;
+	appendM(c.valueList,(float64) inputData.value) ;
+	return false ;
+}
+
+InnerList_t result(mutable InnerList_t c)
+{
+	return c ;
+}
+
+// Samantha:  I have a lot of trouble with this.
+// import -> aggregate - cannot handle punctuaion
+// submission time value for sample rate -> expects non-zero
+public composite Resampler(input In0 ; output Out0)
+{
+	param
+		expression<uint32> $samplingRate ;
+		expression<uint32> $newSamplingRate ;
+	graph
+		(stream<InnerList_t aggregateData> Aggregate_10_out0) as AggregateData =
+			Aggregate(In0 as inPort0Alias)
+		{
+			logic
+				state :
+				{
+					mutable InnerList_t context ;
+				}
+
+			window
+				inPort0Alias : tumbling, count($samplingRate) ;
+			output
+				Aggregate_10_out0 : aggregateData = Custom(init(context), process(In0,
+					context), result(context)) ;
+		}
+		
+		(stream<InnerList_t, tuple<InnerList_t aggregateData>> ReSample_6_out0) as
+			ReSampleOp = ReSample(Aggregate_10_out0)
+		{
+			param
+				inputTimeSeries : aggregateData.valueList ;
+				samplingRate : 360u ;
+				newSamplingRate : $newSamplingRate ;
+			output
+				ReSample_6_out0 : valueList = reSampledTimeSeries();
+		}
+
+		(stream<ResultData_t> Out0) as ReSampleTime = Custom(ReSample_6_out0)
+		{
+			logic
+				onTuple ReSample_6_out0 :
+				{
+					assert(size(aggregateData.tsList) == size(aggregateData.valueList)) ;
+					int32 len = size(aggregateData.tsList) ;
+					mutable uint64 tsDelta =(aggregateData.tsList[ len - 1 ] - aggregateData.tsList[ 0 ]) ;
+					mutable int64 lag = (int64)((float64)tsDelta / (float64)len) ;
+					mutable int32 i = 0 ;
+					while(i < size(valueList))
+					{
+						submit({ts = (int64)aggregateData.tsList[0]+(lag*(int64)i), value = (int32)valueList[i]}, Out0);
+						i ++ ;
+					}
+
+				}
+
+		}
+
+}

@@ -1,4 +1,8 @@
 #!/bin/sh
+#*******************************************************************************
+# Copyright (C) 2017 International Business Machines Corporation
+# All Rights Reserved
+#*******************************************************************************
 
 pushd build
 pwd

@@ -1,0 +1,7 @@
+/.apt_generated/
+/.toolkitList
+/output/
+/toolkit.xml
+/com.ibm.streamsx.health.analysis.ecg/QRSDetector
+/build/
+!OSEA4J.jar
