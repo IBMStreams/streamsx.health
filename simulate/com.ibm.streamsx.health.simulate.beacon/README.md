@@ -40,24 +40,24 @@ This service does not ingest any data.
 
 ```
 {
-  "patientId" : "string",
+  "patientId" : string,
   "device" : {
-    "id" : "string",
-    "locationId" : "string"
+    "id" : string,
+    "locationId" : string
   },
   "readingSource" : {
-    "id" : "string",
-    "sourceType" : "string",
-    "deviceId" : "string"
+    "id" : string,
+    "sourceType" : string,
+    "deviceId" : string
   },
   "reading" : {
-    "ts" : Numeric,
+    "ts" : numeric,
     "readingType" : {
-      "system" : "string",
-      "code" : "string"
+      "system" : string,
+      "code" : string
     },
-    "value" : Numeric,
-    "uom" : "string"
+    "value" : numeric,
+    "uom" : string
   }
 }
 ```
@@ -73,8 +73,10 @@ Run the following command to build the service:
 
 The service properties can be set in the `beacon.properties` file. The following properties are available: 
 
-  * **numPatients** - Number of patients to simulate (default is `1`)
-  * **patientIDPrefix** - The prefix to use when generating the patient ID (default is `patient-`)
+| Property | Description | Default |
+| --- | --- | :---: |
+| **numPatients** | Number of patients to simulate. | `1` |
+| **patientIDPrefix** | The prefix to use when generating the patient ID. | `patient-` |
 
 Run the following command to compile the SAB and launch the service: 
 
