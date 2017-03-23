@@ -17,11 +17,19 @@
           <name>physionet_functions</name>
           <function>
             <description></description>
-            <prototype>&lt;any T> T getSignal(int32 signalIndex)</prototype>
+            <prototype>&lt;any T> list&lt;T> getSignals()</prototype>
           </function>
           <function>
-            <description></description>
-            <prototype>&lt;any T> T getNormalizedChannel(int32 channel)</prototype>
+          	<description></description>
+          	<prototype>&lt;any T> list&lt;T> getDescriptions()</prototype>
+          </function>
+          <function>
+          	<description></description>
+          	<prototype>&lt; any T> T getFrequency()</prototype>
+          </function>
+          <function>
+          	<description></description>
+          	<prototype>list&lt;rstring> getUOMs()</prototype>
           </function>
           <function>
             <description></description>

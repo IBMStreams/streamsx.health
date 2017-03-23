@@ -15,6 +15,8 @@ use com.ibm.streamsx.json::TupleToJSON ;
 use com.ibm.streamsx.health.ingest.types::* ;
 use com.ibm.streamsx.health.ingest.connector::IngestPublish ;
 use com.ibm.streamsx.datetime::*;
+use spl.file::*;
+
 
 /**
  * Topic definition for service
@@ -36,9 +38,39 @@ public rstring EMPTY() {
 	return "EMPTY";
 }
 
-public rstring READING_CODE() {
-	return "X100-8";
+stateful public map<rstring, rstring> LOAD_CODE_MAP() {
+	mutable map<rstring, rstring> codeMap = {};
+	rstring mapfile = getThisToolkitDir() + "/etc/codemap.csv";
+	mutable int32 err = 0;
+	uint64 fh = fopen(mapfile,"r",err);
+	
+	if(err == 0) {
+		while(err == 0) {
+			rstring line = freadLine(fh, err);
+			if(err == 0) {
+				list<rstring> tokens = tokenize(line, "|", false);
+				if(size(tokens) > 1) {
+					insertM(codeMap, tokens[0], tokens[1]);
+				}
+			}
+		}
+	}
+	
+	fclose(fh, err);	
+	
+	return codeMap;
 }
+
+public ReadingType populateReadingType(map<rstring, rstring> codeMap, rstring physionetCode) {
+	mutable ReadingType readingType = { system = "physionet", code = physionetCode };
+	if(has(codeMap, physionetCode)) {
+		readingType.code = codeMap[physionetCode];
+		readingType.system = STREAMS_SYSTEM_NAME();
+	}
+	
+	return readingType;
+}
+
 
 /** Service for ingesting data from Physionet
  * 
@@ -76,28 +108,24 @@ composite PhysionetIngestService
 			logic
 				state: {
 					int64 baseTs = currentTimeMillis();
+					map<rstring, rstring> codeMap = LOAD_CODE_MAP();
 				}
 				onTuple fromPhysionet :
 				{
 					rstring location = $recordName ;
 					Device device = { id = DEVICE_ID(), locationId = location } ;
-					ReadingSource ch1Src = { id = "ch1", sourceType = SOURCE_TYPE(), deviceId
-						= DEVICE_ID() } ;
-					ReadingSource ch2Src = { id = "ch2", sourceType = SOURCE_TYPE(), deviceId
-						= DEVICE_ID()} ;
+					mutable int32 i = 0;
+					while(i < size(signals)) {
+						ReadingSource readingSource = { id = "ch" + (rstring)i, sourceType = SOURCE_TYPE(), deviceId = DEVICE_ID() };
+						Reading reading = { ts = baseTs + (int64)fromPhysionet.ts, 
+							readingType = populateReadingType(codeMap, fromPhysionet.descriptions[i]), 
+							value = fromPhysionet.signals[i], uom = fromPhysionet.uoms[i] };
+						Observation obx = { device = device, patientId = patientId, readingSource = readingSource, reading = reading };
+						submit(obx, 0u);
 						
-					Reading ch1 = { ts = baseTs + (int64)fromPhysionet.ts, readingType = { system = STREAMS_SYSTEM_NAME(), code = READING_CODE() }, value
-						=(float64) fromPhysionet.ch1, uom = EMPTY()} ;
-					Reading ch2 = { ts = baseTs + (int64)fromPhysionet.ts, readingType = { system = STREAMS_SYSTEM_NAME(), code = READING_CODE() }, value
-						=(float64) fromPhysionet.ch2, uom = EMPTY() } ;
-					Observation obxCh1 = { device = device, patientId = patientId,
-						readingSource = ch1Src, reading = ch1 } ;
-					Observation obxCh2 = { device = device, patientId = patientId,
-						readingSource = ch2Src, reading = ch2 } ;
-					submit(obxCh1, 0u) ;
-					submit(obxCh2, 0u) ;
+						i++;
+					}
 				}
-
 		}
 
 		() as IngestPublish_6 = IngestPublish(Functor_7_out0)
@@ -114,7 +142,7 @@ composite ReadFromPhysionet(output Out0 )
 		expression<rstring> $recordName ;
 		expression<float64> $frequency;
 	type
-		static PhysionetSignal = float64 ts, int32 ch1, int32 ch2 ;
+		static PhysionetSignal = float64 ts, list<float64> signals, list<rstring> descriptions, list<rstring> uoms;
 		static PhysiontPatient = PhysionetSignal, tuple<rstring patientId> ;
 	graph
 		(stream<PhysionetSignal> PhysionetGetSignals_1_out0) as
@@ -124,8 +152,11 @@ composite ReadFromPhysionet(output Out0 )
 				recordName : $recordName ;
 				normalize : false ;
 			output
-				PhysionetGetSignals_1_out0 : ts = getTimestamp(), ch1 = getSignal(0), ch2 =
-					getSignal(1) ;
+				PhysionetGetSignals_1_out0 : 
+					ts = getTimestamp(), 
+					signals = getSignals(),
+					descriptions = getDescriptions(),
+					uoms = getUOMs();
 		}
 
 		(stream<PhysionetSignal> Throttle_3_out0) as Throttle_3 =
