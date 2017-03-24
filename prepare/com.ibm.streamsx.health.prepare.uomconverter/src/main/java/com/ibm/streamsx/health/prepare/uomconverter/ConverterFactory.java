@@ -23,7 +23,7 @@ public class ConverterFactory implements Serializable {
 	private transient Map<String, AbstractUOMConverter> converterMap;
 	
 	private static Logger logger = Logger.getLogger("ConverterFactory");
-	private static final String MAP_DELIM = "->";
+	private static final String MAP_DELIM = "|";
 	
 	public ConverterFactory() {
 		supportedConverters = new ArrayList<>();

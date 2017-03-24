@@ -13,13 +13,13 @@ After conversion, the UOM Conversion service returns an *Observation* tuple cont
 
 The UOM Service relies on a user-defined mapping file to indicate the units that should be converted. The mapping file should contain a separate mapping per line. The format of a mapping is as follows: 
 
-  `<fromUnit>-><toUnit>`
+  `<fromUnit>|<toUnit>`
 
 where `<fromUnit>` is the unit you want to convert from, and `<toUnit>` is the unit you want to convert to. Here is an example of a mapping file where all milli volt values are converted to micro volt and all Fahrenheit temperatures are converted to Celcius: 
 
 ```
-mV->uV
-F->C
+mV|uV
+F|C
 ```
 
 ### Supported Unit Formats
@@ -85,7 +85,7 @@ The service properties, including the path to the mapping file, can be set in th
 
 | Property | Description | Default |
 | --- | --- | :---: |
-| **mapFile** | A relative or absolute path to the mapping file. | `./mapfile.txt` |
+| **mapFile** | A relative or absolute path to the mapping file. | `./unitmapping.properties` |
 | **subscriptionTopic** | The topic that the service should subscribe to. | `ingest-beacon` |
 | **debug** | Enables and disables debug mode (`true` or `false`) | `false` |
 
