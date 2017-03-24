@@ -17,8 +17,8 @@ The service expects two submission parameters:
 
 ## ingest-physionet
 
-** Published Topic Name: ** ingest-physionet
-** Published JSON Format: ** Observation type from com.ibm.streamsx.health.ingest
+* **Published Topic Name:** ingest-physionet
+* **Published JSON Format:** Observation type from com.ibm.streamsx.health.ingest
 
 # Build 
 
