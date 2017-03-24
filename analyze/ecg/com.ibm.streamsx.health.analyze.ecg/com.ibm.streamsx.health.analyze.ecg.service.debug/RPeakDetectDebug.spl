@@ -1,0 +1,26 @@
+namespace com.ibm.streamsx.health.analyze.ecg.service.debug ;
+
+use com.ibm.streamsx.topology.topic::Subscribe ;
+use com.ibm.streamsx.health.analyze.ecg::* ;
+use com.ibm.streamsx.health.analyze.ecg.service::*;
+
+composite RPeakDetectDebug
+{
+	graph
+		(stream<RPeakDetectService.RPeakSignalECG_T, QRSDetector_T> Subscribe_1_out0) as Subscribe_1 = Subscribe()
+		{
+			param
+				topic : RPeakDetectServiceTopic() ;
+				streamType : tuple<RPeakDetectService.RPeakSignalECG_T, QRSDetector_T> ;
+		}
+
+		() as Custom_2 = Custom(Subscribe_1_out0)
+		{
+			logic
+				onTuple Subscribe_1_out0 : {
+					println(Subscribe_1_out0);
+				}
+		}
+
+}
+

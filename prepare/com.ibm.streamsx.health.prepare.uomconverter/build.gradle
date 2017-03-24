@@ -1,0 +1,46 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply from: "$rootProject.projectDir/common.gradle"
+
+def STREAMS_INSTALL = System.getenv("STREAMS_INSTALL")
+
+ext.uomServiceProps = new Properties()
+uomServiceProps.load(file('./uom.service.properties').newReader())
+
+eclipse {
+    classpath {
+        downloadJavadoc = true
+        downloadSources = true
+    }
+}
+
+repositories { 
+    mavenCentral()
+    jcenter()
+}
+
+dependencies {
+    compile fileTree(dir: System.getenv("STREAMS_INSTALL") + '/lib', include: ['*.jar'])
+    compile project(':ingest:common:com.ibm.streamsx.health.ingest')
+    compile group: 'tec.uom', name: 'uom-se', version: '1.0.4'
+    compile group: 'systems.uom', name: 'systems-common', version: '0.5'
+    compile group: 'systems.uom', name: 'systems-quantity', version: '0.5'
+    compile group: 'commons-cli', name: 'commons-cli', version: '1.3.1'
+}
+
+task execute(type: JavaExec) {
+    main = 'com.ibm.streamsx.health.prepare.uomconverter.services.UOMConverterService'
+    classpath = configurations.runtime + files("$buildDir/libs/com.ibm.streamsx.health.prepare.uomconverter.jar")
+    args = [
+        '-m', file(uomServiceProps['mapFile']).absolutePath,
+        '-s', uomServiceProps['subscriptionTopic'],
+        '-d', uomServiceProps['debug']
+    ]
+}
+
+task cleanup() {
+    delete fileTree('./') {include '**/*.sab' }
+    delete 'bin'
+}  
+
+clean.dependsOn cleanup

@@ -13,13 +13,13 @@ public rstring RPeakDetectServiceTopic()
 	return "analysis.ecg.rpeak" ;
 }
 
-composite RPeakDetectService
+public composite RPeakDetectService
 {
 	param
 		expression<rstring> $topic : getSubmissionTimeValue("ingestTopic") ;
 		expression<rstring> $readingTypeCode : getSubmissionTimeValue("readingTypeCode", "X100-8") ; // default to ECG Lead I
 	type
-		RPeakSignalECG_T = int64 ts, int32 value ;
+		static RPeakSignalECG_T = int64 ts, int32 value ;
 	graph
 		stream<RPeakSignalECG_T> ResampledSignal = Resampler(Functor_5_out0 as
 			inPort0Alias)
