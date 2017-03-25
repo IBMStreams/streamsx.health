@@ -6,6 +6,9 @@ def jsonToolkitPath = STREAMS_INSTALL + '/toolkits/com.ibm.streamsx.json'
 def topologyToolkitPath = STREAMS_INSTALL + '/toolkits/com.ibm.streamsx.topology'
 def dateTimeToolkitPath = STREAMS_INSTALL + '/toolkits/com.ibm.streamsx.datetime'
 
+ext.physioProps = new Properties()
+physioProps.load(file('./physionet.service.properties').newReader())
+
 repositories {
     mavenCentral()
 }
@@ -37,6 +40,10 @@ task buildServices {
         def serviceToolkitPath = "${project(':ingest:common:com.ibm.streamsx.health.ingest').projectDir}" + ':' + ':' + jsonToolkitPath + ':' + topologyToolkitPath + ':' + ':' + dateTimeToolkitPath 
         compileApp('com.ibm.streamsx.health.ingest.physionet.service', 'PhysionetIngestService', serviceToolkitPath) 
     }
+}
+
+task execute(type:Exec) {
+    commandLine STREAMS_INSTALL + '/bin/streamtool', 'submitjob', 'output/com.ibm.streamsx.health.ingest.physionet.service.PhysionetIngestService/com.ibm.streamsx.health.ingest.physionet.service.PhysionetIngestService.sab', '-P', 'record.name=' + physioProps['recordName'], '-P', 'frequency=' + physioProps['frequency']
 }
 
 task cleanToolkit {
