@@ -52,6 +52,6 @@ The following diagram outlines the architecture of the demo.
 
   1. Run each cell individually. The following graphs should be displayed and updating in real-time. 
 
-    ![Screen capture of Healthcare Demo](images/Healthcare_Demo.png "Screen capture of Healthcare Demo")
+![Screen capture of Healthcare Demo](images/Healthcare_Demo.png "Screen capture of Healthcare Demo")
 
   2. If the graphs do not appear, verify that the Streams applications are running (and tuples are flowing) by opening the Streams Console.
