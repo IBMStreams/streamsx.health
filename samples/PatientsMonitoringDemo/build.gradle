@@ -9,7 +9,7 @@ buildscript {
 
 apply plugin: 'de.undercouch.download'
 apply plugin: 'java'
-apply from: '../../common.gradle'
+apply from: "$rootProject.projectDir/common.gradle"
 
 sourceSets {
     main {
@@ -107,6 +107,6 @@ task extractDeps(type: Copy) {
     into '.toolkits'
 }
 
-build.dependsOn downloadJS, downloadCSS, extractDeps, buildToolkit
+build.dependsOn downloadJS, downloadCSS, extractDeps, buildToolkit, ':ingest:common:com.ibm.streamsx.health.ingest:buildToolkit', ':samples:PatientsMonitoringDemo.rules:com.ibm.streamsx.health.sample.patientsmonitoring.rules:buildToolkit'
 build.finalizedBy getDeps
 clean.dependsOn cleanup, cleanToolkit
