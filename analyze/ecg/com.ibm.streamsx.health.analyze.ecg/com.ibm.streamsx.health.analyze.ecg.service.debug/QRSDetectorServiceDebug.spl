@@ -4,14 +4,14 @@ use com.ibm.streamsx.topology.topic::Subscribe ;
 use com.ibm.streamsx.health.analyze.ecg::* ;
 use com.ibm.streamsx.health.analyze.ecg.service::*;
 
-composite RPeakDetectDebug
+composite QRSDetectorServiceDebug
 {
 	graph
-		(stream<RPeakDetectService.RPeakSignalECG_T, QRSDetector_T> Subscribe_1_out0) as Subscribe_1 = Subscribe()
+		(stream<QRSDetectorService.ECGSignal, QRSDetector_T> Subscribe_1_out0) as Subscribe_1 = Subscribe()
 		{
 			param
-				topic : RPeakDetectServiceTopic() ;
-				streamType : tuple<RPeakDetectService.RPeakSignalECG_T, QRSDetector_T> ;
+				topic : QRSDetectorServiceTopic() ;
+				streamType : tuple<QRSDetectorService.ECGSignal, QRSDetector_T> ;
 		}
 
 		() as Custom_2 = Custom(Subscribe_1_out0)

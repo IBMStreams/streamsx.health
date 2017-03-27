@@ -23,7 +23,7 @@ public class ConverterFactory implements Serializable {
 	private transient Map<String, AbstractUOMConverter> converterMap;
 	
 	private static Logger logger = Logger.getLogger("ConverterFactory");
-	private static final String MAP_DELIM = "|";
+	private static final String MAP_DELIM = "\\|";
 	
 	public ConverterFactory() {
 		supportedConverters = new ArrayList<>();
@@ -87,10 +87,12 @@ public class ConverterFactory implements Serializable {
 	public void createConvertersFromMapFile(String filePath) throws Exception {
 		List<String> lines = Files.readAllLines(new File(filePath).toPath());
 		for(String line : lines) {
+			logger.trace("Found mapping line: " + line);
 			String[] tokens = line.split(MAP_DELIM);
 			if(tokens.length == 2) {
 				String inputUOM = tokens[0].trim();
 				String outputUOM = tokens[1].trim();
+				logger.trace("InputUOM=" + inputUOM + ", OutputUOM=" + outputUOM);
 				createConverter(inputUOM, outputUOM);
 			}
 		}

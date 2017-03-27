@@ -71,6 +71,63 @@ This service contains the following dependencies:
   * Units of Measurement SE v1.0.4 (https://github.com/unitsofmeasurement/uom-se)
   * Units of Measurement Systems v0.5 (https://github.com/unitsofmeasurement/uom-systems)
 
+# Expected Input
+
+This service expects an `Observation` tuple as input: 
+
+```
+{
+  "patientId" : string,
+  "device" : {
+    "id" : string,
+    "locationId" : string
+  },
+  "readingSource" : {
+    "id" : string,
+    "sourceType" : string,
+    "deviceId" : string
+  },
+  "reading" : {
+    "ts" : numeric,
+    "readingType" : {
+      "system" : string,
+      "code" : string
+    },
+    "value" : numeric,
+    "uom" : string
+  }
+}
+```
+
+# Output
+
+  * **Published Topics:** "prepare-uom-converter"
+  * **Output JSON Schema:** [Observation Type](https://github.com/IBMStreams/streamsx.health/wiki/Observation-Data-Type)
+
+```
+{
+  "patientId" : string,
+  "device" : {
+    "id" : string,
+    "locationId" : string
+  },
+  "readingSource" : {
+    "id" : string,
+    "sourceType" : string,
+    "deviceId" : string
+  },
+  "reading" : {
+    "ts" : numeric,
+    "readingType" : {
+      "system" : string,
+      "code" : string
+    },
+    "value" : numeric,
+    "uom" : string
+  }
+}
+```
+
 
 # Build
 

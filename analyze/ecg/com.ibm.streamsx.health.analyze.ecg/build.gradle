@@ -6,6 +6,9 @@ def jsonToolkitPath = STREAMS_INSTALL + '/toolkits/com.ibm.streamsx.json'
 def topologyToolkitPath = STREAMS_INSTALL + '/toolkits/com.ibm.streamsx.topology'
 def timeseriesToolkitPath = STREAMS_INSTALL + '/toolkits/com.ibm.streams.timeseries'
 
+ext.qrsProps = new Properties()
+qrsProps.load(file('./qrsdetector.service.properties').newReader())
+
 sourceSets {
     main {
         java {
@@ -34,7 +37,7 @@ task buildToolkit {
 task buildServices(dependsOn: [':ingest:common:com.ibm.streamsx.health.ingest:buildToolkit', 'buildToolkit']) {
     doLast {
         def serviceToolkitPath = jsonToolkitPath + ':' + topologyToolkitPath + ':' + "${project(':ingest:common:com.ibm.streamsx.health.ingest').projectDir}" + ':' + timeseriesToolkitPath
-        compileApp('com.ibm.streamsx.health.analyze.ecg.service', 'RPeakDetectService', serviceToolkitPath)
+        compileApp('com.ibm.streamsx.health.analyze.ecg.service', 'QRSDetectorService', serviceToolkitPath)
     }
 }
 
@@ -54,6 +57,11 @@ task deleteDeps(type: Delete) {
     delete fileTree(dir: 'impl/lib', include: ['*.jar'])
     delete 'impl/java/bin'
 }
+
+task execute(type:Exec, dependsOn:buildServices) {
+    commandLine STREAMS_INSTALL + '/bin/streamtool', 'submitjob', 'output/com.ibm.streamsx.health.analyze.ecg.service.QRSDetectorService/com.ibm.streamsx.health.analyze.ecg.service.QRSDetectorService.sab', '-P', 'ingestTopic=' + qrsProps['subscriptionTopic'], '-P', 'readingTypeCode=' + qrsProps['readingTypeCode'], '-P', 'samplingRate=' + qrsProps['samplingRate'] 
+}
+
 
 build.dependsOn buildToolkit, buildServices
 clean.dependsOn deleteDeps, cleanToolkit

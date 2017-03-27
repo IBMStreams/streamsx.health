@@ -8,20 +8,20 @@ use com.ibm.streamsx.health.ingest.types::* ;
 use com.ibm.streamsx.json::JSONToTuple ;
 use com.ibm.streamsx.health.ingest.types::Observation ;
 use com.ibm.streamsx.health.ingest.connector::IngestSubscribe ;
-public rstring RPeakDetectServiceTopic()
+public rstring QRSDetectorServiceTopic()
 {
-	return "analysis.ecg.rpeak" ;
+	return "analyze-qrsdetector" ;
 }
 
-public composite RPeakDetectService
+public composite QRSDetectorService
 {
 	param
 		expression<rstring> $topic : getSubmissionTimeValue("ingestTopic") ;
 		expression<rstring> $readingTypeCode : getSubmissionTimeValue("readingTypeCode", "X100-8") ; // default to ECG Lead I
 	type
-		static RPeakSignalECG_T = int64 ts, int32 value ;
+		static ECGSignal = int64 ts, int32 value ;
 	graph
-		stream<RPeakSignalECG_T> ResampledSignal = Resampler(Functor_5_out0 as
+		stream<ECGSignal> ResampledSignal = Resampler(Functor_5_out0 as
 			inPort0Alias)
 		{
 			param
@@ -29,7 +29,7 @@ public composite RPeakDetectService
 				newSamplingRate : 200u ;
 		}
 
-		(stream<RPeakSignalECG_T, QRSDetector_T> QRSDetectOut) =
+		(stream<ECGSignal, QRSDetector_T> QRSDetectOut) =
 			QRSDetector(ResampledSignal)
 		{
 			param
@@ -42,10 +42,10 @@ public composite RPeakDetectService
 		() as Publish_4 = Publish(QRSDetectOut)
 		{
 			param
-				topic : RPeakDetectServiceTopic() ;
+				topic : QRSDetectorServiceTopic() ;
 		}
 
-		(stream<RPeakSignalECG_T> Functor_5_out0) as Functor_5 =
+		(stream<ECGSignal> Functor_5_out0) as Functor_5 =
 			Functor(Filter_7_out0 as inPort0Alias)
 		{
 			output
