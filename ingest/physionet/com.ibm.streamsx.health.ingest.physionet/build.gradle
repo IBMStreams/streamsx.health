@@ -16,6 +16,7 @@ repositories {
 dependencies {
     compile fileTree(dir: System.getenv("STREAMS_INSTALL") + '/lib', include: ['*.jar'])
     compile files(System.getenv("STREAMS_INSTALL") + '/toolkits/com.ibm.streamsx.topology/lib/com.ibm.streamsx.topology.jar')
+    compile project(':ingest:common:com.ibm.streamsx.health.ingest')
     testCompile 'junit:junit:4.12'
 }
 
@@ -35,7 +36,7 @@ task buildToolkit {
     }
 }
 
-task buildServices {
+task buildServices(dependsOn: ':ingest:common:com.ibm.streamsx.health.ingest:buildToolkit') {
     doLast {
         def serviceToolkitPath = "${project(':ingest:common:com.ibm.streamsx.health.ingest').projectDir}" + ':' + ':' + jsonToolkitPath + ':' + topologyToolkitPath + ':' + ':' + dateTimeToolkitPath 
         compileApp('com.ibm.streamsx.health.ingest.physionet.service', 'PhysionetIngestService', serviceToolkitPath) 

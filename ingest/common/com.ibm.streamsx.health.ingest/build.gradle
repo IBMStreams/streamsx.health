@@ -39,5 +39,5 @@ task deleteDeps(type: Delete) {
     delete 'com.ibm.streamsx.health.ingest.types.resolver'
 }
 
-build.dependsOn buildToolkit
+build.finalizedBy buildToolkit
 clean.dependsOn deleteDeps, cleanToolkit
