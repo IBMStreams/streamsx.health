@@ -14,7 +14,7 @@ for f in files:
     call(['../gradlew', '-p', '../', 'clean'])
 
     print("Executing " + f + "...")
-    rc = call(['../gradlew', '-b', f, 'build', 'clean'])
+    rc = call(['../gradlew', '-b', f, 'build'])
     if rc == 0:
         test_successes[f] = rc
     else:
