@@ -21,10 +21,10 @@ To build this sample, it is expected that your environment is set up to use the 
 
 The following environment variables need to be set.  The sample will work with Streams 4.2.0.0 and up:
 
-STREAMS_SPLPATH=/opt/ibm/InfoSphere_Streams/4.2.0.0/toolkits
-STREAMS_INSTALL=/opt/ibm/InfoSphere_Streams/4.2.0.0
-STREAMS_DOMAIN_ID=StreamsDomain
-STREAMS_INSTANCE_ID=StreamsInstance
+* STREAMS_SPLPATH=/opt/ibm/InfoSphere_Streams/4.2.0.0/toolkits
+* STREAMS_INSTALL=/opt/ibm/InfoSphere_Streams/4.2.0.0
+* STREAMS_DOMAIN_ID=StreamsDomain
+* STREAMS_INSTANCE_ID=StreamsInstance
 
 To build:
 
