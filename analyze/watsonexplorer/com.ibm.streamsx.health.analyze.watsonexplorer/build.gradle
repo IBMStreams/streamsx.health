@@ -43,7 +43,7 @@ task cleanup {
 
 task executeMedicationService(type: JavaExec) {
 	main = 'com.ibm.streamsx.health.analytics.wex.services.MedicationEventService'
-	classpath = configurations.runtime + files("$buildDir/libs/com.ibm.streamsx.health.analytics.watsonexplorer.jar")
+	classpath = configurations.runtime + files("$buildDir/libs/com.ibm.streamsx.health.analyze.watsonexplorer.jar")
 	args = [
 		'-c', medServiceProps['medicationCollection'],
 		'-x', medServiceProps['host'],
@@ -57,7 +57,7 @@ task executeMedicationService(type: JavaExec) {
 
 task executeSymptomService(type: JavaExec) {
 	main = 'com.ibm.streamsx.health.analytics.wex.services.SymptomEventService'
-	classpath = configurations.runtime + files("$buildDir/libs/com.ibm.streamsx.health.analytics.watsonexplorer.jar")
+	classpath = configurations.runtime + files("$buildDir/libs/com.ibm.streamsx.health.analyze.watsonexplorer.jar")
 	args = [
 		'-c', sympServiceProps['symptomCollection'],
 		'-x', sympServiceProps['host'],
