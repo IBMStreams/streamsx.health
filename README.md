@@ -40,6 +40,8 @@ This repository is set up to build using [Gradle](https://gradle.org/).
 
 All of the services can be built from the root folder by running **`gradle build`**.
 
+If gradle is not installed on your system, the project is shipped with a gradle wrapper.  You can build the projects by using this wrapper and running **`gradlew build`**.
+
 Similarly, individual components and  services can be built by navigating to either the component or service directory and running **`gradle build`**. 
 
 All projects can be cleaned from either the root folder, a component folder or a service folder by running **`gradle clean`**
