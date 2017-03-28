@@ -26,7 +26,7 @@ The service expects two submission parameters:
 
 # Execute
 
-*.sab file will be produced in the output directory.  Submit the *.sab file to a running instance with the required submission time parameters.
+`gradle execute`
 
 # Setting up for Development
 
