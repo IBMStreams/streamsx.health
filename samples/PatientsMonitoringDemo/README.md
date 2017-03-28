@@ -4,6 +4,8 @@ This sample demonstrates how we can use IBM Streams and the Streams Healthcare A
 
 The rules for checking the vitals and raising alerts are written in business rules using Operation Decision Manager (ODM).  The rules are then compiled into an SPL application.  To see the rules projects, refer to the PatientsMonitoringDemo.rules directory.
 
+![Patients Monitoring Dashboard](images/patientsMonitoring.jpeg)
+
 # Dependencies
 
 This sample depends on the following microservices and toolkits:
