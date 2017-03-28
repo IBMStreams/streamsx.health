@@ -10,7 +10,7 @@ This service prints the JSON tuples from incoming data stream.  The service can 
 
 ## subscribe-topic
 * **Topic**:  subscribe-topic - this is the topic to subscribe data from
-* **Schema**: The service expects an jsonStr attribute of rstring or String type.
+* **Schema**: The service expects type `tuple<rstring jsonString>`
 
 # Output
 
