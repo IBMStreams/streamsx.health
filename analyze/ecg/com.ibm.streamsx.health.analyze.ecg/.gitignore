@@ -5,3 +5,4 @@
 /com.ibm.streamsx.health.analysis.ecg/QRSDetector
 /build/
 !OSEA4J.jar
+QRSDetector.xml
