@@ -3,6 +3,10 @@
  * All Rights Reserved
  *******************************************************************************/
 apply plugin: 'java'
+apply plugin: 'eclipse'
+
+ext.vinesProps = new Properties()
+vinesProps.load(file('./vines.service.properties').newReader())
 
 repositories {
 	mavenCentral()
@@ -13,7 +17,7 @@ dependencies {
 	compile files(System.getenv("STREAMS_INSTALL") + '/toolkits/com.ibm.streamsx.topology/lib/com.ibm.streamsx.topology.jar')
     compile files(System.getenv("STREAMS_INSTALL") + '/toolkits/com.ibm.streamsx.datetime/impl/lib/com.ibm.streamsx.datetime.jar')
     compile project(':ingest:common:com.ibm.streamsx.health.ingest')
-    compile group: 'commons-cli', name: 'commons-cli', version: '1.2'
+    compile group: 'commons-cli', name: 'commons-cli', version: '1.3.1'
     compile group: 'com.google.guava', name: 'guava', version: '21.0'
 	testCompile 'junit:junit:4.12'
 }
@@ -32,7 +36,23 @@ task copyToLib(type: Copy) {
 task cleanUp() {
     doLast {
         delete 'bin'
+        delete 'com.ibm.streamsx.health.vines.service.ViNESAdapter.sab'
     }
+}
+
+task execute(type: JavaExec) {
+    main='com.ibm.streamsx.health.vines.service.VinesAdapterService'
+    classpath = configurations.runtime + files("$buildDir/libs/com.ibm.streamsx.health.vines.jar")
+    args = [
+        '-c', vinesProps['contextType'],
+        '-h', vinesProps['host'],
+        '-p', vinesProps['port'],
+        '-u', vinesProps['username'],
+        '-P', vinesProps['password'],
+        '-q', vinesProps['queue'],
+        '-e', vinesProps['exchangeName'],
+        '-d', vinesProps['debug']
+    ]
 }
 
 compileJava.dependsOn copyToLib

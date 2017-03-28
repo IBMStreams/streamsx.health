@@ -55,23 +55,25 @@ To build this service, run:
 
 # Execute
 
-To submit this service your local instance, run the following:
+The service properties can be set in the `vines.service.properties` file. The following properties are available:
 
-	cd com.ibm.streamsx.health.vines
-	./ingest-vines.sh -h <host:port> -u <username> -p <password> -q <queueName> [-e <exchange_name>] [-d]
+| Property | Description | Default |
+| --- | --- | :---: |
+| host | Specifies the host of the RabbitMQ server | _none_ |
+| port | Specifies the port of the RabbitMQ server | `5672` |
+| username | Specifies the username to connect to the RabbitMQ server | _none_ |
+| password | Specifies the password to connect to the RabbitMQ server | _none_ |
+| queue | Specifies the queue on the RabbitMQ server that contains the Vines messages | _none_ |
+| exchangeName | Specifies the exchange name on the RabbitMQ server | _none_ |
+| debug | Enables debug mode | `false` |
 
-The service requires the following submission time parameters: 
+Run the following command to execute the Vines Ingest Service: 
 
- * **hostAndPort** - specifies the host:port for the RabbitMQ server
- * **username** - specifies the username to connect to RabbitMQ
- * **password** - specifies the password to connect to RabbitMQ
- * **queue** - specifies the RabbitMQ queue
- * **exchangeName** - (Optional) specifies the RabbitMQ exchange name. Default is "". 
-
+`gradle execute`
 
 # Debug
 
-To enable debug mode, set the *-d* flag when executing the `ingest-vines.sh` script.
+To enable debug mode, set the **debug** property to `true` in the `vines.service.properties` file.
 
 This service exports data with the following topic: 
 
