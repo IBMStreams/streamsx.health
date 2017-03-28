@@ -214,7 +214,7 @@ public class VinesAdapterService {
 			throw(e);
 		}
 		
-		boolean isDebug = Boolean.getBoolean(cmd.getOptionValue("d", Boolean.FALSE.toString()));
+		boolean isDebug = Boolean.valueOf(cmd.getOptionValue("d", Boolean.FALSE.toString()));
 		
 		HashMap<String, Object> params = new HashMap<String, Object>();
 		params.put("hostAndPort", cmd.getOptionValue("h") + ":" + cmd.getOptionValue("p"));
