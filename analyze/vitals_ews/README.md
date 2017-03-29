@@ -96,6 +96,7 @@ To build the service:
 
 # Execute
 
-* The build EWSScoreService SAB file will be located in the **output** directory under **com.ibm.streamsx.health.analyze.rules.vitals.spl** project.  
-* Submit the *.sab file to a running Streams instance.
+Run the following command to launch the EWSScoreService:
+
+`gradle execute`
 

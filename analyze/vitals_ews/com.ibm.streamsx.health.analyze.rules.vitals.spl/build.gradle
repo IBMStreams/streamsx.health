@@ -38,6 +38,10 @@ task buildServices(dependsOn: [':ingest:common:com.ibm.streamsx.health.ingest:bu
     }
 }
 
+task execute(type: Exec) {
+    commandLine STREAMS_INSTALL + '/bin/streamtool', 'submitjob', 'output/com.ibm.streamsx.health.analyze.rules.vitals.service.EWScoreService/com.ibm.streamsx.health.analyze.rules.vitals.service.EWScoreService.sab' 
+}
+
 task cleanToolkit {
     doLast {
         splCleanToolkit()
