@@ -1,0 +1,173 @@
+// begin_generated_IBM_copyright_prolog                                       
+//                                                                            
+// This is an automatically generated copyright prolog.                       
+// After initializing,  DO NOT MODIFY OR MOVE                                 
+//****************************************************************************
+// Copyright (C) 2016 International Business Machines Corporation             
+// All Rights Reserved                                                        
+//****************************************************************************
+// end_generated_IBM_copyright_prolog   
+namespace com.ibm.streamsx.health.analyze.rules.vitals.service ;
+
+use com.ibm.streamsx.health.ingest.connector::IngestSubscribe ;
+use com.ibm.streamsx.health.ingest.types::Reading ;
+use com.ibm.streamsx.health.ingest.types::ReadingType ;
+use com.ibm.streamsx.health.ingest.types::Observation ;
+use
+	com.ibm.streamsx.health.analyze.rules.vitals.com.ibm.streamsx.health.analyze.rules.model::* ;
+use
+	com.ibm.streamsx.health.analyze.rules.vitals.com.ibm.streamsx.health.analyze.rules.model::Patient ;
+use
+	com.ibm.streamsx.health.analyze.rules.vitals::streamsx_health_analyze_rules_vitals ;
+use com.ibm.streamsx.json::TupleToJSON ;
+use com.ibm.streamsx.topology.topic::Publish ;
+use com.ibm.streamsx.health.ingest.types::PublishJson ;
+use com.ibm.streamsx.health.ingest.types.resolver::* ;
+use com.ibm.streamsx.topology.topic::Subscribe ;
+
+
+/**
+ * The EWSScoreService is generated from ODM Rules stored in the streamsx-health-analyze-rules-vitals project.
+ * This is an example service to demonstrate how to use the generated rules.  By default the service
+ * ingest data from the "ingest-beacon" service.  
+ *
+ * The service requires input data in the Observation_T format.  This service calculate a moving average of the
+ * readings for  a 10 second window every second.  
+ * 
+ * The service exports data with this topic:  analytics-ews
+ * The service exports data of schema `Patient o_patient` in JSON format.
+ * 
+ */
+composite EWScoreService
+{
+	param
+		expression<rstring> $topic : getSubmissionTimeValue("topic",
+			"ingest-beacon") ;
+	graph
+		(stream<Observation> IngestSubscribe_1_out0) as IngestSubscribe_1 =
+			IngestSubscribe()
+		{
+			param
+				topic : $topic ;
+		}
+
+		(stream<rstring patientId, int64 ts, ReadingType readingType, float64 value>
+			Aggregate_2_out0) as Aggregate_2 = Aggregate(Functor_3_out0 as inputStream)
+		{
+			window
+				inputStream : sliding, time(10), time(1), partitioned ;
+			param
+				partitionBy : readingType ;
+			output
+				Aggregate_2_out0 : value = Average(value) ;
+		}
+
+		(stream<rstring patientId, int64 ts, ReadingType readingType, float64 value>
+			Functor_3_out0) as Functor_3 = Functor(IngestSubscribe_1_out0)
+		{
+			output
+				Functor_3_out0 : ts = reading.ts, readingType = reading.readingType,
+					value = reading.value ;
+		}
+
+		(stream<Patient i_patient> VitalsCollector_out0) as VitalsCollector =
+			Custom(Aggregate_2_out0)
+		{
+			logic
+				state :
+				{
+					mutable Patient patient ;
+					mutable int64 lastTs ;
+				}
+
+				onTuple Aggregate_2_out0 :
+				{
+				// TODO:  The EWS service does not take into account
+				// the alertness or if oxygen is supplemented for the patient.
+				// This information comes from clinical notes and will be integrated
+				// at a later time.
+					patient.id =(ustring) patientId ;
+					patient.avpu = ALERT ;
+					patient.supplementOxygen = false ;
+					lastTs = Aggregate_2_out0.ts ;
+					if(isBPSystolic(readingType.code))
+					{
+						patient.bpSystolic =(float32) value ;
+					}
+
+					else if(isBPDiastolic(readingType.code))
+					{
+						patient.bpDiastolic =(float32) value ;
+					}
+
+					else if(isHeartRate(readingType.code))
+					{
+						patient.hr =(float32) value ;
+					}
+
+					else if(isSpO2(readingType.code))
+					{
+						patient.spo2 =(float32) value ;
+					}
+
+					else if(isTemperature(readingType.code))
+					{
+					// convert from F to C
+						patient.temperature =((float32) value -(float32) 32.0) *(float32) 5.0
+							/(float32) 9.0 ;
+					}
+
+					else if(isRespiratoryRate(readingType.code))
+					{
+						patient.respRate =(float32) value ;
+					}
+
+					if(isTraceable(Trace.debug))
+					{
+						appTrc(Trace.debug,(rstring) patient) ;
+					}
+
+					if(patient.respRate != (float32) 0.0 && patient.spo2 != (float32) 0.0 &&
+						patient.temperature != (float32) 0.0 && patient.bpSystolic !=(float32) 0.0
+						&& patient.hr !=(float32) 0.0)
+					{
+						submit(patient, 0u) ;
+					}
+
+				}
+
+				config
+					placement : partitionIsolation ;
+			}
+
+		(stream<Patient o_patient> streamsx_health_analyze_rules_vitals_6_out0) as
+			streamsx_health_analyze_rules_vitals_6 =
+				streamsx_health_analyze_rules_vitals(VitalsCollector_out0)
+			{
+			}
+
+		(stream<PublishJson> TupleToJSON_7_out0) as TupleToJSON_7 =
+				TupleToJSON(Functor2_8_out0 as inPort0Alias)
+			{
+			}
+
+		() as Publish_8 = Publish(TupleToJSON_7_out0)
+			{
+				param
+					topic : "analytics-ews" ;
+			}
+
+		(stream<PatientSummary> Functor2_8_out0) as Functor2_8 =
+				Functor(streamsx_health_analyze_rules_vitals_6_out0)
+			{
+				output
+					Functor2_8_out0 : avpu = o_patient.avpu, bpDiastolic =
+						o_patient.bpDiastolic, bpSystolic = o_patient.bpSystolic, ewsScore =
+						o_patient.ewsScore, hr = o_patient.hr, id = o_patient.id, newsScore =
+						o_patient.newsScore, respRate = o_patient.respRate, spo2 =
+						o_patient.spo2, supplementOxygen = o_patient.supplementOxygen,
+						temperature = o_patient.temperature ;
+			}
+
+	}
+

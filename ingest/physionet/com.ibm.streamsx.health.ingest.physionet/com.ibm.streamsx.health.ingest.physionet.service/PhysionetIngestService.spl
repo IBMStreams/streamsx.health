@@ -15,6 +15,8 @@ use com.ibm.streamsx.json::TupleToJSON ;
 use com.ibm.streamsx.health.ingest.types::* ;
 use com.ibm.streamsx.health.ingest.connector::IngestPublish ;
 use com.ibm.streamsx.datetime::*;
+use spl.file::*;
+
 
 /**
  * Topic definition for service
@@ -36,9 +38,39 @@ public rstring EMPTY() {
 	return "EMPTY";
 }
 
-public rstring READING_TYPE() {
-	return "ecg";
+stateful public map<rstring, rstring> LOAD_CODE_MAP() {
+	mutable map<rstring, rstring> codeMap = {};
+	rstring mapfile = getThisToolkitDir() + "/etc/codemap.csv";
+	mutable int32 err = 0;
+	uint64 fh = fopen(mapfile,"r",err);
+	
+	if(err == 0) {
+		while(err == 0) {
+			rstring line = freadLine(fh, err);
+			if(err == 0) {
+				list<rstring> tokens = tokenize(line, "|", false);
+				if(size(tokens) > 1) {
+					insertM(codeMap, tokens[0], tokens[1]);
+				}
+			}
+		}
+	}
+	
+	fclose(fh, err);	
+	
+	return codeMap;
 }
+
+public ReadingType populateReadingType(map<rstring, rstring> codeMap, rstring physionetCode) {
+	mutable ReadingType readingType = { system = "physionet", code = physionetCode };
+	if(has(codeMap, physionetCode)) {
+		readingType.code = codeMap[physionetCode];
+		readingType.system = STREAMS_SYSTEM_NAME();
+	}
+	
+	return readingType;
+}
+
 
 /** Service for ingesting data from Physionet
  * 
@@ -62,7 +94,7 @@ composite PhysionetIngestService
 			"360.0") ;	
 	graph
 		@parallel(width = 1)
-		(stream<ReadFromPhysionet.PhysiontPatient_T> ReadFromPhysionet_6_out0) as
+		(stream<ReadFromPhysionet.PhysiontPatient> ReadFromPhysionet_6_out0) as
 			ReadFromPhysionet_6 = ReadFromPhysionet()
 		{
 			param
@@ -70,35 +102,30 @@ composite PhysionetIngestService
 				frequency: $frequency;
 		}
 
-		(stream<Observation_T> Functor_7_out0) as Functor_7 =
+		(stream<Observation> Functor_7_out0) as Functor_7 =
 			Custom(ReadFromPhysionet_6_out0 as fromPhysionet)
 		{
 			logic
 				state: {
 					int64 baseTs = currentTimeMillis();
+					map<rstring, rstring> codeMap = LOAD_CODE_MAP();
 				}
 				onTuple fromPhysionet :
 				{
 					rstring location = $recordName ;
-					set<rstring> patientIds = { patientId } ;
-					Device_T device = { id = DEVICE_ID(), locationId = location } ;
-					ReadingSource_T ch1Src = { id = "ch1", sourceType = SOURCE_TYPE(), deviceId
-						= DEVICE_ID() } ;
-					ReadingSource_T ch2Src = { id = "ch2", sourceType = SOURCE_TYPE(), deviceId
-						= DEVICE_ID()} ;
+					Device device = { id = DEVICE_ID(), locationId = location } ;
+					mutable int32 i = 0;
+					while(i < size(signals)) {
+						ReadingSource readingSource = { id = "ch" + (rstring)i, sourceType = SOURCE_TYPE(), deviceId = DEVICE_ID() };
+						Reading reading = { ts = baseTs + (int64)fromPhysionet.ts, 
+							readingType = populateReadingType(codeMap, fromPhysionet.descriptions[i]), 
+							value = fromPhysionet.signals[i], uom = fromPhysionet.uoms[i] };
+						Observation obx = { device = device, patientId = patientId, readingSource = readingSource, reading = reading };
+						submit(obx, 0u);
 						
-					Reading_T ch1 = { ts = baseTs + (int64)fromPhysionet.ts, readingType = READING_TYPE(), value
-						=(float64) fromPhysionet.ch1, uom = EMPTY()} ;
-					Reading_T ch2 = { ts = baseTs + (int64)fromPhysionet.ts, readingType = READING_TYPE(), value
-						=(float64) fromPhysionet.ch2, uom = EMPTY() } ;
-					Observation_T obxCh1 = { device = device, patientId = patientIds,
-						readingSource = ch1Src, reading = ch1 } ;
-					Observation_T obxCh2 = { device = device, patientId = patientIds,
-						readingSource = ch2Src, reading = ch2 } ;
-					submit(obxCh1, 0u) ;
-					submit(obxCh2, 0u) ;
+						i++;
+					}
 				}
-
 		}
 
 		() as IngestPublish_6 = IngestPublish(Functor_7_out0)
@@ -115,28 +142,31 @@ composite ReadFromPhysionet(output Out0 )
 		expression<rstring> $recordName ;
 		expression<float64> $frequency;
 	type
-		static PhysionetSignal_T = float64 ts, int32 ch1, int32 ch2 ;
-		static PhysiontPatient_T = PhysionetSignal_T, tuple<rstring patientId> ;
+		static PhysionetSignal = float64 ts, list<float64> signals, list<rstring> descriptions, list<rstring> uoms;
+		static PhysiontPatient = PhysionetSignal, tuple<rstring patientId> ;
 	graph
-		(stream<PhysionetSignal_T> PhysionetGetSignals_1_out0) as
+		(stream<PhysionetSignal> PhysionetGetSignals_1_out0) as
 			PhysionetGetSignals_1 = PhysionetGetSignals()
 		{
 			param
 				recordName : $recordName ;
 				normalize : false ;
 			output
-				PhysionetGetSignals_1_out0 : ts = getTimestamp(), ch1 = getSignal(0), ch2 =
-					getSignal(1) ;
+				PhysionetGetSignals_1_out0 : 
+					ts = getTimestamp(), 
+					signals = getSignals(),
+					descriptions = getDescriptions(),
+					uoms = getUOMs();
 		}
 
-		(stream<PhysionetSignal_T> Throttle_3_out0) as Throttle_3 =
+		(stream<PhysionetSignal> Throttle_3_out0) as Throttle_3 =
 			Throttle(PhysionetGetSignals_1_out0)
 		{
 			param
 				rate : $frequency ;
 		}
 
-		(stream<PhysiontPatient_T> Out0) as Functor_5 = Functor(Throttle_3_out0)
+		(stream<PhysiontPatient> Out0) as Functor_5 = Functor(Throttle_3_out0)
 		{
 			output
 				Out0 : patientId = "patient" +(rstring) getChannel() ;

@@ -4,3 +4,4 @@ output/
 toolkit.xml
 impl/java/bin/**
 /build/
+/com.ibm.streamsx.health.ingest.types.resolver/

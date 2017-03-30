@@ -1,0 +1,89 @@
+<html>
+<head>
+ <style type="text/css">
+  .icon {
+   width: 80px;
+   height: auto;
+  }
+
+ .small-icon {
+  height: 20px;
+  width: 20px;
+ }
+  
+ .patient-card {
+  border: 5px solid black;
+  border-radius: 10px;
+  width: auto;
+  text-align: center;
+  margin-left: 5px;
+  margin-right: 5px;
+ }
+ 
+ .patient-card.normal {
+  border-color: green;
+ }
+ 
+ .patient-card.alrt {
+  border-color: orange;
+ }
+ 
+ .alert-icon-row {
+  margin-top: 10px;
+  margin-bottom: 10px;
+ }
+ 
+ .bed-icon-row {
+  margin-bottom: 10px;
+ }
+ 
+ .patient-id-row {
+  font-weight: bold;
+ }
+ 
+ </style>
+ <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+ <script src="assets/js/bootstrap.min.js"></script>
+ 
+</head>
+<body>
+ <div class="container-fluid">
+  <div class="row fill">
+   <div class="col-md-1 patient-card normal">
+     <div class="row fill alert-icon-row">
+      <div class="col-lg-12">
+       <img src="assets/images/red_heart.svg" class="small-icon" />
+      </div>
+     </div>
+     <div class="row fill bed-icon-row">
+      <div class="col-lg-12">
+       <img src="assets/images/bed.svg" class="icon" />
+      </div>
+     </div>
+     <div class="row fill patient-id-row">
+      <div class="col-lg-12">
+       <span>Smith, John</span>
+      </div>
+     </div>
+   </div>
+   <div class="col-md-1 patient-card normal">
+     <div class="row fill alert-icon-row">
+      <div class="col-lg-12">
+       <img src="assets/images/red_heart.svg" class="small-icon" />
+      </div>
+     </div>
+     <div class="row fill bed-icon-row">
+      <div class="col-lg-12">
+       <img src="assets/images/bed.svg" class="icon" />
+      </div>
+     </div>
+     <div class="row fill patient-id-row">
+      <div class="col-lg-12">
+       <span>Smith, John</span>
+      </div>
+     </div>
+   </div>
+  </div>
+ </div>
+</body>
+</html>

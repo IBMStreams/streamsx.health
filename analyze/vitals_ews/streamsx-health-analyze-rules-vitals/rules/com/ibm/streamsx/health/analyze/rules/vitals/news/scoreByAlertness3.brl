@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ilog.rules.studio.model.brl:ActionRule xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ilog.rules.studio.model.brl="http://ilog.rules.studio/model/brl.ecore">
+  <name>scoreByAlertness3</name>
+  <uuid>bfd5eb74-055b-424c-8a68-f220527faae4</uuid>
+  <locale>en_US</locale>
+  <definition><![CDATA[if patient alertness is not ALERT then
+	add patient news score by 3 ;]]></definition>
+</ilog.rules.studio.model.brl:ActionRule>

@@ -1,0 +1,70 @@
+namespace com.ibm.streamsx.health.analyze.ecg.service ;
+
+use com.ibm.streamsx.topology.topic::Subscribe ;
+use com.ibm.streamsx.health.analyze.ecg::QSRDetector ;
+use com.ibm.streamsx.topology.topic::Publish ;
+use com.ibm.streamsx.health.analyze.ecg::* ;
+use com.ibm.streamsx.health.ingest.types::* ;
+use com.ibm.streamsx.json::JSONToTuple ;
+use com.ibm.streamsx.health.ingest.types::Observation ;
+use com.ibm.streamsx.health.ingest.connector::IngestSubscribe ;
+public rstring QRSDetectorServiceTopic()
+{
+	return "analyze-qrsdetector" ;
+}
+
+public composite QRSDetectorService
+{
+	param
+		expression<rstring> $topic : getSubmissionTimeValue("ingestTopic") ;
+		expression<rstring> $readingTypeCode : getSubmissionTimeValue("readingTypeCode", "X100-8") ; // default to ECG Lead I
+	type
+		static ECGSignal = int64 ts, int32 value ;
+	graph
+		stream<ECGSignal> ResampledSignal = Resampler(Functor_5_out0 as
+			inPort0Alias)
+		{
+			param
+				samplingRate :(uint32) getSubmissionTimeValue("samplingRate") ;
+				newSamplingRate : 200u ;
+		}
+
+		(stream<ECGSignal, QRSDetector_T> QRSDetectOut) =
+			QRSDetector(ResampledSignal)
+		{
+			param
+				inputDataAttr : value ;
+				inputTimestampAttr : ts ;
+				sampleRate : 200 ;
+				outputDetectionOnly : true ;
+		}
+
+		() as Publish_4 = Publish(QRSDetectOut)
+		{
+			param
+				topic : QRSDetectorServiceTopic() ;
+		}
+
+		(stream<ECGSignal> Functor_5_out0) as Functor_5 =
+			Functor(Filter_7_out0 as inPort0Alias)
+		{
+			output
+				Functor_5_out0 : ts = reading.ts, value =(int32) reading.value ;
+		}
+
+		(stream<Observation> Filter_7_out0) as Filter_7 =
+			Filter(IngestSubscribe_8_out0)
+		{
+			param
+				filter : IngestSubscribe_8_out0.reading.readingType.code == $readingTypeCode ;
+		}
+
+		(stream<Observation> IngestSubscribe_8_out0) as IngestSubscribe_8 =
+			IngestSubscribe()
+		{
+			param
+				topic : $topic ;
+		}
+
+}
+

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ilog.rules.studio.model.brl:ActionRule xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ilog.rules.studio.model.brl="http://ilog.rules.studio/model/brl.ecore">
+  <name>scoreByRespRate3</name>
+  <uuid>d58a8fdc-7539-4806-b782-7d68fb73e2bd</uuid>
+  <locale>en_US</locale>
+  <definition><![CDATA[if the respiratory rate of patient is more than 24 or the respiratory rate of patient is less than 9 then
+ add patient news score by 3 ;]]></definition>
+</ilog.rules.studio.model.brl:ActionRule>

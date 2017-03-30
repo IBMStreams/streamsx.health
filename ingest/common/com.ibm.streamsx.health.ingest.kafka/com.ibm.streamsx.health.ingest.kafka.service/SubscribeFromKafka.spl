@@ -1,0 +1,52 @@
+// begin_generated_IBM_copyright_prolog                                       
+//                                                                            
+// This is an automatically generated copyright prolog.                       
+// After initializing,  DO NOT MODIFY OR MOVE                                 
+//****************************************************************************
+// Copyright (C) 2016 International Business Machines Corporation             
+// All Rights Reserved                                                        
+//****************************************************************************
+// end_generated_IBM_copyright_prolog             
+
+namespace com.ibm.streamsx.health.ingest.kafka.service ;
+
+use com.ibm.streamsx.messaging.kafka::KafkaConsumer ;
+use com.ibm.streamsx.topology.topic::Publish ;
+use com.ibm.streamsx.health.ingest.types::PublishJson ;
+
+/**
+ * This service helps publish json messages from the Health toolkit to Kafka
+ * 
+ * kafkaTopic - the topic queue on the Kafka server where the message should be read from
+ * topic - the topic to publish for other Streams application to consume this data
+ * 
+ * The service is set up to run with MessageHub.  Comment out the "jaasFile" attribute if authentication
+ * is not needed for sending data to your Kafka server.
+ */
+
+composite SubscribeJsonFromKafka
+{
+	param
+		expression<rstring> $kafkaTopic : getSubmissionTimeValue("kafkaTopic");
+		expression<rstring> $topic : getSubmissionTimeValue("topic");
+		expression<rstring> $jaasFile : "etc/jaas.conf";
+		
+	graph
+		stream<PublishJson> KafkaStream =
+			KafkaConsumer()
+		{
+			param
+				propertiesFile : getThisToolkitDir() + "/etc/consumer.properties" ;
+				topic : $kafkaTopic ;
+				jaasFile : $jaasFile ;
+				messageAttribute: "jsonString";
+		}
+
+		() as Publish_2 = Publish(KafkaStream)
+		{
+			param
+				topic : $topic ;
+		}
+
+}
+

@@ -1,20 +1,11 @@
 apply plugin: 'java'
-apply from: '../../common.gradle'
+apply from: "$rootProject.projectDir/common.gradle"
 
 def STREAMS_INSTALL = System.getenv("STREAMS_INSTALL")
-def healthIngestToolkitPath = '../../ingest/common/com.ibm.streamsx.health.ingest'
-def physionetToolkitPath = '../../ingest/physionet/com.ibm.streamsx.health.ingest.physionet'
-def jsonToolkitPath = STREAMS_INSTALL + '/toolkits/com.ibm.streamsx.json'
 def topologyToolkitPath = STREAMS_INSTALL + '/toolkits/com.ibm.streamsx.topology'
-def dateTimeToolkitPath = STREAMS_INSTALL + '/toolkits/com.ibm.streamsx.datetime'
 
-sourceSets {
-    main {
-        java {
-            srcDir 'impl/java/src'
-        }
-    }
-}
+ext.beaconProps = new Properties()
+beaconProps.load(file('./beacon.properties').newReader())
 
 repositories { 
     mavenCentral() 
@@ -22,38 +13,38 @@ repositories {
 
 dependencies {
     compile fileTree(dir: System.getenv("STREAMS_INSTALL") + '/lib', include: ['*.jar'])
+    compile fileTree(dir: topologyToolkitPath + '/lib', include: ['*.jar'])
+    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.5'
+    compile project(':ingest:common:com.ibm.streamsx.health.ingest')
+    compile group: 'commons-cli', name: 'commons-cli', version: '1.3.1'
 }
 
-task buildToolkit {
-    doLast {
-        splMakeToolkit()
-    }
+task buildService(type: JavaExec, dependsOn: 'classes') {
+	main = 'com.ibm.streamsx.health.simulate.beacon.services.HealthDataBeaconService'
+	classpath = sourceSets.main.runtimeClasspath
 }
 
-task buildIngestToolkit(type: GradleBuild) {
-    buildFile = '../../ingest/common/com.ibm.streamsx.health.ingest/build.gradle'
-    tasks = ['build']
+task getDeps(type: Copy) {
+    from configurations.compile
+    into "$buildDir/output/libs"
+    exclude '*streams*'
 }
 
-task buildPhysionetToolkit(type: GradleBuild) {
-    buildFile = '../../ingest/physionet/com.ibm.streamsx.health.ingest.physionet/build.gradle'
-    tasks = ['build']
+task cleanUp() {
+	doLast {
+		delete 'com.ibm.streamsx.health.simulate.beacon.services.HealthDataBeaconService.sab'
+		delete 'bin'
+	}
 }
 
-task buildServices(dependsOn: ['buildToolkit', 'buildIngestToolkit', 'buildPhysionetToolkit']) {
-    doLast {
-        def serviceToolkitPath = healthIngestToolkitPath + ':' + physionetToolkitPath + ':' + jsonToolkitPath + ':' + topologyToolkitPath + ':' + ':' + dateTimeToolkitPath
-        compileApp('com.ibm.streamsx.health.beacon', 'ECGBeaconService', serviceToolkitPath) 
-    }
+task execute(type: JavaExec) {
+  main = 'com.ibm.streamsx.health.simulate.beacon.services.HealthDataBeaconService'
+  classpath = configurations.runtime + files("$buildDir/libs/com.ibm.streamsx.health.simulate.beacon.jar")
+  args = [
+    '-n', beaconProps['numPatients'],
+    '-p', beaconProps['patientIDPrefix']
+  ]
 }
 
-task cleanToolkit {
-    doLast {
-        splCleanToolkit()
-        delete 'output'
-    }   
-}
-
-build.dependsOn buildServices
-clean.dependsOn cleanToolkit
-
+compileJava.dependsOn getDeps
+clean.dependsOn cleanUp

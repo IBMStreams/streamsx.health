@@ -92,7 +92,7 @@ void MY_OPERATOR::process(uint32_t idx) {
 				exit(1);
 			}
 	
-			freq = sampfreq(NULL);
+			freq = sampfreq(recordName);
 			
 			SPLAPPTRC(L_INFO, "Frequency: " << freq, PHY_LOG);
 	
@@ -113,14 +113,39 @@ void MY_OPERATOR::process(uint32_t idx) {
 		        <%  foreach my $attribute (@{ $outputPort0->getAttributes()}) { %>
 		            <% my $name = $attribute->getName(); %>  
 		            <% my $operation = $attribute->getAssignmentOutputFunctionName(); %>
+		            
+		            <%my $attrType = $attribute->getSPLType();%>	
+		            <%
+						if (SPL::CodeGen::Type::isList($attrType)) {
+							$attrType = SPL::CodeGen::Type::getElementType($attrType);
+						}
+					%>
+		            
 		            <%if ($operation eq "AsIs") { %>
 		                <%my $init = $attribute->getAssignmentValue()->getCppExpression(); %>
 		                otuple.set_<%=$name%>(<%=$init%>);
-		            <%} elsif($operation eq "getSignal") {%>
-		            	<%my $signalIndex = $attribute->getAssignmentOutputFunctionParameterValueAt(0)->getCppExpression();%>
-		            	<%my $attrCppType = $attribute->getCppType();%>
-		            	otuple.set_<%=$name%>(static_cast<<%=$attrCppType%>>(v[<%=$signalIndex%>]));
-		            <%} elsif($operation eq "getTimestamp") {%>
+		            <%} elsif($operation eq "getSignals") {%>
+						SPL::list< <%=$attrType%> > sigList;
+		            	for(int j = 0; j < nsig; ++j) {
+		            		sigList.pushBack(static_cast< <%=$attrType%> >((v[j] - s[j].baseline)/s[j].gain));
+		            	}		            	
+		            	otuple.set_<%=$name%>(sigList);
+		            <%} elsif($operation eq "getDescriptions") {%>
+		            	SPL::list< SPL::rstring > descList;
+		            	for(int j = 0; j < nsig; ++j) {
+		            		descList.pushBack(static_cast<rstring>(s[j].desc));
+		            	}
+						otuple.set_<%=$name%>(descList);
+					<%} elsif($operation eq "getFrequency") {%>
+						<%my $attrCppType = $attribute->getCppType();%>
+						otuple.set_<%=$name%>(static_cast<<%=$attrCppType%>>(freq));	
+					<%} elsif($operation eq "getUOMs") {%>
+						SPL::list< SPL::rstring > uomList;
+						for(int j = 0; j < nsig; ++j) {
+							uomList.pushBack(static_cast<rstring>(s[j].units ? s[j].units : "mV"));
+						}
+						otuple.set_<%=$name%>(uomList);
+					<%} elsif($operation eq "getTimestamp") {%>
 		            	otuple.set_<%=$name%>((i / freq)*1000);
 		            <%}%>
 		        <%}%>
@@ -188,7 +213,7 @@ void MY_OPERATOR::process(uint32_t idx) {
 				printf("uncalibrated; assume %g", WFDB_DEFGAIN);
 			else
 				printf("%g", s[i].gain);
-			printf(" adu/%s\n", s[i].units ? s[i].units : "mV");
+			printf(" adu/%s\n", s[i].units);
 			printf(" Initial value: %d\n", s[i].initval);
 			printf(" Storage format: %d\n", s[i].fmt);
 			printf(" I/O: ");

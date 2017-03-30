@@ -1,5 +1,5 @@
 apply plugin: 'java'
-apply from: '../../../common.gradle'
+apply from: "$rootProject.projectDir/common.gradle"
 
 repositories {
     mavenCentral()
@@ -36,7 +36,8 @@ task cleanToolkit {
 task deleteDeps(type: Delete) {
     delete 'lib'
     delete 'output'
+    delete 'com.ibm.streamsx.health.ingest.types.resolver'
 }
 
-build.dependsOn buildToolkit
+build.finalizedBy buildToolkit
 clean.dependsOn deleteDeps, cleanToolkit

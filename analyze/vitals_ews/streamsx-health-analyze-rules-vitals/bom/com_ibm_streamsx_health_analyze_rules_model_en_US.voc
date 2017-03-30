@@ -1,0 +1,39 @@
+# Vocabulary Properties
+uuid = 9f2c0a72-ec91-4f32-a91c-c389da626d96
+
+# com.ibm.streamsx.health.analyze.rules.model.Consciousness
+com.ibm.streamsx.health.analyze.rules.model.Consciousness#concept.label = consciousness
+com.ibm.streamsx.health.analyze.rules.model.Consciousness.ALERT#instance.label = ALERT
+com.ibm.streamsx.health.analyze.rules.model.Consciousness.CONFUSE#instance.label = CONFUSED
+com.ibm.streamsx.health.analyze.rules.model.Consciousness.PAIN#instance.label = RESPONDS TO PAIN
+com.ibm.streamsx.health.analyze.rules.model.Consciousness.UNCONSCIOUS#instance.label = UNCONSCIOUS
+com.ibm.streamsx.health.analyze.rules.model.Consciousness.VOICE#instance.label = RESPONDS TO VOICE
+com.ibm.streamsx.health.analyze.rules.model.Consciousness.valueOf(java.lang.String)#phrase.navigation = consciousness.valueOf({0})
+com.ibm.streamsx.health.analyze.rules.model.Consciousness.values()#phrase.navigation = consciousness.values()
+
+# com.ibm.streamsx.health.analyze.rules.model.Patient
+com.ibm.streamsx.health.analyze.rules.model.Patient#concept.label = patient
+com.ibm.streamsx.health.analyze.rules.model.Patient.avpu#phrase.action = set {this} responds to {alertness}
+com.ibm.streamsx.health.analyze.rules.model.Patient.avpu#phrase.navigation = {this} {alertness} 
+com.ibm.streamsx.health.analyze.rules.model.Patient.bpDiastolic#phrase.action = set the  diastolic blood presure of {this} to {diastolic blood pressure}
+com.ibm.streamsx.health.analyze.rules.model.Patient.bpDiastolic#phrase.navigation = the {diastolic blood pressure} of {this}
+com.ibm.streamsx.health.analyze.rules.model.Patient.bpSystolic#phrase.action = set the systolic blood pressure of {this} to {bp systolic}
+com.ibm.streamsx.health.analyze.rules.model.Patient.bpSystolic#phrase.navigation = systolic blood pressure of {this}
+com.ibm.streamsx.health.analyze.rules.model.Patient.ewsScore#phrase.navigation = {ews score} of {this}
+com.ibm.streamsx.health.analyze.rules.model.Patient.hr#phrase.action = set the heart rate of {this} to {heart rate}
+com.ibm.streamsx.health.analyze.rules.model.Patient.hr#phrase.navigation = {heart rate} of {this}
+com.ibm.streamsx.health.analyze.rules.model.Patient.id#phrase.action = set the id of {this} to {id}
+com.ibm.streamsx.health.analyze.rules.model.Patient.id#phrase.navigation = {id} of {this}
+com.ibm.streamsx.health.analyze.rules.model.Patient.incrementEwsScore(int)#phrase.action[0] = {this}.incrementEwsScore({0})
+com.ibm.streamsx.health.analyze.rules.model.Patient.incrementEwsScore(int)#phrase.action[1] = add {this} ews score by {0}
+com.ibm.streamsx.health.analyze.rules.model.Patient.incrementNewsScore(int)#phrase.action[0] = {this}.incrementNewsScore({0})
+com.ibm.streamsx.health.analyze.rules.model.Patient.incrementNewsScore(int)#phrase.action[1] = add {this} news score by {0}
+com.ibm.streamsx.health.analyze.rules.model.Patient.newsScore#phrase.navigation = {news score} of {this}
+com.ibm.streamsx.health.analyze.rules.model.Patient.respRate#phrase.action = set the respiratory rate of {this} to {respiratory rate}
+com.ibm.streamsx.health.analyze.rules.model.Patient.respRate#phrase.navigation = {respiratory rate} of {this}
+com.ibm.streamsx.health.analyze.rules.model.Patient.spo2#phrase.action = set the SpO2 of {this} to {SpO2}
+com.ibm.streamsx.health.analyze.rules.model.Patient.spo2#phrase.navigation = {SpO2} of {this}
+com.ibm.streamsx.health.analyze.rules.model.Patient.supplementOxygen#phrase.action = set supplement {this} with oxygen to {supplemented oxygen}
+com.ibm.streamsx.health.analyze.rules.model.Patient.supplementOxygen#phrase.navigation = {this} is supplement oxygen
+com.ibm.streamsx.health.analyze.rules.model.Patient.temperature#phrase.action = set the temperature of {this} to {temperature}
+com.ibm.streamsx.health.analyze.rules.model.Patient.temperature#phrase.navigation = {temperature} of {this}

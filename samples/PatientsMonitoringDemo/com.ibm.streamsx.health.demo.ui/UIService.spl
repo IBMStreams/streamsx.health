@@ -1,0 +1,151 @@
+namespace com.ibm.streamsx.health.demo.ui ;
+
+use com.ibm.streamsx.inet.rest::* ;
+use com.ibm.streamsx.health.ingest.types::* ;
+use com.ibm.streamsx.health.ingest.connector::* ;
+use com.ibm.streamsx.topology.topic::* ;
+use com.ibm.streamsx.json::* ;
+use com.ibm.streamsx.health.analyze.vital::* ;
+use com.ibm.streamsx.health.ingest.types.resolver::* ;
+
+public composite UIService
+{
+	type
+		AlertType = rstring patientId, boolean alert, list<rstring> messages ;
+	graph
+		() as Status = HTTPTupleView(Custom_5_out0 as inPort0Alias)
+		{
+			window
+				inPort0Alias : sliding, count(1) ;
+			param
+				port : 8080 ;
+				context : "health" ;
+				contextResourceBase : getThisToolkitDir() + "/etc/html/health" ;
+			config
+				placement : partitionColocation("ui") ;
+		}
+
+		(stream<PublishJson> HTTPTupleInjection_3_out0) as Simulate =
+			HTTPTupleInjection()
+		{
+			param
+				port : 8080 ;
+				context : "health" ;
+				contextResourceBase : getThisToolkitDir() + "/etc/html/health" ;
+			config
+				placement : partitionColocation("ui") ;
+		}
+
+		() as Publish_4 = Publish(HTTPTupleInjection_3_out0)
+		{
+			param
+				topic : "manipulator.control.input" ;
+		}
+
+		(stream<map<rstring, AlertType> patientMap> Custom_5_out0) as Custom_5 =
+			Custom(JSONToTuple_6_out0 as inPort0Alias)
+		{
+			logic
+				state :
+				{
+					mutable map<rstring, AlertType> patientMap ;
+				}
+
+				onTuple inPort0Alias :
+				{
+					insertM(patientMap, patientId, inPort0Alias) ;
+					submit({ patientMap = patientMap }, Custom_5_out0) ;
+				}
+
+		}
+
+		(stream<Observation> IngestSubscribe_7_out0) as IngestSubscribe_7 =
+			IngestSubscribe()
+		{
+			param
+				topic : "patient-manipulator-topic" ;
+		}
+
+		() as VitalsData = HTTPTupleView(Functor_11_out0 as inPort0Alias)
+		{
+			window
+				inPort0Alias : tumbling, count(1), partitioned ;
+			param
+				partitionKey : "patient_id", "readingType" ;
+				port : 8080 ;
+				context : "health" ;
+				contextResourceBase : getThisToolkitDir() + "/etc/html/health" ;
+			config
+				placement : partitionColocation("ui") ;
+		}
+
+		(stream<AlertType> JSONToTuple_6_out0) as JSONToTuple_6 =
+			JSONToTuple(Subscribe_1_out0)
+		{
+		}
+
+		(stream<PublishJson> Subscribe_1_out0) as Subscribe_1 = Subscribe()
+		{
+			param
+				topic :
+					com.ibm.streamsx.health.analyze.vital.connectors::TOPIC_VITALSRANGECHECK() ;
+				streamType : PublishJson ;
+		}
+
+		(stream<Observation, tuple<rstring patient_id, rstring readingType>>
+			Functor_11_out0) as Functor_11 = Functor(IngestSubscribe_7_out0 as
+			inPort0Alias)
+		{
+			param
+				filter :(isHeartRate(reading.readingType.code) || isBPSystolic(reading.readingType.code) ||
+					isBPDiastolic(reading.readingType.code) || isTemperature(reading.readingType.code)
+					|| isSpO2(reading.readingType.code)) ;
+			output
+				Functor_11_out0 : patient_id = patientId, readingType =
+					reading.readingType.code ;
+		}
+
+		() as WaveformData = HTTPTupleView(Aggregate_12_out0 as inPort0Alias)
+		{
+			window
+				inPort0Alias : sliding, count(3), count(1), partitioned ;
+			param
+				partitionKey : "patient_id", "readingType" ;
+				port : 8080 ;
+				context : "health" ;
+				contextResourceBase : getThisToolkitDir() + "/etc/html/health" ;
+			config
+				placement : partitionColocation("ui") ;
+		}
+
+		(stream<Observation, tuple<rstring patient_id, rstring readingType>>
+			Functor_12_out0) as Functor_12 = Functor(IngestSubscribe_7_out0)
+		{
+			param
+				filter :(isECGLeadI(reading.readingType.code) || isRespiratoryRate(reading.readingType.code)) && (patientId == "patient-1") ;
+			output
+				Functor_12_out0 : patient_id = patientId, readingType =
+					reading.readingType.code ;
+		}
+
+		(stream<list<Functor_11_out0> observations, rstring patient_id,
+			rstring readingType, uint64 windowCount> Aggregate_12_out0) as
+			Aggregate_12 = Aggregate(Functor_12_out0 as inPort0Alias)
+		{
+			logic
+				state :
+				{
+					mutable uint64 _winCount = 0ul ;
+				}
+
+			window
+				inPort0Alias : tumbling, time(1), partitioned ;
+			param
+				partitionBy : patient_id, readingType ;
+			output
+				Aggregate_12_out0 : observations = Collect(inPort0Alias), windowCount =
+					_winCount ++ ;
+		}
+
+}
+

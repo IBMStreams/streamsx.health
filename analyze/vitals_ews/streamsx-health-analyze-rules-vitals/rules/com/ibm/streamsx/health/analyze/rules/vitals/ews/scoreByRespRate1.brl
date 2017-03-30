@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ilog.rules.studio.model.brl:ActionRule xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ilog.rules.studio.model.brl="http://ilog.rules.studio/model/brl.ecore">
+  <name>scoreByRespRate1</name>
+  <uuid>1da148bb-1035-4226-aea9-8982140cfd77</uuid>
+  <locale>en_US</locale>
+  <definition><![CDATA[if the respiratory rate of patient is between 21 and 30 then
+	add patient ews score by 1 ;]]></definition>
+</ilog.rules.studio.model.brl:ActionRule>

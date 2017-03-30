@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src/main/java"/>
+	<classpathentry path="bin" kind="output"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8/"/>
+	<classpathentry kind="src" path="/com.ibm.streamsx.health.ingest"/>
+	<classpathentry sourcepath="/home/streamsadmin/.gradle/caches/modules-2/files-2.1/tec.uom/uom-se/1.0.4/6dbb9c05fa46735494fea7b34fac7c51b478a59b/uom-se-1.0.4-sources.jar" kind="lib" path="/home/streamsadmin/.gradle/caches/modules-2/files-2.1/tec.uom/uom-se/1.0.4/d1d5d3c047a00e2086afd7b10ed48ca95844b920/uom-se-1.0.4.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/home/streamsadmin/.gradle/caches/modules-2/files-2.1/tec.uom/uom-se/1.0.4/479a06a0c9eec51f42951aae55100ace6b790ad2/uom-se-1.0.4-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="/home/streamsadmin/.gradle/caches/modules-2/files-2.1/systems.uom/systems-common/0.5/e48c0cfd6d78fe09b6fd52a5dc5b64aaa465107c/systems-common-0.5-sources.jar" kind="lib" path="/home/streamsadmin/.gradle/caches/modules-2/files-2.1/systems.uom/systems-common/0.5/729d5ddb03a83d8f4dfed30f3188d36abe16572d/systems-common-0.5.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/home/streamsadmin/.gradle/caches/modules-2/files-2.1/systems.uom/systems-common/0.5/6828b30aa6e8a175208e99f2f65251094c71693b/systems-common-0.5-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="/home/streamsadmin/.gradle/caches/modules-2/files-2.1/systems.uom/systems-quantity/0.5/7dad0fb8718b66f1900dfaed8d4a442d4e6bd940/systems-quantity-0.5-sources.jar" kind="lib" path="/home/streamsadmin/.gradle/caches/modules-2/files-2.1/systems.uom/systems-quantity/0.5/789d49f41e47c580abf2fda5fa9d288fdfc0679d/systems-quantity-0.5.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/home/streamsadmin/.gradle/caches/modules-2/files-2.1/systems.uom/systems-quantity/0.5/57a2c05ce2d1d410d9bee71fb82640a9d7de24dd/systems-quantity-0.5-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="/home/streamsadmin/.gradle/caches/modules-2/files-2.1/commons-cli/commons-cli/1.3.1/12ec02d8cb9fbb33bd05506109a4fc8bcc3578/commons-cli-1.3.1-sources.jar" kind="lib" path="/home/streamsadmin/.gradle/caches/modules-2/files-2.1/commons-cli/commons-cli/1.3.1/1303efbc4b181e5a58bf2e967dc156a3132b97c0/commons-cli-1.3.1.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/home/streamsadmin/.gradle/caches/modules-2/files-2.1/commons-cli/commons-cli/1.3.1/53872c7f3192ae4c449bfa8ce203b4549110b478/commons-cli-1.3.1-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="/home/streamsadmin/.gradle/caches/modules-2/files-2.1/javax.measure/unit-api/1.0/8d60af295fc95714c210c795ce63b48b9d183213/unit-api-1.0-sources.jar" kind="lib" path="/home/streamsadmin/.gradle/caches/modules-2/files-2.1/javax.measure/unit-api/1.0/6b960260278588d7ff02fe376e5aad39a9c7440b/unit-api-1.0.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/home/streamsadmin/.gradle/caches/modules-2/files-2.1/javax.measure/unit-api/1.0/bdee9b315f4252e6abcd335e894d1a15d3a0d3a2/unit-api-1.0-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="/home/streamsadmin/.gradle/caches/modules-2/files-2.1/tec.uom.lib/uom-lib-common/1.0.1/960e3906cf116b9cd61d799bb9d71b96c5d250d0/uom-lib-common-1.0.1-sources.jar" kind="lib" path="/home/streamsadmin/.gradle/caches/modules-2/files-2.1/tec.uom.lib/uom-lib-common/1.0.1/db6eda4953faeb5f85ec63c8092da9ed76a5f8a5/uom-lib-common-1.0.1.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/home/streamsadmin/.gradle/caches/modules-2/files-2.1/tec.uom.lib/uom-lib-common/1.0.1/c308c5a53f6f7446560a3f70cd2c04b23f68d8d1/uom-lib-common-1.0.1-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="/home/streamsadmin/.gradle/caches/modules-2/files-2.1/tec.units/unit-ri/1.0/a2b6270835515821b8d83f36e747c4b9dff011df/unit-ri-1.0-sources.jar" kind="lib" path="/home/streamsadmin/.gradle/caches/modules-2/files-2.1/tec.units/unit-ri/1.0/fcc8be6dbc383c4abde0dad39c2cb476251f741b/unit-ri-1.0.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/home/streamsadmin/.gradle/caches/modules-2/files-2.1/tec.units/unit-ri/1.0/eb0e7ba9d2c444710dba695681bf72055415804d/unit-ri-1.0-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="/home/streamsadmin/.gradle/caches/modules-2/files-2.1/si.uom/si-quantity/0.6/c81059d8193ff283189e2e9412f1bc54bb9b2cec/si-quantity-0.6-sources.jar" kind="lib" path="/home/streamsadmin/.gradle/caches/modules-2/files-2.1/si.uom/si-quantity/0.6/cfb1f9b625e8fa27de8d98b24720c335dd91507b/si-quantity-0.6.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/home/streamsadmin/.gradle/caches/modules-2/files-2.1/si.uom/si-quantity/0.6/29765ab419dddb04b6cb2d24d656730b1fbb28ee/si-quantity-0.6-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="/home/streamsadmin/.gradle/caches/modules-2/files-2.1/si.uom/si-units/0.6/485c1831ddfaecae0a6f7fc777c89f76f0ce55b1/si-units-0.6-sources.jar" kind="lib" path="/home/streamsadmin/.gradle/caches/modules-2/files-2.1/si.uom/si-units/0.6/63e6a977793aa59c42c56e1db103ae2bd0f4b1b3/si-units-0.6.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/home/streamsadmin/.gradle/caches/modules-2/files-2.1/si.uom/si-units/0.6/804f36dc0eda306488ca0a0a996fb6949d50ba8b/si-units-0.6-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/opt/ibm/InfoSphere_Streams/4.2.0.0/lib/streams.sws.tools.jar"/>
+	<classpathentry kind="lib" path="/opt/ibm/InfoSphere_Streams/4.2.0.0/lib/streams.sws.dsmutils.jar"/>
+	<classpathentry kind="lib" path="/opt/ibm/InfoSphere_Streams/4.2.0.0/lib/com.ibm.streams.install.dependency.jar"/>
+	<classpathentry kind="lib" path="/opt/ibm/InfoSphere_Streams/4.2.0.0/lib/streams.sws.base.jar"/>
+	<classpathentry kind="lib" path="/opt/ibm/InfoSphere_Streams/4.2.0.0/lib/com.ibm.streams.resourcemgr.utils.jar"/>
+	<classpathentry kind="lib" path="/opt/ibm/InfoSphere_Streams/4.2.0.0/lib/com.ibm.streams.devicemgr.utils.jar"/>
+	<classpathentry kind="lib" path="/opt/ibm/InfoSphere_Streams/4.2.0.0/lib/streams.sws.util.jar"/>
+	<classpathentry kind="lib" path="/opt/ibm/InfoSphere_Streams/4.2.0.0/lib/com.ibm.streams.security.authc.jar"/>
+	<classpathentry kind="lib" path="/opt/ibm/InfoSphere_Streams/4.2.0.0/lib/streams.sws.internal.jar"/>
+	<classpathentry kind="lib" path="/opt/ibm/InfoSphere_Streams/4.2.0.0/lib/com.ibm.streams.devicemgr.jar"/>
+	<classpathentry kind="lib" path="/opt/ibm/InfoSphere_Streams/4.2.0.0/lib/streams.sws.bi.jar"/>
+	<classpathentry kind="lib" path="/opt/ibm/InfoSphere_Streams/4.2.0.0/lib/com.ibm.streams.operator.jar"/>
+	<classpathentry kind="lib" path="/opt/ibm/InfoSphere_Streams/4.2.0.0/lib/streams.sws.client.jar"/>
+	<classpathentry kind="lib" path="/opt/ibm/InfoSphere_Streams/4.2.0.0/lib/com.ibm.streams.management.mx.jar"/>
+	<classpathentry kind="lib" path="/opt/ibm/InfoSphere_Streams/4.2.0.0/lib/streams.domainmgr.server.jar"/>
+	<classpathentry kind="lib" path="/opt/ibm/InfoSphere_Streams/4.2.0.0/lib/com.ibm.streams.management.jmxmp.jar"/>
+	<classpathentry kind="lib" path="/opt/ibm/InfoSphere_Streams/4.2.0.0/lib/com.ibm.streams.resourcemgr.symphony.jar"/>
+	<classpathentry kind="lib" path="/opt/ibm/InfoSphere_Streams/4.2.0.0/lib/com.ibm.streams.operator.samples.jar"/>
+	<classpathentry kind="lib" path="/opt/ibm/InfoSphere_Streams/4.2.0.0/lib/streams.sws.annotation.jar"/>
+	<classpathentry kind="lib" path="/opt/ibm/InfoSphere_Streams/4.2.0.0/lib/streams.domainmgr.base.jar"/>
+	<classpathentry kind="lib" path="/opt/ibm/InfoSphere_Streams/4.2.0.0/lib/com.ibm.streams.resourcemgr.jar"/>
+	<classpathentry kind="lib" path="/opt/ibm/InfoSphere_Streams/4.2.0.0/lib/com.ibm.streams.resourcemgr.yarn.jar"/>
+	<classpathentry kind="lib" path="/opt/ibm/InfoSphere_Streams/4.2.0.0/toolkits/com.ibm.streamsx.topology/lib/com.ibm.streamsx.topology.jar"/>
+</classpath>

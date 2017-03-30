@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ilog.rules.studio.model.brl:ActionRule xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ilog.rules.studio.model.brl="http://ilog.rules.studio/model/brl.ecore">
+  <name>scoreByRespRate1</name>
+  <uuid>376cccc3-ccf9-403a-9f15-c798c9a1eb42</uuid>
+  <locale>en_US</locale>
+  <definition><![CDATA[if the respiratory rate of patient is between 9 and 11 then
+	add patient news score by 1;]]></definition>
+</ilog.rules.studio.model.brl:ActionRule>

@@ -1,0 +1,36 @@
+// begin_generated_IBM_copyright_prolog                                       
+//                                                                            
+// This is an automatically generated copyright prolog.                       
+// After initializing,  DO NOT MODIFY OR MOVE                                 
+//****************************************************************************
+// Copyright (C) 2016 International Business Machines Corporation             
+// All Rights Reserved                                                        
+//****************************************************************************
+// end_generated_IBM_copyright_prolog             
+
+namespace com.ibm.streamsx.health.ingest.connector ;
+
+use com.ibm.streamsx.health.ingest.types::ClinicalNoteEvent ;
+use com.ibm.streamsx.health.ingest.types::PublishJson_T ;
+use com.ibm.streamsx.json::TupleToJSON ;
+use com.ibm.streamsx.topology.topic::Publish ;
+
+public composite IngestClinicalNotePublish(input stream<ClinicalNoteEvent> In0 )
+{
+	param
+		expression<rstring> $topic ;
+	graph
+		(stream<PublishJson> TupleToJSON_1_out0) as TupleToJSON_1 =
+			TupleToJSON(In0)
+		{
+		}
+
+		() as Publish_2 = Publish(TupleToJSON_1_out0)
+		{
+			param
+				topic : $topic ;
+		}
+
+}
+
+

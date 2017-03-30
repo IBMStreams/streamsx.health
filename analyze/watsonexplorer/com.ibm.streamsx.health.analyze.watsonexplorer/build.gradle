@@ -1,0 +1,73 @@
+apply plugin: 'java'
+
+repositories {
+	mavenCentral()
+}
+
+ext.medServiceProps = new Properties()
+medServiceProps.load(file('./medication.service.properties').newReader())
+
+ext.sympServiceProps = new Properties()
+sympServiceProps.load(file('./symptom.service.properties').newReader())
+
+dependencies {
+    compile fileTree(dir: System.getenv("STREAMS_INSTALL") + '/lib', include: ['*.jar'])
+    compile fileTree(dir: System.getenv("STREAMS_INSTALL") + "/toolkits/com.ibm.streamsx.topology/lib/", include: ['com.ibm.streamsx.topology.jar'])
+    compile fileTree(dir: 'etc/toolkits/com.ibm.streamsx.watsonexplorer/impl/lib', include: ['com.ibm.streamsx.watsonexplorer.jar'])
+    compile group: 'commons-cli', name: 'commons-cli', version: '1.3.1'
+    compile project(':ingest:common:com.ibm.streamsx.health.ingest')
+	testCompile 'junit:junit:4.12'
+}
+
+task getWEXToolkit << {
+	exec {
+		commandLine 'curl', '-LJO', 'https://github.com/IBMStreams/streamsx.watsonexplorer/releases/download/1.0.1/com.ibm.streamsx.watsonexplorer.tar.gz'
+	}
+	copy {
+		from tarTree("com.ibm.streamsx.watsonexplorer.tar.gz")
+		into "etc/toolkits/"
+	}
+	delete 'com.ibm.streamsx.watsonexplorer.tar.gz'
+}
+
+task getDeps(type: Copy) {
+    from configurations.compile
+    into "$buildDir/output/libs"
+    exclude '*streams*'
+}
+
+task cleanup {
+    delete fileTree('./') { include '**/*.sab' }
+    delete 'bin'
+}
+
+task executeMedicationService(type: JavaExec) {
+	main = 'com.ibm.streamsx.health.analytics.wex.services.MedicationEventService'
+	classpath = configurations.runtime + files("$buildDir/libs/com.ibm.streamsx.health.analyze.watsonexplorer.jar")
+	args = [
+		'-c', medServiceProps['medicationCollection'],
+		'-x', medServiceProps['host'],
+		'-p', medServiceProps['port'],
+		'-t', medServiceProps['wexToolkitPath'],
+		'-s', medServiceProps['subscriptionTopic'],
+        '-d', medServiceProps['debug']
+		]
+	
+}
+
+task executeSymptomService(type: JavaExec) {
+	main = 'com.ibm.streamsx.health.analytics.wex.services.SymptomEventService'
+	classpath = configurations.runtime + files("$buildDir/libs/com.ibm.streamsx.health.analyze.watsonexplorer.jar")
+	args = [
+		'-c', sympServiceProps['symptomCollection'],
+		'-x', sympServiceProps['host'],
+		'-p', sympServiceProps['port'],
+		'-t', sympServiceProps['wexToolkitPath'],
+		'-s', sympServiceProps['subscriptionTopic'],
+        '-d', sympServiceProps['debug']
+		]
+}
+
+compileJava.dependsOn getWEXToolkit
+clean.finalizedBy cleanup
+build.finalizedBy getDeps

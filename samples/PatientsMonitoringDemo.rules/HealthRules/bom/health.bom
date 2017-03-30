@@ -1,0 +1,25 @@
+
+property loadGetterSetterAsProperties "true"
+property origin "xom:/HealthRules//health-xom"
+property uuid "d684086f-77cf-44f5-a620-859b084965f1"
+package demo;
+
+
+public class Patient
+{
+    public int age;
+    public readonly boolean alert;
+    public int bpDiastolic;
+    public int bpSystolic;
+    public float heartRate;
+    public float hrAverage;
+    public java.util.List messages domain 0,* class string;
+    public string name;
+    public string roomInfo;
+    public int spO2;
+    public float temperature;
+    public Patient();
+    public void addToMessages(string arg);
+    public void setAlert();
+}
+

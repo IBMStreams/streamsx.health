@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ilog.rules.studio.model.brl:ActionRule xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ilog.rules.studio.model.brl="http://ilog.rules.studio/model/brl.ecore">
+  <name>scoreBySysBp2</name>
+  <uuid>2639f81e-e9ce-4d2b-94e7-a062e47822dc</uuid>
+  <locale>en_US</locale>
+  <definition><![CDATA[if systolic blood pressure of patient is more than 199 or systolic blood pressure of patient is between 70 and 79 then
+	add patient ews score by 2; ]]></definition>
+</ilog.rules.studio.model.brl:ActionRule>

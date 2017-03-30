@@ -15,14 +15,14 @@ public class Observation implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	private Device device;
-	private PatientId patientId;
+	private String patientId;
 	private ReadingSource readingSource;
 	private Reading reading;
 
 	public Observation() {
 	}
 
-	public Observation(Device device, PatientId patientId, ReadingSource readingSource, Reading reading) {
+	public Observation(Device device, String patientId, ReadingSource readingSource, Reading reading) {
 		this.device = device;
 		this.patientId = patientId;
 		this.readingSource = readingSource;
@@ -31,7 +31,7 @@ public class Observation implements Serializable {
 	
 	public Observation(Observation observation) {
 		this.device = new Device(observation.device);
-		this.patientId = new PatientId(observation.patientId);
+		this.patientId = observation.patientId;
 		this.readingSource = new ReadingSource(observation.readingSource);
 		this.reading = new Reading(observation.reading);
 	}
@@ -44,11 +44,11 @@ public class Observation implements Serializable {
 		this.device = device;
 	}
 
-	public PatientId getPatientId() {
+	public String getPatientId() {
 		return patientId;
 	}
 
-	public void setPatientId(PatientId patientId) {
+	public void setPatientId(String patientId) {
 		this.patientId = patientId;
 	}
 

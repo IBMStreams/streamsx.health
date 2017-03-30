@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- begin_generated_IBM_copyright_prolog                                       -->
+<!--                                                                            -->
+<!-- This is an automatically generated copyright prolog.                       -->
+<!-- After initializing,  DO NOT MODIFY OR MOVE                                 -->
+<!--****************************************************************************-->
+<!-- Copyright (C) 2016 International Business Machines Corporation             -->
+<!-- All Rights Reserved                                                        -->
+<!--****************************************************************************-->
+<!-- end_generated_IBM_copyright_prolog                                         -->
+<info:toolkitInfoModel xmlns:common="http://www.ibm.com/xmlns/prod/streams/spl/common" xmlns:info="http://www.ibm.com/xmlns/prod/streams/spl/toolkitInfo">
+  <info:identity>
+    <info:name>streamsx.health</info:name>
+    <info:description></info:description>
+    <info:version>0.1</info:version>
+    <info:requiredProductVersion>4.2.0.0</info:requiredProductVersion>
+  </info:identity>
+</info:toolkitInfoModel>

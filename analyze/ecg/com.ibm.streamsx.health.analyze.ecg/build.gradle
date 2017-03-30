@@ -1,0 +1,68 @@
+apply plugin: 'java'
+apply from: "$rootProject.projectDir/common.gradle"
+
+def STREAMS_INSTALL = System.getenv("STREAMS_INSTALL")
+def jsonToolkitPath = STREAMS_INSTALL + '/toolkits/com.ibm.streamsx.json'
+def topologyToolkitPath = STREAMS_INSTALL + '/toolkits/com.ibm.streamsx.topology'
+def timeseriesToolkitPath = STREAMS_INSTALL + '/toolkits/com.ibm.streams.timeseries'
+
+ext.qrsProps = new Properties()
+qrsProps.load(file('./qrsdetector.service.properties').newReader())
+
+sourceSets {
+    main {
+        java {
+            srcDir 'impl/java/src'
+        }
+    }
+}
+
+repositories { 
+    mavenCentral() 
+}
+
+dependencies {
+    compile fileTree(dir: System.getenv("STREAMS_INSTALL") + '/lib', include: ['*.jar'])
+    compile fileTree(dir: 'opt/downloaded', include: ['*.jar'])
+    compile project(':ingest:common:com.ibm.streamsx.health.ingest')
+}
+
+task buildToolkit {
+    doLast {
+	tasks.copyJarToImpl.execute()
+        splMakeToolkit()
+    }
+}
+
+task buildServices(dependsOn: [':ingest:common:com.ibm.streamsx.health.ingest:buildToolkit', 'buildToolkit']) {
+    doLast {
+        def serviceToolkitPath = jsonToolkitPath + ':' + topologyToolkitPath + ':' + "${project(':ingest:common:com.ibm.streamsx.health.ingest').projectDir}" + ':' + timeseriesToolkitPath
+        compileApp('com.ibm.streamsx.health.analyze.ecg.service', 'QRSDetectorService', serviceToolkitPath)
+    }
+}
+
+task cleanToolkit {
+    doLast {
+        splCleanToolkit()
+        delete 'output'
+    }   
+}
+
+task copyJarToImpl(type: Copy) {
+    from fileTree(dir : 'build/libs', include : ['*.jar'])
+    into 'impl/lib'
+}
+
+task deleteDeps(type: Delete) {
+    delete fileTree(dir: 'impl/lib', include: ['*.jar'])
+    delete 'impl/java/bin'
+}
+
+task execute(type:Exec, dependsOn:buildServices) {
+    commandLine STREAMS_INSTALL + '/bin/streamtool', 'submitjob', 'output/com.ibm.streamsx.health.analyze.ecg.service.QRSDetectorService/com.ibm.streamsx.health.analyze.ecg.service.QRSDetectorService.sab', '-P', 'ingestTopic=' + qrsProps['subscriptionTopic'], '-P', 'readingTypeCode=' + qrsProps['readingTypeCode'], '-P', 'samplingRate=' + qrsProps['samplingRate'] 
+}
+
+
+build.dependsOn buildToolkit, buildServices
+clean.dependsOn deleteDeps, cleanToolkit
+

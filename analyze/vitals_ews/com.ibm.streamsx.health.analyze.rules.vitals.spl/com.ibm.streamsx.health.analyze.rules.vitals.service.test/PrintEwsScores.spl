@@ -1,0 +1,32 @@
+namespace com.ibm.streamsx.health.analyze.rules.vitals.service.test ;
+
+use com.ibm.streamsx.topology.topic::Subscribe ;
+use com.ibm.streamsx.json::JSONToTuple ;
+use com.ibm.streamsx.health.ingest.types::PublishJson ;
+use com.ibm.streamsx.health.analyze.rules.vitals.service::PatientSummary ;
+
+composite PrintEwsScores
+{
+	graph
+		(stream<PublishJson> Subscribe_1_out0) as Subscribe_1 = Subscribe()
+		{
+			param
+				topic : "analytics-ews" ;
+				streamType : PublishJson;
+		}
+
+		(stream<PatientSummary> JSONToTuple_2_out0) as JSONToTuple_2 =
+			JSONToTuple(Subscribe_1_out0)
+		{
+		}
+
+		() as Custom_3 = Custom(JSONToTuple_2_out0)
+		{
+			logic onTuple JSONToTuple_2_out0:
+			{
+				printStringLn((rstring)JSONToTuple_2_out0);
+			}
+		}
+
+}
+

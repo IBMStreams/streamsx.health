@@ -9,23 +9,35 @@
 // end_generated_IBM_copyright_prolog                                         
 namespace com.ibm.streamsx.health.ingest.types ;
 
+public rstring STREAMS_SYSTEM_NAME() {
+	return "streamsx.health/1.0";
+}
 
-type Reading_T = int64 ts, rstring readingType, float64 value, rstring uom;
+type Reading = int64 ts, ReadingType readingType, float64 value, rstring uom;
 
-type Observation_T = Device_T device, set<rstring> patientId, ReadingSource_T readingSource, Reading_T reading;
+type ReadingType = rstring system, rstring code;
+
+type Observation = Device device, rstring patientId, ReadingSource readingSource, Reading reading;
 	
-type Patient_T = set<rstring> ids, rstring name, rstring gender, rstring DOB, rstring status ;	
+type Patient = rstring id, rstring name, rstring gender, rstring DOB, rstring status ;	
 	
-type Location_T = rstring id, rstring name, rstring locationType;	
+type Location = rstring id, rstring name, rstring locationType;	
 
-type ReadingSource_T = rstring id, rstring sourceType, rstring deviceId;
+type ReadingSource = rstring id, rstring sourceType, rstring deviceId;
 
-type Device_T = rstring id, rstring locationId;
+type Device = rstring id, rstring locationId;
+
+
+/**
+ * Represent EMR records
+ */
+type ClinicalNoteEvent = rstring patientId, rstring eventType,
+	rstring eventName, int64 ts, float64 value, rstring uom ;
 
 /**
  * Schema type for service publish
  */
-type PublishJson_T = rstring jsonString ;
+type PublishJson = rstring jsonString ;
 
 
 

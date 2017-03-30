@@ -1,0 +1,12 @@
+namespace com.ibm.streamsx.health.sample.patientsmonitoring.rules.generated;
+use com.ibm.streams.rulescompiler::*;
+use com.ibm.streamsx.health.sample.patientsmonitoring.rules.generated.demo::*;
+
+public void addToMessages(mutable Patient obj, ustring arg0) {
+
+	appendM(obj.messages, arg0);
+}
+
+public void setAlert(mutable Patient obj) {
+	obj.alert = true;
+}

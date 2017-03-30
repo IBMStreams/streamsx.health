@@ -1,0 +1,8 @@
+namespace com.ibm.streamsx.health.analyze.rules.vitals.service ;
+
+use
+	com.ibm.streamsx.health.analyze.rules.vitals.com.ibm.streamsx.health.analyze.rules.model::Patient ;
+type PatientSummary = Patient ;
+
+
+	

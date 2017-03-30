@@ -26,8 +26,6 @@
             <arg value="-xpvzf" />
             <arg value="${dep.archive}" />
         </exec>
-<!--        <untar src="${ext.dir}/${dep.archive}" dest="${ext.dir}" compression="gzip"/> -->
-<!--        <chmod file="${ext.dir}/streamsx.topology/com.ibm.streamsx.topology/opt/python/templates/common/pyversion.sh" perm="u+x"/> -->
     </target>
 
     <target name="compile">
@@ -43,31 +41,13 @@
         <exec executable="tar" dir="${ext.dir}">
             <arg value="-cpzvf" />
             <arg value="${ext.dir}/${dep.archive}" />
-            <arg value="biosppy_streaming" />
-            <!--<arg value="biosppy" />-->
             <arg value="com.ibm.streamsx.health" />
             <arg value="streamsx.inet" />
             <arg value="streamsx.topology" />
         </exec>
-        <!--
-        <tar destfile="${ext.dir}/deps.tar.gz" compression="gzip" longfile="gnu">
-            <tarfileset dir="${ext.dir}/.." filemode="755">
-                <include name="${ext.dir}/streamsx.topology/com.ibm.streamsx.topology/opt/python/templates/common/pyversion.sh" />
-            </tarfileset>
-            <tarfileset dir="${ext.dir}/..">
-                <include name="${ext.dir}/biosppy_streaming/**" />
-                <include name="${ext.dir}/biosppy/**" />
-                <include name="${ext.dir}/streamsx.topology/**" />
-                <include name="${ext.dir}/com.ibm.streamsx.health/**" />
-                <include name="${ext.dir}/streamsx.inet/**" />
-            </tarfileset>
-        </tar>
-        -->
     </target>       
 
     <target name="remove-deps">
-        <delete dir="${ext.dir}/biosppy_streaming" />
-        <delete dir="${ext.dir}/biosppy" />
         <delete dir="${ext.dir}/streamsx.topology" />
         <delete dir="${ext.dir}/com.ibm.streamsx.health" />
         <delete dir="${ext.dir}/streamsx.inet" />
