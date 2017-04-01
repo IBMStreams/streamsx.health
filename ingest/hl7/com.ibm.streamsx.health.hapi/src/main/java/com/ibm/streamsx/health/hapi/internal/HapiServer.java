@@ -37,6 +37,16 @@ public class HapiServer {
 		messageQueue = new ArrayBlockingQueue<>(100);
 	}
 	
+	public HapiServer(Class<? extends Message> messageClass) {
+		context = new DefaultHapiContext();		
+		CanonicalModelClassFactory mcf = new CanonicalModelClassFactory(messageClass);
+		context.setModelClassFactory(mcf);
+		context.setValidationRuleBuilder(new NoValidationBuilder());
+		
+		
+		messageQueue = new ArrayBlockingQueue<>(100);
+	}
+	
 	public void start(int port)
 	{
 		TRACE.debug("Listening on " + port);
