@@ -1,0 +1,35 @@
+//*******************************************************************************
+//* Copyright (C) 2017 International Business Machines Corporation
+//* All Rights Reserved
+//*******************************************************************************
+
+namespace com.ibm.streamsx.health.ingest.iotp ;
+
+use com.ibm.streamsx.iot::EventsSubscribe ;
+use com.ibm.streamsx.topology.topic::Publish ;
+use com.ibm.streamsx.health.ingest.types::PublishJson ;
+use com.ibm.streamsx.iot::*;
+
+composite TransformIotData
+{
+	param
+		expression<rstring> $topic : getSubmissionTimeValue("topic", "ingest-beacon");
+	graph
+		(stream<DeviceEvent> EventsSubscribe_1_out0) as EventsSubscribe_1 =
+			EventsSubscribe()
+		{
+		}
+
+		() as Publish_2 = Publish(Functor_3_out0 as inPort0Alias)
+		{
+			param
+				topic : $topic;
+		}
+
+		(stream<PublishJson> Functor_3_out0) as Functor_3 =
+			Functor(EventsSubscribe_1_out0)
+		{
+		}
+
+}
+
