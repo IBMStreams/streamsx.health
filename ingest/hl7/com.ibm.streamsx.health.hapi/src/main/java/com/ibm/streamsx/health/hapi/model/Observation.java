@@ -9,20 +9,19 @@ import java.io.Serializable;
 
 public class Observation implements Serializable{
 	
-	private static final String EMPTYSTR = "";	
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 	
 	
-	private String ts = EMPTYSTR;
-	private String location = EMPTYSTR ;
-	private String observationId = EMPTYSTR;
-	private String observationValue = EMPTYSTR;
-	private String unit = EMPTYSTR;
-	private String sendingApp = EMPTYSTR;
-	private String sendingFacility = EMPTYSTR;
+	private String ts = IHL7Constants.EMPTYSTR;
+	private String location = IHL7Constants.EMPTYSTR ;
+	private String observationId = IHL7Constants.EMPTYSTR;
+	private String observationValue = IHL7Constants.EMPTYSTR;
+	private String unit = IHL7Constants.EMPTYSTR;
+	private String sendingApp = IHL7Constants.EMPTYSTR;
+	private String sendingFacility = IHL7Constants.EMPTYSTR;
 
 	// This is the SPL type defined by the toolkit.  This must match the Observation model class.
 	public static final String OBSERVATION_SCHEMA_SPL = "tuple<rstring ts, rstring location, rstring observationId,rstring observationValue, rstring unit, rstring sendingApp, rstring sendingFacility>";

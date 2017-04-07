@@ -1,0 +1,33 @@
+namespace com.ibm.streamsx.health.spl ;
+
+use com.ibm.streamsx.topology.topic::Subscribe ;
+use com.ibm.streamsx.json::JSONToTuple ;
+
+composite IngestAdt
+{
+	param
+		expression<rstring> $topic : "adt" ;
+	graph
+		() as Custom_2 = Custom(JSONToTuple_3_out0 as inputStream)
+		{
+			logic
+				onTuple inputStream :
+				{
+					printStringLn((rstring) inputStream) ;
+				}
+
+		}
+
+		(stream<rstring jsonString> Subscribe_3_out0) as Subscribe_3 = Subscribe()
+		{
+			param
+				topic : $topic ;
+				streamType : tuple<rstring jsonString> ;
+		}
+
+		(stream<AdtEvent> JSONToTuple_3_out0) as JSONToTuple_3 =
+			JSONToTuple(Subscribe_3_out0)
+		{
+		}
+
+}

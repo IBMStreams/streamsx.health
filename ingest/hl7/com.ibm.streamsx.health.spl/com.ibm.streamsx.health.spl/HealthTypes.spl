@@ -1,5 +1,5 @@
 //*******************************************************************************
-//* Copyright (C) 2016 International Business Machines Corporation
+//* Copyright (C) 2017 International Business Machines Corporation
 //* All Rights Reserved
 //*******************************************************************************
 
@@ -7,3 +7,13 @@ namespace com.ibm.streamsx.health.spl ;
 
 type Observation_T = rstring ts, rstring location, rstring observationId,
 	rstring observationValue, rstring unit, rstring sendingApp, rstring sendingFacility;
+	
+type MessageInfo = rstring receivingApp, rstring messageType, rstring receivingFacility, rstring sendingFacility, rstring messageTs, rstring sendingApp;
+
+type Event = rstring eventType, rstring recordTs, rstring eventTs;
+
+type Patient = list<rstring> alternateIds, rstring gender, rstring name, rstring dateOfBirth, rstring id, rstring status;
+
+type PV = rstring patientClass, rstring visitNumber, rstring priorLocation, rstring location;
+
+type AdtEvent = MessageInfo msg, Event evt, Patient patient, PV pv;

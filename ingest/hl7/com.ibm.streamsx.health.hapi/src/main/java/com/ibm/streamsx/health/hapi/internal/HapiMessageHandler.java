@@ -55,8 +55,6 @@ public class HapiMessageHandler implements ReceivingApplication {
 			TRACE.log(TraceLevel.ERROR, "Unable to generate ack message", e);
 		}
 		return theMessage;
-	
-		
 	}
 
 }
