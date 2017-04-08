@@ -4,7 +4,7 @@
 //*******************************************************************************
 
 
-package com.ibm.streamsx.health.hapi.model;
+package com.ibm.streamsx.health.ingest.types.model;
 
 import java.io.Serializable;
 

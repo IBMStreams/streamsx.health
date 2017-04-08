@@ -2,13 +2,16 @@ namespace com.ibm.streamsx.health.spl ;
 
 use com.ibm.streamsx.topology.topic::Subscribe ;
 use com.ibm.streamsx.json::JSONToTuple ;
+use com.ibm.streamsx.health.ingest.types::* ;
+use com.ibm.streamsx.health.ingest.connector::IngestAdtSubscribe ;
+use com.ibm.streamsx.health.ingest.types::AdtEvent ;
 
 composite IngestAdt
 {
 	param
 		expression<rstring> $topic : "adt" ;
 	graph
-		() as Custom_2 = Custom(JSONToTuple_3_out0 as inputStream)
+		() as Custom_2 = Custom(IngestAdtSubscribe_2_out0 as inputStream)
 		{
 			logic
 				onTuple inputStream :
@@ -18,16 +21,11 @@ composite IngestAdt
 
 		}
 
-		(stream<rstring jsonString> Subscribe_3_out0) as Subscribe_3 = Subscribe()
+		(stream<AdtEvent> IngestAdtSubscribe_2_out0) as IngestAdtSubscribe_2 =
+			IngestAdtSubscribe()
 		{
 			param
 				topic : $topic ;
-				streamType : tuple<rstring jsonString> ;
-		}
-
-		(stream<AdtEvent> JSONToTuple_3_out0) as JSONToTuple_3 =
-			JSONToTuple(Subscribe_3_out0)
-		{
 		}
 
 }

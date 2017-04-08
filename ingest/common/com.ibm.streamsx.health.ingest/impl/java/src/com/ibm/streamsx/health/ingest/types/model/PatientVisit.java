@@ -4,7 +4,7 @@
 //*******************************************************************************
 
 
-package com.ibm.streamsx.health.hapi.model;
+package com.ibm.streamsx.health.ingest.types.model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -20,10 +20,10 @@ public class PatientVisit implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	private String patientClass = IHL7Constants.EMPTYSTR;
-	private String location = IHL7Constants.EMPTYSTR;
-	private String priorLocation = IHL7Constants.EMPTYSTR;
-	private String visitNumber = IHL7Constants.EMPTYSTR;
+	private String patientClass = IInjestServicesConstants.EMPTYSTR;
+	private String location = IInjestServicesConstants.EMPTYSTR;
+	private String priorLocation = IInjestServicesConstants.EMPTYSTR;
+	private String visitNumber = IInjestServicesConstants.EMPTYSTR;
 	private List<Clinician> attendingDoctors = new ArrayList<Clinician>();
 	private List<Clinician> consultingDoctors = new ArrayList<Clinician>();
 	

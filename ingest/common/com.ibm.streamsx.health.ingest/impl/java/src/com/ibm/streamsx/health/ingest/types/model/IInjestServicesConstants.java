@@ -4,9 +4,9 @@
 //*******************************************************************************
 
 
-package com.ibm.streamsx.health.hapi.model;
+package com.ibm.streamsx.health.ingest.types.model;
 
-public interface IHL7Constants {
+public interface IInjestServicesConstants {
 	
 	public static final String EMPTYSTR = "";
 

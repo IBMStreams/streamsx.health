@@ -4,7 +4,7 @@
 //*******************************************************************************
 
 
-package com.ibm.streamsx.health.hapi.model;
+package com.ibm.streamsx.health.ingest.types.model;
 
 import java.io.Serializable;
 
@@ -19,12 +19,12 @@ public class MessageInfo implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	
-	String sendingApp = IHL7Constants.EMPTYSTR;
-	String sendingFacility = IHL7Constants.EMPTYSTR;
-	String receivingApp = IHL7Constants.EMPTYSTR;
-	String receivingFacility = IHL7Constants.EMPTYSTR;
-	String messageTs = IHL7Constants.EMPTYSTR;
-	String messageType = IHL7Constants.EMPTYSTR;
+	String sendingApp = IInjestServicesConstants.EMPTYSTR;
+	String sendingFacility = IInjestServicesConstants.EMPTYSTR;
+	String receivingApp = IInjestServicesConstants.EMPTYSTR;
+	String receivingFacility = IInjestServicesConstants.EMPTYSTR;
+	String messageTs = IInjestServicesConstants.EMPTYSTR;
+	String messageType = IInjestServicesConstants.EMPTYSTR;
 	
 	public String getSendingApp() {
 		return sendingApp;

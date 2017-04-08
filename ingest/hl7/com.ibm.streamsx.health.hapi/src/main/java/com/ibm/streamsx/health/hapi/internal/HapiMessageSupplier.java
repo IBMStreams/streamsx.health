@@ -36,7 +36,9 @@ public class HapiMessageSupplier implements Supplier<Message> {
 				server = new HapiServer(messageClass);
 			else
 				server = new HapiServer();
-			server.start(serverPort);
+			
+			System.out.println("Listening on: " + serverPort);
+			server.start(serverPort); 
 		}
 	}
 

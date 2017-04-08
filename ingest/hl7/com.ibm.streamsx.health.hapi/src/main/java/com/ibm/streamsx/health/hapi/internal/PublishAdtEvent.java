@@ -4,8 +4,8 @@ import java.io.ObjectStreamException;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.ibm.streamsx.health.hapi.model.ADTEvent;
 import com.ibm.streamsx.health.ingest.types.connector.JsonPublisher;
+import com.ibm.streamsx.health.ingest.types.model.ADTEvent;
 import com.ibm.streamsx.topology.TStream;
 import com.ibm.streamsx.topology.function.Function;
 

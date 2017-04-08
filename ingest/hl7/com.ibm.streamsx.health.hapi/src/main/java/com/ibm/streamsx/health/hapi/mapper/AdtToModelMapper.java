@@ -10,13 +10,13 @@ import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
 
-import com.ibm.streamsx.health.hapi.model.ADTEvent;
-import com.ibm.streamsx.health.hapi.model.Clinician;
-import com.ibm.streamsx.health.hapi.model.EventDetails;
-import com.ibm.streamsx.health.hapi.model.IHL7Constants;
-import com.ibm.streamsx.health.hapi.model.MessageInfo;
-import com.ibm.streamsx.health.hapi.model.Patient;
-import com.ibm.streamsx.health.hapi.model.PatientVisit;
+import com.ibm.streamsx.health.ingest.types.model.ADTEvent;
+import com.ibm.streamsx.health.ingest.types.model.Clinician;
+import com.ibm.streamsx.health.ingest.types.model.EventDetails;
+import com.ibm.streamsx.health.ingest.types.model.IInjestServicesConstants;
+import com.ibm.streamsx.health.ingest.types.model.MessageInfo;
+import com.ibm.streamsx.health.ingest.types.model.Patient;
+import com.ibm.streamsx.health.ingest.types.model.PatientVisit;
 
 import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.model.Message;
@@ -64,7 +64,7 @@ public class AdtToModelMapper implements Serializable {
 				XPN[] patientNames = pid.getPatientName();
 				for (XPN name : patientNames) {
 
-					if (patient.getName().equals(IHL7Constants.EMPTYSTR)) {
+					if (patient.getName().equals(IInjestServicesConstants.EMPTYSTR)) {
 						patient.setName(getPatientFullName(name));
 					} else {
 						patient.addAlternateName(getPatientFullName(name));

@@ -9,7 +9,7 @@ package com.ibm.streamsx.health.hapi.services;
 import com.ibm.streamsx.health.hapi.internal.HapiMessageSupplier;
 import com.ibm.streamsx.health.hapi.internal.PublishAdtEvent;
 import com.ibm.streamsx.health.hapi.mapper.AdtToModelMapper;
-import com.ibm.streamsx.health.hapi.model.ADTEvent;
+import com.ibm.streamsx.health.ingest.types.model.ADTEvent;
 import com.ibm.streamsx.topology.TStream;
 import com.ibm.streamsx.topology.Topology;
 import com.ibm.streamsx.topology.context.StreamsContext;
@@ -56,7 +56,7 @@ public class AdtIngest extends AbstractHL7Service {
 		
 		
 		// publish data as JSON
-		PublishAdtEvent.mapAndPublish(adtEvents, "adt");
+		PublishAdtEvent.mapAndPublish(adtEvents, getTopic());
 
 		try {
 			StreamsContextFactory.getStreamsContext(StreamsContext.Type.DISTRIBUTED).submit(topology);

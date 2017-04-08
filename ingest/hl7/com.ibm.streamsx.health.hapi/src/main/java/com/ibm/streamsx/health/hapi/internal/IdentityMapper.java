@@ -3,7 +3,7 @@ package com.ibm.streamsx.health.hapi.internal;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.ibm.streamsx.health.hapi.model.ADTEvent;
+import com.ibm.streamsx.health.ingest.types.model.ADTEvent;
 import com.ibm.streamsx.topology.function.Function;
 
 public class IdentityMapper<T>  implements Function<T, Iterable<ADTEvent>> {

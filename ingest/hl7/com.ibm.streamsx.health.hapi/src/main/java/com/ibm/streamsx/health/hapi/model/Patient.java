@@ -10,6 +10,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.ibm.streamsx.health.ingest.types.model.IInjestServicesConstants;
+
 /*
  * Represents a pateint 
  */
@@ -21,18 +23,18 @@ public class Patient implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	
-	private String id = IHL7Constants.EMPTYSTR;
+	private String id = IInjestServicesConstants.EMPTYSTR;
 	private List<String> alternateIds = new ArrayList<String>();
-	private String name = IHL7Constants.EMPTYSTR;
+	private String name = IInjestServicesConstants.EMPTYSTR;
 	private List<String> alternateNames = new ArrayList<String>();
 	
-	private String gender = IHL7Constants.EMPTYSTR;
-	private String dateOfBirth = IHL7Constants.EMPTYSTR;
+	private String gender = IInjestServicesConstants.EMPTYSTR;
+	private String dateOfBirth = IInjestServicesConstants.EMPTYSTR;
 	
 	/*
 	 * Bed status from PV1 if available
 	 */
-	private String status = IHL7Constants.EMPTYSTR;
+	private String status = IInjestServicesConstants.EMPTYSTR;
 	
 	public String getId() {
 		return id;

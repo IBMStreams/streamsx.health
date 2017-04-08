@@ -4,7 +4,7 @@
 //*******************************************************************************
 
 
-package com.ibm.streamsx.health.hapi.model;
+package com.ibm.streamsx.health.ingest.types.model;
 
 import java.io.Serializable;
 
@@ -19,9 +19,9 @@ public class EventDetails implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	
-	String eventType = IHL7Constants.EMPTYSTR;
-	String recordTs = IHL7Constants.EMPTYSTR;
-	String eventTs = IHL7Constants.EMPTYSTR;
+	String eventType = IInjestServicesConstants.EMPTYSTR;
+	String recordTs = IInjestServicesConstants.EMPTYSTR;
+	String eventTs = IInjestServicesConstants.EMPTYSTR;
 	
 	public String getEventType() {
 		return eventType;
