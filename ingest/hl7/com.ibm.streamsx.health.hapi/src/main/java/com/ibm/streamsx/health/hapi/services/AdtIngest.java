@@ -1,3 +1,9 @@
+//*******************************************************************************
+//* Copyright (C) 2017 International Business Machines Corporation
+//* All Rights Reserved
+//*******************************************************************************
+
+
 package com.ibm.streamsx.health.hapi.services;
 
 import com.ibm.streamsx.health.hapi.internal.HapiMessageSupplier;

@@ -1,8 +1,17 @@
+//*******************************************************************************
+//* Copyright (C) 2017 International Business Machines Corporation
+//* All Rights Reserved
+//*******************************************************************************
+
+
 package com.ibm.streamsx.health.hapi.model;
 
 import java.io.Serializable;
 
-public class Event implements Serializable {
+/*
+ * Represents event details from an ADT message
+ */
+public class EventDetails implements Serializable {
 
 	/**
 	 * 

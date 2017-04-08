@@ -1,9 +1,18 @@
+//*******************************************************************************
+//* Copyright (C) 2017 International Business Machines Corporation
+//* All Rights Reserved
+//*******************************************************************************
+
+
 package com.ibm.streamsx.health.hapi.model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+/*
+ * Represents a pateint 
+ */
 public class Patient implements Serializable {
 	
 	/**
@@ -15,8 +24,14 @@ public class Patient implements Serializable {
 	private String id = IHL7Constants.EMPTYSTR;
 	private List<String> alternateIds = new ArrayList<String>();
 	private String name = IHL7Constants.EMPTYSTR;
+	private List<String> alternateNames = new ArrayList<String>();
+	
 	private String gender = IHL7Constants.EMPTYSTR;
 	private String dateOfBirth = IHL7Constants.EMPTYSTR;
+	
+	/*
+	 * Bed status from PV1 if available
+	 */
 	private String status = IHL7Constants.EMPTYSTR;
 	
 	public String getId() {
@@ -62,6 +77,16 @@ public class Patient implements Serializable {
 	{
 		alternateIds.add(id);
 	}
+	public List<String> getAlternateNames() {
+		return alternateNames;
+	}
+	public void setAlternateNames(List<String> alternateNames) {
+		this.alternateNames = alternateNames;
+	}
 	
+	public void addAlternateName(String name)
+	{
+		this.alternateNames.add(name);
+	}
 
 }

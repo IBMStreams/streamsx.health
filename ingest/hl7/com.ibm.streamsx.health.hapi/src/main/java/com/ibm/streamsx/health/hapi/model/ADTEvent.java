@@ -1,7 +1,16 @@
+//*******************************************************************************
+//* Copyright (C) 2017 International Business Machines Corporation
+//* All Rights Reserved
+//*******************************************************************************
+
+
 package com.ibm.streamsx.health.hapi.model;
 
 import java.io.Serializable;
 
+/*
+ * Top level object encapsulating an ADT event
+ */
 public class ADTEvent implements Serializable{
 	
 	/**
@@ -11,7 +20,7 @@ public class ADTEvent implements Serializable{
 	
 	
 	private MessageInfo msg;
-	private Event evt;
+	private EventDetails evt;
 	private Patient patient;
 	private PatientVisit pv;
 	
@@ -21,10 +30,10 @@ public class ADTEvent implements Serializable{
 	public void setMsg(MessageInfo msg) {
 		this.msg = msg;
 	}
-	public Event getEvt() {
+	public EventDetails getEvt() {
 		return evt;
 	}
-	public void setEvt(Event evt) {
+	public void setEvt(EventDetails evt) {
 		this.evt = evt;
 	}
 	public Patient getPatient() {
