@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /*
- * Represents a pateint 
+ * Represents a patient 
  */
 public class Patient implements Serializable {
 	
