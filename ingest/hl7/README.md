@@ -4,6 +4,7 @@ The initial contribution consists of:
 
 * MLLP Server - listening for incoming connection from on a node on a specified port
 * HL7 Parser for ORU01 Messages - parser for parsing ORU01 messages and transforming them to SPL Tuples.  ORU01 messages represent observations gathered from devices, lab results, etc.
+* HL7 Parser for ADT Messages - parser for parsing ADT messages and extracting information from MSH, EVN, PID and PV1 segments.  Results are published as AdtEvent.
 
 When a message is recieved by the server, the server transforms the messages to SPL Tuples.  The SPL stream is then published with a specified topic.  Downstream applications can subscribe to that topic to analyze the ingested messages.
 
