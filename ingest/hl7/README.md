@@ -67,8 +67,11 @@ To run the application in Streams Studio:
     * -Dport=`<port number>`
     * -Dtopic=`<topic to publish to>`
 4.  Run this launch configuration.  This will generate the SPL application, and submit it to the instance as specified in the environment variables earlier.
-5.  To check that the microservice is running correctly, run the com.ibm.streamsx.health.spl::IngestObservation application from the com.ibm.streamsx.health.spl project.  By default, this application subscribes to "oru01" as the topic.  Modify this to match the topic being published by the service.
+5.  To check that the microservice is running correctly:
+    * For OruR01Ingest - run the com.ibm.streamsx.health.spl::IngestObservation application from the com.ibm.streamsx.health.spl project.  By default, this application subscribes to "oru01" as the topic.  Modify this to match the topic being published by the service.
+    * For AdtIngest - run the com.ibm.streamsx.health.spl::IngestAdt application from the com.ibm.streamsx.health.spl project.  By default, this application subscribes to "adt" as the topic.  
 
 # Dependencies
 
 * HAPI - [http://hl7api.sourceforge.net](http://hl7api.sourceforge.net)
+* com.ibm.streamsx.health.ingest
