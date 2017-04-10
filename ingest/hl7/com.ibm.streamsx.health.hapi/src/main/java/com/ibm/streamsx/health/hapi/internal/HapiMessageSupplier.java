@@ -22,6 +22,7 @@ public class HapiMessageSupplier implements Supplier<Message> {
 	private transient HapiServer server;
 	
 	private int serverPort;
+	private Class<? extends Message> messageClass;
 	
 	public HapiMessageSupplier(int port) {
 		
@@ -31,8 +32,13 @@ public class HapiMessageSupplier implements Supplier<Message> {
 	private void initServer() {
 		if (server == null)
 		{
-			server = new HapiServer();
-			server.start(serverPort);
+			if (messageClass != null)
+				server = new HapiServer(messageClass);
+			else
+				server = new HapiServer();
+			
+			System.out.println("Listening on: " + serverPort);
+			server.start(serverPort); 
 		}
 	}
 
@@ -51,6 +57,10 @@ public class HapiMessageSupplier implements Supplier<Message> {
 	private void write(ObjectOutputStream out) throws IOException
 	{
 		out.defaultWriteObject();
+	}
+	
+	public void setMessageClass(Class<? extends Message> class1) {
+		this.messageClass = class1;
 	}
 	
 

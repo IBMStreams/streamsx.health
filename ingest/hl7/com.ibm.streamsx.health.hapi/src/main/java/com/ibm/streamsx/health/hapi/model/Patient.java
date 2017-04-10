@@ -4,11 +4,13 @@
 //*******************************************************************************
 
 
-package com.ibm.streamsx.health.ingest.types.model;
+package com.ibm.streamsx.health.hapi.model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.ibm.streamsx.health.ingest.types.model.IInjestServicesConstants;
 
 /*
  * Represents a pateint 

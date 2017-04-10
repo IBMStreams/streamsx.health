@@ -1,0 +1,26 @@
+namespace com.ibm.streamsx.health.ingest.connector ;
+
+use com.ibm.streamsx.health.ingest.types::AdtEvent ;
+use com.ibm.streamsx.health.ingest.types::PublishJson ;
+use com.ibm.streamsx.json::JSONToTuple ;
+use com.ibm.streamsx.topology.topic::Subscribe ;
+
+public composite IngestAdtSubscribe(output Out0 )
+{
+	param
+		expression<rstring> $topic ;
+	graph
+		(stream<rstring jsonString> Subscribe_3_out0) as Subscribe_3 = Subscribe()
+		{
+			param
+				topic : $topic ;
+				streamType : tuple<rstring jsonString> ;
+		}
+
+		(stream<AdtEvent> Out0) as JSONToTuple_3 = JSONToTuple(Subscribe_3_out0)
+		{
+		}
+
+}
+
+

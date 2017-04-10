@@ -3,8 +3,11 @@
 //* All Rights Reserved
 //*******************************************************************************
 
-namespace com.ibm.streamsx.health.spl ;
 
-type Observation_T = rstring ts, rstring location, rstring observationId,
-	rstring observationValue, rstring unit, rstring sendingApp, rstring sendingFacility;
+package com.ibm.streamsx.health.ingest.types.model;
+
+public interface IInjestServicesConstants {
 	
+	public static final String EMPTYSTR = "";
+
+}

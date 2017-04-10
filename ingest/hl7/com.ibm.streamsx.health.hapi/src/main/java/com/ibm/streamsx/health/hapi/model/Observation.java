@@ -7,22 +7,23 @@ package com.ibm.streamsx.health.hapi.model;
 
 import java.io.Serializable;
 
+import com.ibm.streamsx.health.ingest.types.model.IInjestServicesConstants;
+
 public class Observation implements Serializable{
 	
-	private static final String EMPTYSTR = "";	
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 	
 	
-	private String ts = EMPTYSTR;
-	private String location = EMPTYSTR ;
-	private String observationId = EMPTYSTR;
-	private String observationValue = EMPTYSTR;
-	private String unit = EMPTYSTR;
-	private String sendingApp = EMPTYSTR;
-	private String sendingFacility = EMPTYSTR;
+	private String ts = IInjestServicesConstants.EMPTYSTR;
+	private String location = IInjestServicesConstants.EMPTYSTR ;
+	private String observationId = IInjestServicesConstants.EMPTYSTR;
+	private String observationValue = IInjestServicesConstants.EMPTYSTR;
+	private String unit = IInjestServicesConstants.EMPTYSTR;
+	private String sendingApp = IInjestServicesConstants.EMPTYSTR;
+	private String sendingFacility = IInjestServicesConstants.EMPTYSTR;
 
 	// This is the SPL type defined by the toolkit.  This must match the Observation model class.
 	public static final String OBSERVATION_SCHEMA_SPL = "tuple<rstring ts, rstring location, rstring observationId,rstring observationValue, rstring unit, rstring sendingApp, rstring sendingFacility>";

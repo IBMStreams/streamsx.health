@@ -13,15 +13,14 @@ public rstring STREAMS_SYSTEM_NAME() {
 	return "streamsx.health/1.0";
 }
 
+/**
+ * Observation Data Types
+ */
 type Reading = int64 ts, ReadingType readingType, float64 value, rstring uom;
 
 type ReadingType = rstring system, rstring code;
 
 type Observation = Device device, rstring patientId, ReadingSource readingSource, Reading reading;
-	
-type Patient = rstring id, rstring name, rstring gender, rstring DOB, rstring status ;	
-	
-type Location = rstring id, rstring name, rstring locationType;	
 
 type ReadingSource = rstring id, rstring sourceType, rstring deviceId;
 
@@ -33,6 +32,22 @@ type Device = rstring id, rstring locationId;
  */
 type ClinicalNoteEvent = rstring patientId, rstring eventType,
 	rstring eventName, int64 ts, float64 value, rstring uom ;
+
+/** 
+ * ADT Event Data Types
+ */
+
+type MessageInfo = rstring receivingApp, rstring messageType, rstring receivingFacility, rstring sendingFacility, rstring messageTs, rstring sendingApp;
+
+type EventDetails = rstring eventType, rstring recordTs, rstring eventTs;
+
+type Patient = list<rstring> alternateNames, list<rstring> alternateIds, rstring gender, rstring name, rstring dateOfBirth, rstring id, rstring status;
+
+type Clinician = rstring name, rstring id;
+
+type PatientVisit = rstring patientClass, rstring visitNumber, rstring priorLocation, rstring location, list<Clinician> attendingDoctors, list<Clinician> consultingDoctors;
+
+type AdtEvent = MessageInfo msg, EventDetails evt, Patient patient, PatientVisit pv;
 
 /**
  * Schema type for service publish

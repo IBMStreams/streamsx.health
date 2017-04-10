@@ -1,5 +1,5 @@
 apply plugin: 'java'
-
+apply plugin: 'eclipse'
 
 ext {
 	STREAMS_INSTALL = System.getenv('STREAMS_INSTALL')
@@ -19,6 +19,8 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 dependencies {
+	compile project(':ingest:common:com.ibm.streamsx.health.ingest')
+	
     // https://mvnrepository.com/artifact/ca.uhn.hapi/hapi-base
 	compile group: 'ca.uhn.hapi', name: 'hapi-base', version: '2.2'
 
@@ -80,6 +82,7 @@ task copyJar(type: Copy) {
 task copyScript(type: Copy) {
     into "$projectDir/release"
     from "$projectDir/run.sh"
+    from "$projectDir/runAdt.sh"
 }
 
 task rmRelease(type: Delete) {
