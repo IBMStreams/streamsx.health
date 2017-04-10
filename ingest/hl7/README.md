@@ -38,7 +38,7 @@ Set the following environment variables before starting Streams Studio:
 1.  `cd com.ibm.streamsx.health.hapi/release`
 1.  There are two microservices:
     * `./run.sh` - This runs the OBXORU01 microservice Java code and submits the job to the streams instance as specified in your environment variable.  
-    *.  `./runAdt.sh` - This runs the ADT microservice Java code and submits the job to the streams instance as specified in your environment variable.
+    * `./runAdt.sh` - This runs the ADT microservice Java code and submits the job to the streams instance as specified in your environment variable.
 1.  To customize the port and topic for the microservice, add the following VM arguments when running run.sh
     * -Dport=`<port number>`
     * -Dtopic=`<topic to publish to>`
