@@ -56,7 +56,7 @@ public class AdtIngest extends AbstractHL7Service {
 		
 		
 		// publish data as JSON
-		PublishAdtEvent.mapAndPublish(adtEvents, getTopic());
+		PublishAdtEvent.publish(adtEvents, getTopic());
 
 		try {
 			StreamsContextFactory.getStreamsContext(StreamsContext.Type.DISTRIBUTED).submit(topology);
