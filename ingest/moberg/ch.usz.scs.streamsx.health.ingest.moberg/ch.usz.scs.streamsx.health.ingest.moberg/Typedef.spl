@@ -1,0 +1,31 @@
+namespace ch.usz.scs.streamsx.health.ingest.moberg;
+
+type PatientIdTuple = tuple<rstring patientId> ;
+
+type PatientInfoTuple = tuple<
+	boolean isValid,
+	rstring FirstName,
+	rstring LastName,
+	rstring MedicalRecordNumber,
+	rstring PhysicianName,
+	rstring Gender,
+	rstring Birthdate,
+	rstring Timestamp,
+	rstring AdditionalInfo,
+	int64 SystemOffset,
+	rstring CnsInfo> ;
+		
+type DebugTuple = tuple<rstring debug_filename> ;
+
+type CnsDataTuple = tuple<
+	rstring MedicalRecordNumber,
+	rstring Aspect,
+	rstring Timestamp,
+	list<float32> Data,
+	rstring Unit> ;
+
+type CnsEventTuple = tuple<
+	rstring MedicalRecordNumber,
+	rstring Aspect,
+	rstring Timestamp,
+	rstring Message> ;

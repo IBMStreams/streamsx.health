@@ -1,0 +1,60 @@
+namespace ch.usz.scs.streamsx.health.ingest.moberg.service ;
+
+use ch.usz.scs.streamsx.health.ingest.moberg::* ;
+use ch.usz.scs.streamsx.health.ingest.moberg.timeshift::* ;
+use com.ibm.streamsx.json::TupleToJSON ;
+use com.ibm.streamsx.topology.topic::Publish ;
+use ch.usz.scs.streamsx.health.ingest.moberg::ReadCnsData ;
+use com.ibm.streamsx.health.ingest.connector::IngestPublish ;
+use com.ibm.streamsx.health.ingest.types::*;
+
+composite CnsDataService
+{
+	param
+		expression<rstring> $cnsArchiveRoot : "/home/streamsadmin/moberg/patient" ;
+	graph
+		stream<timestamp ts> CnsTimestampBeaconOut as CnsTimestampBeacon = Beacon()
+		{
+			param
+				period : 1.0 ;
+			output
+				CnsTimestampBeaconOut : ts = getTimestamp() ;
+		}
+
+		(stream<tuple<timestamp ts>, PatientIdTuple> PatientIdOut) as
+			PatientIdReader = ReadPatientId(CnsTimestampBeaconOut)
+		{
+			param
+				cnsArchiveRoot : $cnsArchiveRoot ;
+		}
+
+		(stream<tuple<timestamp ts>, PatientIdTuple, PatientInfoTuple>
+			PatientInfoOut) as PatientInfoReader = ReadPatientInfo(PatientIdOut)
+		{
+			param
+				cnsArchiveRoot : $cnsArchiveRoot ;
+		}
+		/** Note: currently, this application processes historic and live CNS data.		
+		In case you would like to process CNS data differently, change a code line in the ReadCnsData Operator.		
+		CnsOperators::ReadCnsData::process()		
+				- historic and live CNS data: processAspectHistoricAndLive(aspect, cns_source);		
+		 *		- live only CNS data: processAspectLiveOnly(aspect, cns_source);		
+		 *		
+		*/
+		(stream<CnsDataTuple> CnsDataOut ; stream<CnsEventTuple> CnsEventOut) as
+			CnsReader = ReadCnsData(PatientInfoOut)
+		{
+			param
+				cnsArchiveRoot : $cnsArchiveRoot ;
+				cnsSleepMs : 200 ;
+				cnsPayloadDurationUsec : 2000000l ;
+		}
+
+		(stream<Observation> DataToObservation_5_out0) as DataToObservation_5 =
+			DataToObservation(CnsDataOut)
+		{
+		}
+
+}
+
+

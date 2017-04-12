@@ -1,0 +1,49 @@
+namespace ch.usz.scs.streamsx.health.ingest.moberg.service ;
+
+use com.ibm.streamsx.topology.topic::Subscribe ;
+
+composite PrintCnsDataService
+{
+
+	type
+		JsonString = tuple <rstring jsonString>;
+		
+	graph
+		(stream<rstring jsonString> Subscribe_1_out0) as Subscribe_1 = Subscribe()
+		{
+			param
+				topic : "ingest.cnsevent" ;
+				streamType : JsonString ;
+		}
+
+		(stream<rstring jsonString> Subscribe_2_out0) as Subscribe_2 = Subscribe()
+		{
+			param
+				topic : "ingest.cnsdata" ;
+				streamType : JsonString ;
+		}
+
+		() as Custom_3 = Custom(Subscribe_1_out0 as inputStream)
+		{
+			logic
+				onTuple inputStream :
+				{
+					printStringLn((rstring)inputStream);
+
+				}
+
+		}
+
+		() as Custom_4 = Custom(Subscribe_2_out0 as inputStream)
+		{
+			logic
+				onTuple inputStream :
+				{
+					printStringLn((rstring)inputStream);
+
+				}
+
+		}
+
+}
+

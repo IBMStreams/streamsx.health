@@ -1,0 +1,42 @@
+namespace ch.usz.scs.streamsx.health.ingest.moberg.service ;
+
+use com.ibm.streamsx.health.ingest.types::Observation ;
+use ch.usz.scs.streamsx.health.ingest.moberg::*;
+
+/*
+ * type Reading = int64 ts, ReadingType readingType, float64 value, rstring uom;
+
+type ReadingType = rstring system, rstring code;
+
+type Observation = Device device, rstring patientId, ReadingSource readingSource, Reading reading;
+	
+type Patient = rstring id, rstring name, rstring gender, rstring DOB, rstring status ;	
+	
+type Location = rstring id, rstring name, rstring locationType;	
+
+type ReadingSource = rstring id, rstring sourceType, rstring deviceId;
+
+type Device = rstring id, rstring locationId;
+ 
+ */
+
+composite DataToObservation(input stream<CnsDataTuple> In0 ; output Out0)
+{
+	graph
+		(stream<Observation> Out0) as Custom_1 = Custom(In0)
+		{
+		
+			logic
+				onTuple In0:
+				{
+				
+					// TODO:  Convert CnsDataTuple to standard Observation type
+				
+				}
+		}
+
+}
+
+
+
+
