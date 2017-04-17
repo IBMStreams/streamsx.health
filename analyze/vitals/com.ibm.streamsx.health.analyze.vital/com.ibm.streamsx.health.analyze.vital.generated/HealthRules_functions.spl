@@ -1,0 +1,24 @@
+// begin_generated_IBM_copyright_prolog                                       
+//                                                                            
+// This is an automatically generated copyright prolog.                       
+// After initializing,  DO NOT MODIFY OR MOVE                                 
+//****************************************************************************
+// Copyright (C) 2016 International Business Machines Corporation             
+// All Rights Reserved                                                        
+//****************************************************************************
+// end_generated_IBM_copyright_prolog                
+
+namespace com.ibm.streamsx.health.analyze.vital.generated;
+use com.ibm.streams.rulescompiler::*;
+use com.ibm.streamsx.health.analyze.vital.generated.demo::*;
+
+public void addToMessages(mutable Patient obj, ustring arg0) {
+
+	appendM(obj.messages, arg0);
+}
+
+public void setAlert(mutable Patient obj) {
+	obj.alert = true;
+}
+
+

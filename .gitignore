@@ -1,6 +1,5 @@
 *.*~
 .gradle
-build/
 
 # SPL toolkit files
 .toolkitList

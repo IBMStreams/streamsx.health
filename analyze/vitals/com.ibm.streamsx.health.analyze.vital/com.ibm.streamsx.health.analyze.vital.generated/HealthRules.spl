@@ -1,0 +1,120 @@
+namespace com.ibm.streamsx.health.analyze.vital.generated;
+use com.ibm.streams.rulescompiler::*;
+use com.ibm.streamsx.health.analyze.vital.generated.demo::*;
+
+/**
+ * Composite generated from ruleset HealthRules
+ * The rules are divided by package.
+ * @input ruleIn Represents IN/INOUT parameter(s) Patient
+ * @output ruleOut Represents INOUT/OUT parameter(s) Patient
+ */
+public composite HealthRules(input stream<Patient i_Patient> ruleIn; output stream<tuple<Patient o_Patient>> ruleOut) {
+	graph
+		stream<tuple<Patient o_Patient>> ruleOut = Custom(ruleIn) {
+			logic state: {
+				mutable tuple<Patient o_Patient> ovar;
+			}
+			
+			onTuple ruleIn: {
+				ovar.o_Patient = ruleIn.i_Patient;
+				/* 
+				 * Now generating code for rule alertrules.no heart rate.
+				 * if 'the patient' 's heart rate is less than 20
+				 * then 
+				 * 	setAlert 'the patient' ;
+				 * 	add "HR:Patient needs ambulance" to the messages of 'the patient' ;  
+				*/
+				if((((ovar.o_Patient.heartRate < ((float32)20))))) {
+					setAlert(ovar.o_Patient);
+					addToMessages(ovar.o_Patient, "HR:Patient needs ambulance"u);
+				}
+				
+				/* 
+				 * Now generating code for rule alertrules.high blood pressure.
+				 * if the bp diastolic of 'the patient' is more than 80 or the bp systolic of 'the patient' is more than 120
+				 * then
+				 * 	add "ABPsys,ABPdias:Patient has high blood pressure" to the messages of 'the patient' ;
+				 * 	setAlert 'the patient'  ;
+				*/
+				if(((((ovar.o_Patient.bpDiastolic > 80)) || ((ovar.o_Patient.bpSystolic > 120))))) {
+					addToMessages(ovar.o_Patient, "ABPsys,ABPdias:Patient has high blood pressure"u);
+					setAlert(ovar.o_Patient);
+				}
+				
+				/* 
+				 * Now generating code for rule alertrules.fever check.
+				 * if the temperature of 'the patient' is more than 102
+				 * then
+				 * 	add "Temperature:Patient has a high fever" to the messages of 'the patient' ;
+				 * 	setAlert 'the patient'  ;
+				*/
+				if((((ovar.o_Patient.temperature > ((float32)102))))) {
+					addToMessages(ovar.o_Patient, "Temperature:Patient has a high fever"u);
+					setAlert(ovar.o_Patient);
+				}
+				
+				/* 
+				 * Now generating code for rule alertrules.low blood pressure.
+				 * if the bp diastolic of 'the patient' is less than 50 or the bp systolic of 'the patient' is less than 80
+				 * then
+				 * 	add "ABPsys,ABPdias:Patient has low blood pressure" to the messages of 'the patient' ;
+				 * 	setAlert 'the patient'  ;
+				*/
+				if(((((ovar.o_Patient.bpDiastolic < 50)) || ((ovar.o_Patient.bpSystolic < 80))))) {
+					addToMessages(ovar.o_Patient, "ABPsys,ABPdias:Patient has low blood pressure"u);
+					setAlert(ovar.o_Patient);
+				}
+				
+				/* 
+				 * Now generating code for rule alertrules.spo2 levels.
+				 * if the sp O2 of 'the patient' is less than 90
+				 * then
+				 * 	add "SpO2:spO2 should be greater than 90%" to the messages of 'the patient' ;
+				 * 	setAlert 'the patient' ;
+				*/
+				if((((ovar.o_Patient.spO2 < 90)))) {
+					addToMessages(ovar.o_Patient, "SpO2:spO2 should be greater than 90%"u);
+					setAlert(ovar.o_Patient);
+				}
+				
+				/* 
+				 * Now generating code for rule alertrules.heart rate within range.
+				 * if the heart rate of 'the patient' is less than 60 or the heart rate of 'the patient' is more than 120
+				 * then
+				 * 	add "HR:Heart rate must be between 60 and 115!" to the messages of 'the patient' ; 
+				 * 	setAlert 'the patient' ;
+				 * 	
+				 * 	
+				 * 	
+				*/
+				if(((((ovar.o_Patient.heartRate < ((float32)60))) || ((ovar.o_Patient.heartRate > ((float32)120)))))) {
+					addToMessages(ovar.o_Patient, "HR:Heart rate must be between 60 and 120!"u);
+					setAlert(ovar.o_Patient);
+				}
+				
+				/* 
+				 * Now generating code for rule alertrules.temperature within range.
+				 * if the temperature of 'the patient' is less than 97 or the temperature of 'the patient' is more than 99
+				 * then
+				 * 	add "Temperature:Patient body temperature is out of range" to the messages of 'the patient' ;
+				 * 	setAlert 'the patient'  ;
+				*/
+				if(((((ovar.o_Patient.temperature < ((float32)97))) || ((ovar.o_Patient.temperature > ((float32)99)))))) {
+					addToMessages(ovar.o_Patient, "Temperature:Patient body temperature is out of range"u);
+					setAlert(ovar.o_Patient);
+				}
+				
+				submit({o_Patient=ovar.o_Patient}, ruleOut);
+		}
+		
+		onPunct ruleIn: {
+			if (currentPunct() == Sys.WindowMarker) {
+				submit(Sys.WindowMarker, ruleOut);
+			}
+		}
+		
+		config restartable: true;
+		}
+		
+}
+

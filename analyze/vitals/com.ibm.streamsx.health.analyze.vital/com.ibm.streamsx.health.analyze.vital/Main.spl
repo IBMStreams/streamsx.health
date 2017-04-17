@@ -1,0 +1,35 @@
+namespace com.ibm.streamsx.health.analyze.vital ;
+
+use com.ibm.streamsx.health.ingest.connector::IngestSubscribe ;
+use com.ibm.streamsx.health.ingest.types::PublishJson_T ;
+use com.ibm.streamsx.health.ingest.types::Observation_T ;
+
+composite Main
+{
+	graph
+		(stream<Observation_T> IngestSubscribe_1_out0) as IngestSubscribe_1 =
+			IngestSubscribe()
+		{
+			param
+				topic : "patient-manipulator-topic" ;
+		}
+
+		() as Custom_2 = Custom(Filter_3_out0 as inPort0Alias)
+		{
+			logic
+				onTuple inPort0Alias :
+				{
+					printStringLn((rstring) inPort0Alias) ;
+				}
+
+		}
+
+		(stream<Observation_T> Filter_3_out0) as Filter_3 =
+			Filter(IngestSubscribe_1_out0)
+		{
+			param
+				filter : IngestSubscribe_1_out0.reading.readingType != "RESP" && IngestSubscribe_1_out0.reading.readingType != "ECGLeadI" ;
+		}
+
+}
+
