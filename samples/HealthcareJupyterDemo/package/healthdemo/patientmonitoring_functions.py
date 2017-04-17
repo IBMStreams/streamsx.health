@@ -6,7 +6,7 @@ from collections import deque
 from itertools import filterfalse
 
 from . import ecg_streaming
-from .utils import get_sampled_data_values, add_coordinate_data
+from .utils import get_sampled_data_values, add_coordinate_data, get_patient_id
 
 """
 Expects a list of signal values as an input
@@ -25,19 +25,21 @@ def streaming_rpeak(signalStream, sampling_rate, data_label):
 
 class DataPostProcessing:
     def __init__(self, data_label):
-        self.lastTime = -1.
         self.data_label = data_label
-        self.rpeak_queue = deque(maxlen=3)
+        self.rpeak_queue = {}
 
     def __call__(self, tup):
         coords = []
+        patientId = get_patient_id(tup)
+        self.rpeak_queue.setdefault(patientId, deque(maxlen=3))
         for rpeak_idx in tup['rpeaks']:
             rpeak_ts = get_sampled_data_values(tup, 'timestamp')[rpeak_idx]
-            self.rpeak_queue.append(rpeak_ts)
+            rpeak_queue = self.rpeak_queue[patientId]
+            rpeak_queue.append(rpeak_ts)
 
-            if len(self.rpeak_queue) == 3:
-                rr = self.rpeak_queue[1] - self.rpeak_queue[0]
-                rr_plus1 = self.rpeak_queue[2] - self.rpeak_queue[1]
+            if len(rpeak_queue) == 3:
+                rr = rpeak_queue[1] - rpeak_queue[0]
+                rr_plus1 = rpeak_queue[2] - rpeak_queue[1]
                 coords.append([rr, rr_plus1])
 
         add_coordinate_data(tup, 'Poincare - ' + self.data_label, coords)
@@ -47,15 +49,6 @@ class DataPostProcessing:
         tup.pop('__algo_vars', None)
         tup.pop('rpeaks', None)
         tup.pop('sampling_rate', None)
-
-        ## remove data points with a time stamp less than
-        ## the last time stamp recorded
-#        dedup_list = []
-#        for point in tup['data']:
-#            if point['ts'] > self.lastTime:
-#                dedup_list.append(point)
-#                self.lastTime = point['ts']
-#        tup['data'] = dedup_list
 
         return tup
 
