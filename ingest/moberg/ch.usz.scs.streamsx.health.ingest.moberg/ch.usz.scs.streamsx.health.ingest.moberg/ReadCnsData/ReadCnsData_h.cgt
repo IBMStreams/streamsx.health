@@ -56,9 +56,6 @@ private:
     
   void processAspectHistoricAndLive(CNSDataAccess::CAspects& aspect, CNSDataAccessWrapper::IcuDataSource* cns_source);
   
-  // to use this method you need to make a change in the CNS Data Access library
-  void processAspectLiveOnly(CNSDataAccess::CAspects& aspect, CNSDataAccessWrapper::IcuDataSource* cns_source);
-  
   // can not be const because payload.GetMessagesAt() is not const. 
   void processMeasurements(
 		  	CNSDataAccessWrapper::DataSettingsFile& dataSettingsFile,
@@ -80,12 +77,6 @@ private:
   		const float& m, const float& b);
   
   
-  /*
-   * Currently not used by ICU. this methods may be used for the IBM health toolkit
-   * Need to be tested with the new method. ReviewLatest()
-   * 
-   * can not be const because payload.GetMessagesAt() is not const. 
-   */
   void setEventTuple(
 		  CNSDataAccess::CPayload& payload, 
 		  const size_t& i,
@@ -105,12 +96,7 @@ private:
 		  const std::string& unit,
 		  const int& value);
   
-  /*
-    * Currently not used by ICU. this methods may be used for the IBM health toolkit
-    * Need to be tested with the new method. ReviewLatest()
-    * 
-    * can not be const because payload.GetMessagesAt() is not const. 
-    */
+
   void submitEventTuples(CNSDataAccess::CPayload& payload);
   
   // can not be const because payload.GetMessagesAt() is not const. 
