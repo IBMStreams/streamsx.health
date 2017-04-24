@@ -11,7 +11,7 @@ use com.ibm.streamsx.health.ingest.types::*;
 composite CnsDataService
 {
 	param
-		expression<rstring> $cnsArchiveRoot : "/home/streamsadmin/moberg/patient" ;
+		expression<rstring> $cnsArchiveRoot : "/home/streamsadmin/moberg/archive" ;
 	graph
 		stream<timestamp ts> CnsTimestampBeaconOut as CnsTimestampBeacon = Beacon()
 		{
@@ -34,13 +34,6 @@ composite CnsDataService
 			param
 				cnsArchiveRoot : $cnsArchiveRoot ;
 		}
-		/** Note: currently, this application processes historic and live CNS data.		
-		In case you would like to process CNS data differently, change a code line in the ReadCnsData Operator.		
-		CnsOperators::ReadCnsData::process()		
-				- historic and live CNS data: processAspectHistoricAndLive(aspect, cns_source);		
-		 *		- live only CNS data: processAspectLiveOnly(aspect, cns_source);		
-		 *		
-		*/
 		(stream<CnsDataTuple> CnsDataOut ; stream<CnsEventTuple> CnsEventOut) as
 			CnsReader = ReadCnsData(PatientInfoOut)
 		{
