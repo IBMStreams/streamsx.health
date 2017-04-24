@@ -12,16 +12,9 @@
 #include <exception>
 
 
-
-<%
-my $isNtpPort = ($model->getNumberOfInputPorts()==2)?1:0;
-%>
-
-
 MY_OPERATOR::MY_OPERATOR():
 		current_context_(NULL), next_context_(NULL), context_change_needed_(false), 
-		current_is_valid_(false), next_is_valid_(false),
-		current_start_time_(0L), next_start_time_(0L)
+		current_is_valid_(false), next_is_valid_(false)
 {
 	SPLAPPTRC(L_TRACE, "Operator ReadCnsData: Constructor", "");
 
@@ -39,20 +32,7 @@ MY_OPERATOR::MY_OPERATOR():
 	cns_archive_ = <%=$cnsArchiveRootValue%>;
 	cns_sleep_ms_ = <%=$cnsSleepMsValue%>;
 	cns_payload_duration_usec_ = <%=$cnsPayloadDurationUsecValue%>;
-	
-<%
-if (!$isNtpPort) {
-%>
-    // TODO:  Samantha Review timestamp changes
-	SPL::timestamp ts = Functions::Time::getTimestamp();
-	int64 seconds = Functions::Time::getSeconds(ts);
-	int64 nano = (int64)Functions::Time::getNanoseconds(ts);
-	
-	int64 epocMicro = nano*0.001;
-	epocMicro += seconds * 1000000;
-	
-	handleStartTime(epocMicro);
-<%}%>    
+	   
 }
  
 // Destructor
@@ -97,28 +77,6 @@ void MY_OPERATOR::process(Tuple const & tuple, uint32_t port) {
 		handlePatient(pid, mrn, is_valid_patient);
 			
 	} 
-	
-<%
-if ($isNtpPort) {
-%>
-	else if (port == 1) {
-		
-		IPort1Type const & tuple_cns_time = static_cast<IPort1Type const &>(tuple);
-		SPL::int64 start_time = tuple_cns_time.get_OtherSystemTimeEpocMicro();
-
-		handleStartTime(start_time);
-	}
-<%
-}
-%>
-}
-
-
-void MY_OPERATOR::handleStartTime(const ClockTime start_time) {
-	{ AutoMutex am (context_mutex_); 
-		next_start_time_ = start_time;
-	}
-	SPLAPPTRC(L_INFO, "CNS next start time: '" << start_time << "' [epoc micro].", "");
 }
 
 void MY_OPERATOR::handlePatient(const std::string& next_pid, const std::string& next_mrn, const bool next_is_valid) {
@@ -265,91 +223,10 @@ void MY_OPERATOR::processAspectHistoricAndLive(CNSDataAccess::CAspects& aspect, 
 
 }
 
-// TODO:  SAMANTHA - have to comment this code for it to compile
-/*
-void MY_OPERATOR::processAspectLiveOnly(CNSDataAccess::CAspects& aspect, CNSDataAccessWrapper::IcuDataSource* cns_source) {
-	SPLAPPTRC(L_DEBUG, "Processing " << aspect.toString(), "");
-	
-	CNSDataAccess::CPayload payload;
-	cns_source->readLatest(payload);
-	SPLAPPTRC(L_DEBUG, "Payload count '" << payload.Count() << "', for type " << payload.Type(), "");
-	
-	std::vector<ClockTime> sampleTimes;
-	cns_source->getSampleTimestamps(payload, sampleTimes);
-	if (sampleTimes.size() > 0) {
-		ClockTime firstTimestamp = sampleTimes.at(0);
-		
-		// to ensure that timestamps are more or less within the current timeframe
-		ClockTime current_time = getCurrentTime();
-		if (isTimestampOutOfBound(firstTimestamp, current_time)) {
-			SPLAPPTRC(L_WARN, "First timestamp for aspect '" << aspect.toString() << "' is out of bound (+/-24hours of current time).\n"
-					<< "\tTimestamp = '" << firstTimestamp << "' epoc micro \n"
-					<< "\tCurrent time = '" << current_time << "' epoc micro (from CNS NTP)\n"
-					<< "\tPayload count = '" << payload.Count() << "'\n"
-					<< "\tPayload type = '" << payload.Type() << "'\n"
-					<< "\tPayload duration = '" << cns_payload_duration_usec_ << "' usec (in)\n"
-					<< "\tPayload duration = '" << payload.Duration() << "' usec (out)\n"
-					, "");		
-		}
-	}
-		
-	if (payload.Type() == CNSDataAccess::CHAR_AGGREGATE) {
-		SPLAPPTRC(L_DEBUG, "Received new event. However, it is currently not processed.", "");
-		
-		submitEventTuples(payload);
-		
-	} else if (payload.Type() == CNSDataAccess::FLOAT_AGGREGATE 
-			|| payload.Type() == CNSDataAccess::INTEGER_AGGREGATE
-			|| payload.Type() == CNSDataAccess::COMPOSITE_AGGREGATE ) {
-		float64 m = updateSampleConversionsSlopeParam(cns_source, aspect.Type());
-		float64 b = updateSampleConversionYInterceptParam(cns_source, aspect.Type());
-		submitDataTuples(cns_source, payload, m, b);	
-	} else {
-		SPLAPPTRC(L_DEBUG, "Unknown value type '" << payload.Type() << "'", "");								
-	}
-	
-	SPLAPPTRC(L_DEBUG, "Aspect '" << aspect.toString() << "' done.", "");
-}
-*/
-
-ClockTime MY_OPERATOR::getCurrentTime() {
-	ClockTime current_time = 0L;
-	{ AutoMutex am (context_mutex_); 
-	     current_time = next_start_time_;
-	}
-	return current_time;
-}
-
-bool MY_OPERATOR::isTimestampOutOfBound(const ClockTime& start_time) {
-	ClockTime current_time = getCurrentTime();
-	
-	bool out_of_bound = isTimestampOutOfBound(start_time, current_time);
-
-	return out_of_bound;
-}
-
-bool MY_OPERATOR::isTimestampOutOfBound(const ClockTime& start_time, const ClockTime& current_time) {
-	ClockTime current_time_bound = 86400000000; //24 hours in epoc micro seconds
-	
-	ClockTime lower_bound_current_time = current_time - current_time_bound;
-	ClockTime upper_bound_current_time = current_time + current_time_bound;
-	
-	bool out_of_bound = false;
-	if (start_time < lower_bound_current_time || start_time > upper_bound_current_time) {
-		out_of_bound = true;
-	}
-	return out_of_bound;
-}
-
-
 void MY_OPERATOR::switchPatientIfNeeded() {
 	{ AutoMutex am (context_mutex_); 
 	
-	    if (next_start_time_ == 0) {
-			SPLAPPTRC(L_WARN, "Next recording start time is zero.", "");
-	    	return;
-	    }
-		if (context_change_needed_) {
+	if (context_change_needed_) {
 			SPLAPPTRC(L_INFO, "Switching patient context...", "");
 			
 			if (current_context_ != NULL ) {
@@ -362,15 +239,12 @@ void MY_OPERATOR::switchPatientIfNeeded() {
 			
 			current_is_valid_ = next_is_valid_;
 			
-			current_start_time_ = next_start_time_;
-
 			context_change_needed_ = false;
 		
 			SPLAPPTRC(L_INFO, "Switched patient context.", "");
 		
-		}
 	}
-}
+ }
 
 
 float64 MY_OPERATOR::updateSampleConversionsSlopeParam(
@@ -448,12 +322,13 @@ void MY_OPERATOR::setEventTuple(
 	SPLAPPTRC(L_TRACE, "Operator ReadCnsData: START setEventTuple setTimestamp", "");
 	
 	// TODO:  SAMANTHA - this line of code causes the operator to crash
+        // HINT: SUS: that might be a null pointer exception? if payload.ValueList() is not initialized and we call it on i
+        // HINT: SUS: check either payload.Count() or similar
 	tuple.set_Message(payload.ValueList()[i].value.sValue);
 	
 	SPLAPPTRC(L_TRACE, "Operator ReadCnsData: END setEventTuple", "");
 }
 
-// FIXME: refactor
 void MY_OPERATOR::processCompositeMeasurements(
 		CNSDataAccessWrapper::DataSettingsFile& dataSettingsFile,
 		CNSDataAccess::CPayload& payload, 
@@ -557,8 +432,6 @@ void MY_OPERATOR::processMeasurements(
 	}
 }
 
-
-// TODO:  SAMANTHA:  Change menthod signature to make it unambiguious
 void MY_OPERATOR::sendMeasurementTupleInt(
 		  const std::string& mrn, 
 		  const std::string& aspect,
@@ -669,8 +542,6 @@ void MY_OPERATOR::openPatientDirectory(const std::string& pid, const std::string
 			
 	}
 }
-
-
 
 bool MY_OPERATOR::getCurrentPatientIsValid() {
 	bool is_valid = false;
