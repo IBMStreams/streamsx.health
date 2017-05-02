@@ -77,7 +77,7 @@ def isECGLeadV4(obxDict):
     readingCode = getReadingCode(obxDict)
     return readingCode == 'X106-5'
 
-def isECGLeadIV5(obxDict):
+def isECGLeadV5(obxDict):
     """Check if the observation is of reading type ECGLeadV5
         Args:
             obxDict(dict): Observation in dictionary

@@ -23,7 +23,7 @@ def getReadingCode(obxDict):
     reading = getReading(obxDict)
     readingType = reading.get('readingType')
     readingCode = readingType.get('code')
-    return readingCode
+    return str(readingCode)
 
 def getReadingCodeSystem(obxDict):
     """Get reading code system from the observation
@@ -35,17 +35,17 @@ def getReadingCodeSystem(obxDict):
     reading = getReading(obxDict)
     readingType = reading.get('readingType')
     codeSystem = readingType.get('system')
-    return codeSystem
+    return str(codeSystem)
 
 def getReadingValue(obxDict):
     """Get reading value from the observation
     Args:
         obxDict(dict): Observation in dictionary
     Returns:
-        str: Value of the reading
+        float: Value of the reading
     """
     reading = getReading(obxDict)
-    return reading.get('value')
+    return float(reading.get('value'))
 
 def getUom(obxDict):
     """Get the unit of measure from the observation
@@ -55,17 +55,17 @@ def getUom(obxDict):
         str: The unit of measure fo the observation
     """
     reading = getReading(obxDict)
-    return reading.get('uom')
+    return str(reading.get('uom'))
 
 def getReadingTs(obxDict):
     """Get the timestamp from the observation
     Args:
         obxDict(dict): Observation in dictionary
     Returns:
-        str: Timestamp of when the observation is taken
+        int: Timestamp of when the observation is taken
     """
     reading = getReading(obxDict)
-    return reading.get('ts')
+    return int(reading.get('ts'))
 
 # Get Reading Source Information
 
@@ -86,7 +86,7 @@ def getReadingSourceId(obxDict):
         str: Reading source ID - If the device contains multiple channels, reading source Id will represent the channel of which the observation is taken.
     """
     readingSrc = getReadingSource(obxDict)
-    return readingSrc.get('id')
+    return str(readingSrc.get('id'))
 
 def getReadingSourceType(obxDict):
     """Get reading source type from the observation
@@ -96,7 +96,7 @@ def getReadingSourceType(obxDict):
         str: Type of reading source
     """
     readingSrc = getReadingSource(obxDict)
-    return readingSrc.get('sourceType')
+    return str(readingSrc.get('sourceType'))
 
 # Get Device Information
 def getDevice(obxDict):
@@ -124,7 +124,7 @@ def getLocationId(obxDict):
     Returns:
         str: Location Id of the device
     """
-    return getDevice(obxDict).get('locationId')
+    return str(getDevice(obxDict).get('locationId'))
 
 # Get Patient Id
 
@@ -135,4 +135,4 @@ def getPatientId(obxDict):
     Returns:
         str: Patient Id
     """
-    return obxDict.get('patientId')
+    return str(obxDict.get('patientId'))
