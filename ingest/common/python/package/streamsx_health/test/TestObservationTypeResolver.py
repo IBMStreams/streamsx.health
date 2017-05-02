@@ -1,3 +1,8 @@
+#****************************************************************************
+# Copyright (C) 2017 International Business Machines Corporation
+# All Rights Reserved
+# ****************************************************************************
+
 import unittest
 import json
 from streamsx_health.ingest.Observation import *
