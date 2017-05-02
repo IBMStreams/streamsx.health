@@ -198,6 +198,17 @@ public class ObservationTypeResolver {
 	}
 
 	/**
+	 * Returns `true` if the given Observation object represents an Impedance Respiratory
+	 * wave form
+	 * 
+	 * @return `true` if the Observation object represents an Impedance Respiratory
+	 *         waveform, `false` otherwise
+	 */
+	public static boolean isResp(Observation observation) {
+		return isResp(getCode(observation));
+	}
+	
+	/**
 	 * Returns `true` if the given Observation object represents a Temperature
 	 * vital.
 	 * 
@@ -476,6 +487,18 @@ public class ObservationTypeResolver {
 		return code.equalsIgnoreCase(ReadingTypeCode.RESP_RATE.getCode());
 	}
 
+	/**
+	 * Returns `true` if the given Observation object represents an Impedance Respiratory
+	 * wave form.
+	 * 
+	 * @return `true` if the Observation object represents an Impedance Respiratory wave form
+	 *         vital, `false` otherwise
+	 */
+	@Function(namespace="com.ibm.streamsx.health.ingest.types.resolver")
+	public static boolean isResp(String code) {
+		return code.equalsIgnoreCase(ReadingTypeCode.RESP.getCode());
+	}
+	
 	/**
 	 * Returns `true` if the given Observation object represents a Temperature
 	 * vital.

@@ -3,6 +3,7 @@ package com.ibm.streamsx.health.ingest.types.model;
 public enum ReadingTypeCode {
 
 	HEART_RATE("8867-4"),
+	RESP("76270-8"),
 	RESP_RATE("9279-1"),
 	TEMPERATURE("8310-5"),
 	SPO2("2710-2"),
