@@ -8,6 +8,7 @@ repositories {
 dependencies {
     compile fileTree(dir: System.getenv("STREAMS_INSTALL") + '/lib', include: ['*.jar'])
     compile files(System.getenv("STREAMS_INSTALL") + '/toolkits/com.ibm.streamsx.topology/lib/com.ibm.streamsx.topology.jar')
+    compile files(System.getenv("STREAMS_INSTALL") + '/ext/lib/gson2.3.1.jar')
     testCompile 'junit:junit:4.12'
 }
 
