@@ -4,6 +4,8 @@ Welcome to the Streams Healthcare Analytics Platform!
 
 Our goal is to make it easy to create real-time healthcare analytics application using IBM Streams.  We want our users to be able to rapidly develop, test and validate healthcare analytics. Researchers and clinicians should focus on the analytics part of an application, while the platform should take care of the necessary plumbing and infrastructure work.
 
+**NEW Release v0.1 is now available [here](https://github.com/IBMStreams/streamsx.health/releases/tag/v0.1)!**  See this [article](https://developer.ibm.com/streamsdev/2017/04/04/streams-healthcare-analytics-platform-first-pre-release-now-available/) to learn more about this release!
+
 ![Streams Healthcare Analytics Platform](https://github.com/IBMStreams/streamsx.health/blob/wiki/img/healthroadmap.jpg)
 
 This diagram shows what we think a typical Streams healthcare application will look like and its major components.  The blue boxes represent components that should be provided by the platform.  The purple box represents an area where our end-user should focus on.  (i.e. developing advanced analytics).  
