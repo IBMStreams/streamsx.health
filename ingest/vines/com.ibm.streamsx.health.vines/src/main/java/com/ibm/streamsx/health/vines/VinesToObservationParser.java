@@ -61,16 +61,18 @@ public class VinesToObservationParser implements Function<Vines, VinesParserResu
 	private DateTimeFormatter formatter;
 	
 	private transient VinesToStreamsCodeLookupTable lookupTable;
-	private Supplier<Boolean> mappingEnabled;
-
-	public VinesToObservationParser(Supplier<Boolean> mappingEnabled) {
-		this.mappingEnabled = mappingEnabled;
+	private Supplier<String> mappingEnabledSupplier;
+	private boolean isMappingEnabled;
+	
+	public VinesToObservationParser(Supplier<String> mappingEnabledSupplier) {
+		this.mappingEnabledSupplier = mappingEnabledSupplier;
 	}
 	
 	public Object readResolve() throws ObjectStreamException {
 		formatter = new DateTimeFormatterBuilder()
 				.appendPattern(DATE_TIME_PATTERN)
 				.toFormatter(Locale.ENGLISH);
+		isMappingEnabled = Boolean.parseBoolean(mappingEnabledSupplier.get());
 		
 		try {
 			InputStream inputStream = Resources.getResource(MAPPING_FILE).openStream();
@@ -282,7 +284,7 @@ public class VinesToObservationParser implements Function<Vines, VinesParserResu
 
 	private ReadingType getReadingType(String vinesName) {
 		ReadingType readingType;
-		String code = mappingEnabled.get() == Boolean.TRUE ? lookupTable.lookupPlatformCode(vinesName) : null;
+		String code = isMappingEnabled ? lookupTable.lookupPlatformCode(vinesName) : null;
 		if(code != null) {
 			readingType = new ReadingType(ReadingTypeSystem.STREAMS_CODE_SYSTEM, code);
 		} else {
