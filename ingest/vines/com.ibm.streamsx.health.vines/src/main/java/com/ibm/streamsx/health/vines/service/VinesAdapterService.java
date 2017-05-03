@@ -33,6 +33,7 @@ import com.ibm.streamsx.topology.context.StreamsContext.Type;
 import com.ibm.streamsx.topology.context.ContextProperties;
 import com.ibm.streamsx.topology.context.StreamsContextFactory;
 import com.ibm.streamsx.topology.function.Function;
+import com.ibm.streamsx.topology.function.Supplier;
 import com.ibm.streamsx.topology.spl.SPL;
 import com.ibm.streamsx.topology.spl.SPLSchemas;
 
@@ -82,9 +83,12 @@ public class VinesAdapterService {
 		rabbitMQParams.put("password", topo.createSubmissionParameter("password", String.class));
 		rabbitMQParams.put("queueName", topo.createSubmissionParameter("queueName", String.class));
 		rabbitMQParams.put("messageAttribute", SPLSchemas.STRING.getAttribute(0).getName());
+		Supplier<Boolean> mappingEnabledSubmissionParam = topo.createSubmissionParameter("mappingEnabled", Boolean.class);
 		
 		TStream<String> srcStream = SPL.invokeSource(topo, "com.ibm.streamsx.messaging.rabbitmq::RabbitMQSource", rabbitMQParams, SPLSchemas.STRING).toStringStream();
-		TStream<VinesParserResult> parserStream = srcStream.transform(VinesMessageParser::fromJson).transform(new VinesToObservationParser());
+		TStream<VinesParserResult> parserStream = srcStream
+				.transform(VinesMessageParser::fromJson)
+				.transform(new VinesToObservationParser(mappingEnabledSubmissionParam));
 		
 		// Observation stream
 		TStream<Observation> vinesStream = parserStream.multiTransform(new ObservationFunction());
@@ -193,6 +197,13 @@ public class VinesAdapterService {
 								   .type(Boolean.class)
 								   .build();
 		
+		Option mappingEnabledOption = Option.builder("m")
+									.longOpt("mapping-enabled")
+									.argName("isMappingEnabled")
+									.required(true)
+									.type(Boolean.class)
+									.build();
+		
 		Options options = new Options();
 		options.addOption(contextOption);
 		options.addOption(hostOption);
@@ -202,6 +213,7 @@ public class VinesAdapterService {
 		options.addOption(queueOption);
 		options.addOption(exchangeOption);
 		options.addOption(debugOption);
+		options.addOption(mappingEnabledOption);
 		
 		CommandLineParser parser = new DefaultParser();
 		CommandLine cmd = null;
@@ -222,6 +234,7 @@ public class VinesAdapterService {
 		params.put("password", cmd.getOptionValue("P"));
 		params.put("queueName", cmd.getOptionValue("q"));
 		params.put("exchangeName", cmd.getOptionValue("e", ""));
+		params.put("mappingEnabled", cmd.getOptionValue("m"));
 		
 		HashMap<String, Object> config = new HashMap<>();
 		config.put(ContextProperties.SUBMISSION_PARAMS, params);

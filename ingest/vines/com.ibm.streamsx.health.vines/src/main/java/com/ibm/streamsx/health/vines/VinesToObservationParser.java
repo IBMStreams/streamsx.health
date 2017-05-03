@@ -38,6 +38,7 @@ import com.ibm.streamsx.health.vines.model.Terms;
 import com.ibm.streamsx.health.vines.model.Vines;
 import com.ibm.streamsx.health.vines.model.WaveformHelper;
 import com.ibm.streamsx.topology.function.Function;
+import com.ibm.streamsx.topology.function.Supplier;
 
 public class VinesToObservationParser implements Function<Vines, VinesParserResult> {
 
@@ -60,6 +61,11 @@ public class VinesToObservationParser implements Function<Vines, VinesParserResu
 	private DateTimeFormatter formatter;
 	
 	private transient VinesToStreamsCodeLookupTable lookupTable;
+	private Supplier<Boolean> mappingEnabled;
+
+	public VinesToObservationParser(Supplier<Boolean> mappingEnabled) {
+		this.mappingEnabled = mappingEnabled;
+	}
 	
 	public Object readResolve() throws ObjectStreamException {
 		formatter = new DateTimeFormatterBuilder()
@@ -276,7 +282,7 @@ public class VinesToObservationParser implements Function<Vines, VinesParserResu
 
 	private ReadingType getReadingType(String vinesName) {
 		ReadingType readingType;
-		String code = lookupTable.lookupPlatformCode(vinesName);
+		String code = mappingEnabled.get() == Boolean.TRUE ? lookupTable.lookupPlatformCode(vinesName) : null;
 		if(code != null) {
 			readingType = new ReadingType(ReadingTypeSystem.STREAMS_CODE_SYSTEM, code);
 		} else {
