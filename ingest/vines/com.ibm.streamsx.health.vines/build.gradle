@@ -50,9 +50,9 @@ task execute(type: JavaExec) {
         '-u', vinesProps['username'],
         '-P', vinesProps['password'],
         '-q', vinesProps['queue'],
-        '-e', vinesProps['exchangeName'],
         '-d', vinesProps['debug'],
-        '-m', vinesProps['mappingEnabled']
+        '-m', vinesProps['mappingEnabled'],
+        '-e', vinesProps['exchangeName']
     ]
 }
 

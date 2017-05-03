@@ -83,7 +83,8 @@ public class VinesAdapterService {
 		rabbitMQParams.put("password", topo.createSubmissionParameter("password", String.class));
 		rabbitMQParams.put("queueName", topo.createSubmissionParameter("queueName", String.class));
 		rabbitMQParams.put("messageAttribute", SPLSchemas.STRING.getAttribute(0).getName());
-		Supplier<Boolean> mappingEnabledSubmissionParam = topo.createSubmissionParameter("mappingEnabled", Boolean.class);
+		
+		Supplier<String> mappingEnabledSubmissionParam = topo.createSubmissionParameter("mappingEnabled", String.class);
 		
 		TStream<String> srcStream = SPL.invokeSource(topo, "com.ibm.streamsx.messaging.rabbitmq::RabbitMQSource", rabbitMQParams, SPLSchemas.STRING).toStringStream();
 		TStream<VinesParserResult> parserStream = srcStream
@@ -198,10 +199,10 @@ public class VinesAdapterService {
 								   .build();
 		
 		Option mappingEnabledOption = Option.builder("m")
-									.longOpt("mapping-enabled")
+									.longOpt("mappingEnabled")
+									.hasArg()
 									.argName("isMappingEnabled")
-									.required(true)
-									.type(Boolean.class)
+									.required()
 									.build();
 		
 		Options options = new Options();
