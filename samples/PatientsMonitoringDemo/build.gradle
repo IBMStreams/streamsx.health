@@ -19,6 +19,9 @@ sourceSets {
     }   
 }
 
+ext.demoProps = new Properties()
+demoProps.load(file('./demo.properties').newReader())
+
 repositories { mavenCentral() }
 
 dependencies {
@@ -87,6 +90,10 @@ task cleanup(type: Delete) {
 task execute(type: JavaExec) {
 	main = 'com.ibm.streamsx.health.demo.PatientsMonitoringDemo'
 	classpath = sourceSets.main.runtimeClasspath
+	args = [
+    '-i', demoProps['topics'],
+    '-n', demoProps['num.patients'],
+  ]
 }
 
 task bundle(type: JavaExec) {

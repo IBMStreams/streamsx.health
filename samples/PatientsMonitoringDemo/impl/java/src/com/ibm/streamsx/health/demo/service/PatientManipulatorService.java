@@ -7,6 +7,7 @@ import static com.ibm.streamsx.health.ingest.types.resolver.ObservationTypeResol
 import static com.ibm.streamsx.health.ingest.types.resolver.ObservationTypeResolver.isTemperature;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -58,17 +59,32 @@ public class PatientManipulatorService {
 	public static final String CONTROL_INPUT_TOPIC = "manipulator.control.input";
 	
 	private Topology topo;
-	private String subscriptionTopic;
+	private ArrayList<String> topics = new ArrayList<String>();
 	
-	public PatientManipulatorService(String subscriptionTopic) {
+	public PatientManipulatorService(String... topics) {
 		topo = new Topology("PatientManipulatorService");
 		topo.addClassDependency(Observation.class);
 		topo.addClassDependency(HealthDataBeaconService.class);
-		this.subscriptionTopic = subscriptionTopic;
+		
+		for (int i = 0; i < topics.length; i++) {
+			if (!topics[i].isEmpty())
+				this.topics.add(topics[i]);
+		}
 	}
 
 	public void build() {
-		TStream<Observation> obsStream = SubscribeConnector.subscribe(topo, subscriptionTopic);
+				
+		TStream<Observation> obsStream = null;
+		
+		for (String topic  : topics) {
+			TStream<Observation> tstream = SubscribeConnector.subscribe(topo, topic.trim());
+			
+			if (obsStream == null)
+				obsStream = tstream;
+			else
+				obsStream = obsStream.union(tstream);
+		}
+		
 		TSink controlSink = SPLStreams.subscribe(topo, CONTROL_INPUT_TOPIC, JSONSchemas.JSON).convert(t -> t.getString(0)).asType(String.class).sink(new PatientController());
 
 		TStream<Observation> modifiedObs = obsStream.modify(new Manipulator());
