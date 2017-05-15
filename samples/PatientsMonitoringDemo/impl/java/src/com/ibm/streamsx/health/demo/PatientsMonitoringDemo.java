@@ -8,7 +8,6 @@ import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
-import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 
 import com.ibm.streamsx.health.demo.service.PatientManipulatorService;
@@ -60,7 +59,9 @@ public class PatientsMonitoringDemo {
 		
 		// DataIngest service
 		Map<String, Object> beaconServiceParams = new HashMap<String, Object>();
-		beaconServiceParams.put("num.patients", 50);
+		beaconServiceParams.put("num.patients", 20);
+		beaconServiceParams.put("patient.prefix", "patient-");
+		
 		HealthDataBeaconService beaconService = new HealthDataBeaconService("../../simulate/com.ibm.streamsx.health.simulate.beacon");
 		
 		// Manipulator service

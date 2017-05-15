@@ -194,17 +194,28 @@
  
  var patientMap = {};
  var patientTags = {};
+ var tagGenerated = false;
    
  /* generate random tags */
- for(var i = 1; i <= 10000; i++) {
-  var patientId = "patient-" + i;
-  var tags = [];
-  
-  tags.push(activeTags[Math.floor(Math.random()*activeTags.length)]); // select active tag
-  tags.push(ageTags[Math.floor(Math.random()*ageTags.length)]); // select age tag
-  tags.push(careTags[Math.floor(Math.random()*careTags.length)]); // select care tag
-  
-  patientTags[patientId] = tags;
+ 
+ function generateTags(patientMap) {
+	 
+	 if (!tagGenerated){
+		 var sortedPatientIds = Object.keys(patientMap).sort();
+		 
+		 for(var i = 0; i < sortedPatientIds.length; i++) {
+		  var patientId = sortedPatientIds[i];
+		  var tags = [];
+		  
+		  tags.push(activeTags[Math.floor(Math.random()*activeTags.length)]); // select active tag
+		  tags.push(ageTags[Math.floor(Math.random()*ageTags.length)]); // select age tag
+		  tags.push(careTags[Math.floor(Math.random()*careTags.length)]); // select care tag
+		  
+		  patientTags[patientId] = tags;
+		 }
+		 displayPatients();
+ 	 }
+	 tagGenerated = true;
  }
  
  /* filter functions */
@@ -236,6 +247,7 @@
        return;
       
       patientMap = data[0].patientMap;
+      generateTags(patientMap);
       setTimeout(doStatusUpdate, 100);
      });
  }
@@ -321,7 +333,7 @@
   }
   setTimeout(displayPatients, 1000);
  }
- displayPatients();
+
  
 </script>
 <script type="text/javascript">
@@ -371,7 +383,7 @@ function getWaveformGraph(patientId, waveformName, elemId) {
 	var lastWindow = -1;
 	var ts = 0;
 	var dataGetTimer = setInterval(function() {
-		$.get('/health/WaveformData/ports/input/0/tuples?partition=patient-1&partition=' + waveformName, function(data, status) {
+		$.get('/health/WaveformData/ports/input/0/tuples?partition=' + patientId  + '&partition=' + waveformName, function(data, status) {
 			for(var idx in data) {
 				if(data[idx].windowCount === lastWindow)
 					return;
@@ -404,9 +416,18 @@ $('#simulate').click(function() {
 	manipulationEnabled = !manipulationEnabled;
 
 	var patientNums = [1, 4, 9, 12, 32, 44, 48, 55, 60, 70, 71, 72, 90, 98];
-	for(var idx in patientNums) {
-		var p = {patientId : "patient-" + patientNums[idx], isManipulationEnabled : manipulationEnabled};
-		$.post('/health/Simulate/ports/output/0/inject', {jsonString : JSON.stringify(p)});
+	var sortedPatientIds = Object.keys(patientMap).sort();
+	
+	for(var idx in patientNums) {		
+		if (patientNums[idx] < sortedPatientIds.length)
+		{
+			var p = {patientId : sortedPatientIds[patientNums[idx]], isManipulationEnabled : manipulationEnabled};
+			$.post('/health/Simulate/ports/output/0/inject', {jsonString : JSON.stringify(p)});
+		}
+		else
+		{
+			break;
+		}
 	}
 });
 
