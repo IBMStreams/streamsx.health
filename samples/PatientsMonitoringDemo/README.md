@@ -44,7 +44,7 @@ Demo configuration can be found in the demo.properties file.  By default, the de
 
 If you would like the demo to ingest data from another data source, you can specify additional topics using the `topic` proprties in the demo.properties file.
 
-If you would like to suppress the launching of the HealthDataBeacon service, specicy 0 in the num.patients property in the demo.properties file.
+If you would like to suppress the launching of the HealthDataBeacon service, specify 0 in the num.patients property in the demo.properties file.
 
 # Execute
 
