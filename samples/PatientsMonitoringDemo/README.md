@@ -38,6 +38,14 @@ cd streamsx.health
 
 This will take a few minutes for the Healtcare Streaming Platform to build.
 
+# Configure
+
+Demo configuration can be found in the demo.properties file.  By default, the demo launches the HealthDataBeacon service and will generate data for 20 patients.
+
+If you would like the demo to ingest data from another data source, you can specify additional topics using the `topic` proprties in the demo.properties file.
+
+If you would like to suppress the launching of the HealthDataBeacon service, specicy 0 in the num.patients property in the demo.properties file.
+
 # Execute
 
 To run the sample:
@@ -52,10 +60,13 @@ This will take a few minutes as when run the Java Topology applications, compile
 If the job submissions are successful, you will see the following jobs submitted:
 
 * com.ibm.streamsx.health.demo.service::UIservice
-* com.ibm.streamsx.health.simulate.beacon.service::HealthDataBeaconService
 * com.ibm.streamsx.health.demo.service::PatientManipulatorService
 * com.ibm.streamsx.health.demo.service::VitalsRulesServices
+
+If the num.patients property is greater than zero, the following job will also be submitted.
+* com.ibm.streamsx.health.simulate.beacon.service::HealthDataBeaconService
 
 To see open the demo dashboard, open this URL in a browser:  http://localhost:8080/health
 
 To generate alerts for patients, click on the Simulate Alert button at the top right corner.  To turn off the alerts, click on the Simulate Alert button again.
+
