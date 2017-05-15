@@ -1,6 +1,6 @@
 from distutils.core import setup
 setup(
-  name = 'streamsx_health',
+  name = 'ingest',
   packages = ['ingest'],
   version = '1.0',
   description = 'Utilities for running api course',
