@@ -1,7 +1,7 @@
 from distutils.core import setup
 setup(
-  name = 'streams_health',
-  packages = ['streams_health'],
+  name = 'streamsx_health',
+  packages = ['streamsx_health'],
   version = '1.0',
   description = 'Utilities for running api course',
   author = 'IBM Streams @ github.com',
