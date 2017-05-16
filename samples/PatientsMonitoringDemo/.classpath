@@ -10,7 +10,7 @@
 	</classpathentry>
 	<classpathentry kind="var" path="STREAMS_JAVA_FUNCTIONAL_API"/>
 	<classpathentry kind="lib" path="opt/downloaded/commons-cli-1.3.1.jar"/>
-	<classpathentry kind="lib" path="/home/streamsadmin/git/streamsx.health/ingest/common/com.ibm.streamsx.health.ingest/lib/com.ibm.streamsx.health.ingest.jar"/>
-	<classpathentry kind="lib" path="/home/streamsadmin/git/streamsx.health/simulate/com.ibm.streamsx.health.simulate.beacon/build/libs/com.ibm.streamsx.health.simulate.beacon.jar"/>
+	<classpathentry kind="lib" path="../../ingest/common/com.ibm.streamsx.health.ingest/lib/com.ibm.streamsx.health.ingest.jar"/>
+	<classpathentry kind="lib" path="../../simulate/com.ibm.streamsx.health.simulate.beacon/build/libs/com.ibm.streamsx.health.simulate.beacon.jar"/>
 	<classpathentry kind="output" path="impl/java/bin"/>
 </classpath>
