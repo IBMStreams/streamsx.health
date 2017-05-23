@@ -13,7 +13,7 @@ public class StreamsHL7Service extends SimpleServer {
 	protected void handle() {
 		super.handle();
 		try {
-			Thread.sleep(10000);
+			Thread.sleep(3000);
 		} catch (InterruptedException e) {
 			
 		}
