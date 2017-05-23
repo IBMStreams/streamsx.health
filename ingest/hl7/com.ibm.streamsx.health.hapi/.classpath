@@ -9,7 +9,7 @@
 	<classpathentry kind="lib" path="opt/lib/com.ibm.streamsx.topology.jar"/>
 	<classpathentry kind="lib" path="opt/lib/commons-math-2.2.jar"/>
 	<classpathentry kind="lib" path="opt/lib/gson-1.7.2.jar"/>
-	<classpathentry kind="lib" path="opt/lib/hapi-base-2.2.jar" sourcepath="/home/streamsadmin/hapi/hapi-dist-2.2/hapi-base/target/"/>
+	<classpathentry kind="lib" path="opt/lib/hapi-base-2.2.jar"/>
 	<classpathentry kind="lib" path="opt/lib/hapi-structures-v21-2.2.jar"/>
 	<classpathentry kind="lib" path="opt/lib/hapi-structures-v22-2.2.jar"/>
 	<classpathentry kind="lib" path="opt/lib/hapi-structures-v23-2.2.jar"/>
