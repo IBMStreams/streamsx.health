@@ -10,7 +10,6 @@ import org.apache.log4j.Logger;
 
 import com.ibm.streams.operator.log4j.TraceLevel;
 
-import ca.uhn.hl7v2.DefaultHapiContext;
 import ca.uhn.hl7v2.HapiContext;
 import ca.uhn.hl7v2.app.HL7Service;
 import ca.uhn.hl7v2.model.Message;
@@ -28,7 +27,7 @@ public class HapiServer {
 	private ArrayBlockingQueue<Message> messageQueue;
 	
 	public HapiServer() {
-		context = new DefaultHapiContext();		
+		context = new StreamsHapiContext();		
 		CanonicalModelClassFactory mcf = new CanonicalModelClassFactory(VERSION);
 		context.setModelClassFactory(mcf);
 		context.setValidationRuleBuilder(new NoValidationBuilder());
@@ -38,7 +37,7 @@ public class HapiServer {
 	}
 	
 	public HapiServer(Class<? extends Message> messageClass) {
-		context = new DefaultHapiContext();		
+		context = new StreamsHapiContext();		
 		CanonicalModelClassFactory mcf = new CanonicalModelClassFactory(messageClass);
 		context.setModelClassFactory(mcf);
 		context.setValidationRuleBuilder(new NoValidationBuilder());
@@ -72,6 +71,10 @@ public class HapiServer {
 	
 	public Message getMessage()
 	{
-		return messageQueue.poll();
+		try {
+			return messageQueue.take();
+		} catch (InterruptedException e) {
+			return null;
+		}
 	}
 }
