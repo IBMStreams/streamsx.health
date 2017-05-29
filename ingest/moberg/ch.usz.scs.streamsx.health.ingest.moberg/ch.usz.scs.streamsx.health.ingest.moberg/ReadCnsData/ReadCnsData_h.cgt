@@ -47,17 +47,10 @@ public:
 
   // Tuple processing for non-mutating ports
   void process(Tuple const & tuple, uint32_t port);
-  
-  
-  
-  
-  
+    
 private:
     
   void processAspectHistoricAndLive(CNSDataAccess::CAspects& aspect, CNSDataAccessWrapper::IcuDataSource* cns_source);
-  
-  // to use this method you need to make a change in the CNS Data Access library
-  void processAspectLiveOnly(CNSDataAccess::CAspects& aspect, CNSDataAccessWrapper::IcuDataSource* cns_source);
   
   // can not be const because payload.GetMessagesAt() is not const. 
   void processMeasurements(
@@ -80,12 +73,6 @@ private:
   		const float& m, const float& b);
   
   
-  /*
-   * Currently not used by ICU. this methods may be used for the IBM health toolkit
-   * Need to be tested with the new method. ReviewLatest()
-   * 
-   * can not be const because payload.GetMessagesAt() is not const. 
-   */
   void setEventTuple(
 		  CNSDataAccess::CPayload& payload, 
 		  const size_t& i,
@@ -105,12 +92,7 @@ private:
 		  const std::string& unit,
 		  const int& value);
   
-  /*
-    * Currently not used by ICU. this methods may be used for the IBM health toolkit
-    * Need to be tested with the new method. ReviewLatest()
-    * 
-    * can not be const because payload.GetMessagesAt() is not const. 
-    */
+
   void submitEventTuples(CNSDataAccess::CPayload& payload);
   
   // can not be const because payload.GetMessagesAt() is not const. 
@@ -128,7 +110,6 @@ private:
   void switchPatientIfNeeded();
   void prepareNextPatient(const std::string& pid, const std::string& mrn); // TODO: delete
   
-  void handleStartTime(const ClockTime start_time);
   void handlePatient(const std::string& next_pid, const std::string& next_mrn, const bool next_is_valid);
   void openPatientDirectory(const std::string& pid, const std::string& mrn);
   void createNextContext(const std::string& pid, const std::string& mrn);
@@ -138,13 +119,9 @@ private:
   std::string getCurrentMrn();
   std::string getCurrentPid();
   std::vector <CNSDataAccess::CAspects> getCurrentAspects();
-  ClockTime getCurrentTime();
 
   float64 updateSampleConversionsSlopeParam(CNSDataAccessWrapper::IcuDataSource* cns_source, const std::string& type) const;
   float64 updateSampleConversionYInterceptParam(CNSDataAccessWrapper::IcuDataSource* cns_source, const std::string& type) const;
-
-  bool isTimestampOutOfBound(const ClockTime& start_time);
-  bool isTimestampOutOfBound(const ClockTime& start_time, const ClockTime& current_time);
 
   std::string cns_archive_;
   int cns_sleep_ms_;
@@ -160,9 +137,6 @@ private:
   // Data in current_context_ need not be protected, because only the process loop accesses it (and does the context switch)
   Mutex context_mutex_; 
   
-  ClockTime current_start_time_;
-  ClockTime next_start_time_;
-
 }; 
 
 <%SPL::CodeGen::headerEpilogue($model);%>

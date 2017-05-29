@@ -15,8 +15,6 @@ type PatientInfoTuple = tuple<
 	int64 SystemOffset,
 	rstring CnsInfo> ;
 		
-type DebugTuple = tuple<rstring debug_filename> ;
-
 type CnsDataTuple = tuple<
 	rstring MedicalRecordNumber,
 	rstring Aspect,
