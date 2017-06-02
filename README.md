@@ -54,8 +54,6 @@ Thank you to all our contributors.  This platform is made available from their c
 
 | Name | Company |
 |------|---------|
-| Gergens Polynice | [CleMetric](http://www.clemetric.com/) |
-| Sharath Cholleti | [CleMetric](http://www.clemetric.com/) |
 | Jonathan Lachman  | [True Process](http://www.trueprocess.com/)|
 | Peter Nicholls | [IBM](https://www.ibm.com/analytics/us/en/technology/stream-computing/) |
 | Samantha Chan | [IBM](https://www.ibm.com/analytics/us/en/technology/stream-computing/) |
