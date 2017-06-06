@@ -53,6 +53,7 @@ All projects can be cleaned from either the root folder, a component folder or a
 Thank you to all our contributors.  This platform is made available from their contributions and valuable feedback/advises.
 
 | Name | Company |
+|------|------|
 | Gergens Polynice | [CleMetric](http://www.clemetric.com/)
 | James Cancilla | [IBM](https://www.ibm.com/analytics/us/en/technology/stream-computing/) |
 | Jonathan Lachman  | [True Process](http://www.trueprocess.com/)|
