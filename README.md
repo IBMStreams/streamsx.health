@@ -54,10 +54,13 @@ Thank you to all our contributors.  This platform is made available from their c
 
 | Name | Company |
 |------|---------|
+| Gergens Polynice | [CleMetric](http://www.clemetric.com/)
+| James Cancilla | [IBM](https://www.ibm.com/analytics/us/en/technology/stream-computing/) |
 | Jonathan Lachman  | [True Process](http://www.trueprocess.com/)|
 | Peter Nicholls | [IBM](https://www.ibm.com/analytics/us/en/technology/stream-computing/) |
 | Samantha Chan | [IBM](https://www.ibm.com/analytics/us/en/technology/stream-computing/) |
-| James Cancilla | [IBM](https://www.ibm.com/analytics/us/en/technology/stream-computing/) |
+| Sharath Sharath Cholleti | [CleMetric](http://www.clemetric.com/)
+
 
 [<img src="images/TP-Logo-Default.png" alt="True Process" width="200">](http://www.trueprocess.com/)[<img src="images/ibmpos_blue.jpg" alt="IBM" width="200">](https://www.ibm.com/analytics/us/en/technology/stream-computing/)
 
