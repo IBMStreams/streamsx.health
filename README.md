@@ -62,7 +62,7 @@ Thank you to all our contributors.  This platform is made available from their c
 | Sharath Cholleti | [CleMetric](http://www.clemetric.com/)
 
 
-[<img src="images/TP-Logo-Default.png" alt="True Process" width="200">](http://www.trueprocess.com/)[<img src="images/ibmpos_blue.jpg" alt="IBM" width="200">](https://www.ibm.com/analytics/us/en/technology/stream-computing/)
+[<img src="images/logo.png" alt="CleMetric" width="200">](http://www.clemetric.com/)      [<img src="images/TP-Logo-Default.png" alt="True Process" width="200">](http://www.trueprocess.com/)      [<img src="images/ibmpos_blue.jpg" alt="IBM" width="200">](https://www.ibm.com/analytics/us/en/technology/stream-computing/)         
 
 
 ## Learn more about Streams
