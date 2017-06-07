@@ -16,7 +16,7 @@ Follow the [**Getting Started Guide**](https://developer.ibm.com/streamsdev/2017
 
 As part of our initial work for this platform, we have developed a real-time ECG monitoring sample, using the Physionet Ingest Service, Python and Jupyter notebook.  
 
-[<img src="https://github.com/IBMStreams/streamsx.health/blob/master/samples/HealthcareJupyterDemo/images/Healthcare_Demo.png" alt="Healthcare Jupyter Notebook Demo" width="400">](https://github.com/IBMStreams/streamsx.health/blob/master/samples/HealthcareJupyterDemo/)
+[<img src="https://github.com/IBMStreams/streamsx.health/blob/master/samples/HealthcareJupyterDemo/images/Healthcare_Demo.png" alt="Healthcare Jupyter Notebook Demo" width="600">](https://github.com/IBMStreams/streamsx.health/blob/master/samples/HealthcareJupyterDemo/)
 
 To see this sample in action, you can run this sample using [**IBM Data Science Experience**](https://datascience.ibm.com/) and [**Streaming Analytics Service**](https://console.ng.bluemix.net/docs/services/StreamingAnalytics/index.html) on Bluemix.  See this [notebook](https://datascience.ibm.com/exchange/public/entry/view/9fc33ce7301f10e21a9f92039cad29a6
 ) for details.
@@ -31,7 +31,7 @@ To run this sample in Streams Quick Start Edition:
 
 This sample demonstrates how we can use IBM Streams and the Streams Healthcare Anallytics Platform to monitor patient status in real-time. The sample generates vitals and ECG data for 100 patients. Patient data is fed into an analytics application that checks if a patient's vitals are in the normal range. If the vitals exceed the normal ranges, an alert is raised and is displayed on the dashboard.
 
-[<img src="https://github.com/IBMStreams/streamsx.health/blob/develop/samples/PatientsMonitoringDemo/images/patientsMonitoring.jpeg" alt="Population Health and Patient Monitoring" width="400">](https://github.com/IBMStreams/streamsx.health/tree/develop/samples/PatientsMonitoringDemo)
+[<img src="https://github.com/IBMStreams/streamsx.health/blob/develop/samples/PatientsMonitoringDemo/images/patientsMonitoring.jpeg" alt="Population Health and Patient Monitoring" width="600">](https://github.com/IBMStreams/streamsx.health/tree/develop/samples/PatientsMonitoringDemo)
 
 To run this sample in Streams Quick Start Edition:
 
