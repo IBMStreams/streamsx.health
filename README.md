@@ -10,9 +10,39 @@ Our goal is to make it easy to create real-time healthcare analytics application
 
 Follow the [**Getting Started Guide**](https://developer.ibm.com/streamsdev/2017/06/07/getting-started-streams-healthcare-analytics-platform/) to learn about how to leverage the services from the Streams Healthcare Analytics Platform
 
+## Streams Healthcare Demos
+
+### Python Jupyter Notebook Demo
+
+As part of our initial work for this platform, we have developed a real-time ECG monitoring sample, using the Physionet Ingest Service, Python and Jupyter notebook.  
+
+[<img src="https://github.com/IBMStreams/streamsx.health/blob/master/samples/HealthcareJupyterDemo/images/Healthcare_Demo.png" alt="Healthcare Jupyter Notebook Demo" width="400">](https://github.com/IBMStreams/streamsx.health/blob/master/samples/HealthcareJupyterDemo/)
+
+To see this sample in action, you can run this sample using [**IBM Data Science Experience**](https://datascience.ibm.com/) and [**Streaming Analytics Service**](https://console.ng.bluemix.net/docs/services/StreamingAnalytics/index.html) on Bluemix.  See this [notebook](https://datascience.ibm.com/exchange/public/entry/view/9fc33ce7301f10e21a9f92039cad29a6
+) for details.
+
+To run this sample in Streams Quick Start Edition:
+
+1.  Get the Streams Quick Start Edition VM from [here](https://www-01.ibm.com/marketing/iwm/iwm/web/preLogin.do?source=swg-ibmistvi&S_TACT=000000VP&S_OFF_CD=10000737).
+1.  Clone this repository.
+1.  Follow the instructions from here to run the demo:  [Healthcare Python Streaming Application Demo](https://github.com/IBMStreams/streamsx.health/tree/master/samples/HealthcareJupyterDemo)
+
+### Population Health and Patient Monitoring
+
+This sample demonstrates how we can use IBM Streams and the Streams Healthcare Anallytics Platform to monitor patient status in real-time. The sample generates vitals and ECG data for 100 patients. Patient data is fed into an analytics application that checks if a patient's vitals are in the normal range. If the vitals exceed the normal ranges, an alert is raised and is displayed on the dashboard.
+
+[<img src="https://github.com/IBMStreams/streamsx.health/blob/develop/samples/PatientsMonitoringDemo/images/patientsMonitoring.jpeg" alt="Population Health and Patient Monitoring" width="400">](https://github.com/IBMStreams/streamsx.health/tree/develop/samples/PatientsMonitoringDemo)
+
+To run this sample in Streams Quick Start Edition:
+
+1.  Get the Streams Quick Start Edition VM from [here](https://www-01.ibm.com/marketing/iwm/iwm/web/preLogin.do?source=swg-ibmistvi&S_TACT=000000VP&S_OFF_CD=10000737).
+1.  Clone this repository.
+1.  Follow the instructions from here to run the demo:  [Population Health and Patient Monitoring Demo](https://github.com/IBMStreams/streamsx.health/tree/develop/samples/PatientsMonitoringDemo)
+
+
 ## Platform Design and Roadmap
 
-![Streams Healthcare Analytics Platform](https://github.com/IBMStreams/streamsx.health/blob/wiki/img/healthroadmap.jpg)
+[<img src="https://github.com/IBMStreams/streamsx.health/blob/wiki/img/healthroadmap.jpg" alt="Streams Healthcare Analytics Platform Roadmap" width="600">](https://github.com/IBMStreams/streamsx.health/blob/master/samples/HealthcareJupyterDemo/)
 
 This diagram shows what we think a typical Streams healthcare application will look like and its major components.  The blue boxes represent components that should be provided by the platform.  The purple box represents an area where our end-user should focus on.  (i.e. developing advanced analytics).  
 
@@ -21,18 +51,6 @@ For details on the design and roadmap of this platform, please refer to here:
 https://github.com/IBMStreams/streamsx.health/wiki
 
 Our design and roadmap are always up for discussions and we welcome your feedback and contribution.  Please submit an [issue](https://github.com/IBMStreams/streamsx.health/issues) if you have any feedback for us.
-
-## Real-time Healthcare Monitoring Sample
-
-As part of our initial work for this platform, we have developed a real-time ECG monitoring sample, using the Physionet Ingest Service, Python and Jupyter notebook.  
-
-To see this sample in action:
-
-1.  Get the Streams Quick Start Edition VM from [here](https://www-01.ibm.com/marketing/iwm/iwm/web/preLogin.do?source=swg-ibmistvi&S_TACT=000000VP&S_OFF_CD=10000737).
-1.  Clone this repository.
-1.  Follow the instructions from here to run the demo:  [Healthcare Python Streaming Application Demo](https://github.com/IBMStreams/streamsx.health/tree/master/samples/HealthcareJupyterDemo)
-
-![Healthcare Demo](https://github.com/IBMStreams/streamsx.health/blob/master/samples/HealthcareJupyterDemo/images/Healthcare_Demo.png)
 
 ## Repository Organization
 
