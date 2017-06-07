@@ -48,6 +48,20 @@ Similarly, individual components and  services can be built by navigating to eit
 
 All projects can be cleaned from either the root folder, a component folder or a service folder by running **`gradle clean`**
 
+# The Contributors
+
+Thank you to all our contributors.  This platform is made available from their contributions and valuable feedback/advises.
+
+| Name | Company |
+|------|---------|
+| Jonathan Lachman  | [True Process](http://www.trueprocess.com/)|
+| Peter Nicholls | [IBM](https://www.ibm.com/analytics/us/en/technology/stream-computing/) |
+| Samantha Chan | [IBM](https://www.ibm.com/analytics/us/en/technology/stream-computing/) |
+| James Cancilla | [IBM](https://www.ibm.com/analytics/us/en/technology/stream-computing/) |
+
+[<img src="images/TP-Logo-Default.png" alt="True Process" width="200">](http://www.trueprocess.com/)[<img src="images/ibmpos_blue.jpg" alt="IBM" width="200">](https://www.ibm.com/analytics/us/en/technology/stream-computing/)
+
+
 ## Learn more about Streams
 
 To learn more about Streams:

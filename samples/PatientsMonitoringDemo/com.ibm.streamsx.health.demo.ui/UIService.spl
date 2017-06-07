@@ -5,7 +5,8 @@ use com.ibm.streamsx.health.ingest.types::* ;
 use com.ibm.streamsx.health.ingest.connector::* ;
 use com.ibm.streamsx.topology.topic::* ;
 use com.ibm.streamsx.json::* ;
-use com.ibm.streamsx.health.analyze.vital::* ;
+use com.ibm.streamsx.health.sample.patientsmonitoring.rules::*;
+use com.ibm.streamsx.health.sample.patientsmonitoring.rules.connectors::*;
 use com.ibm.streamsx.health.ingest.types.resolver::* ;
 
 public composite UIService
@@ -87,8 +88,7 @@ public composite UIService
 		(stream<PublishJson> Subscribe_1_out0) as Subscribe_1 = Subscribe()
 		{
 			param
-				topic :
-					com.ibm.streamsx.health.analyze.vital.connectors::TOPIC_VITALSRANGECHECK() ;
+				topic : TOPIC_VITALSRANGECHECK() ;
 				streamType : PublishJson ;
 		}
 
@@ -122,7 +122,7 @@ public composite UIService
 			Functor_12_out0) as Functor_12 = Functor(IngestSubscribe_7_out0)
 		{
 			param
-				filter :(isECGLeadI(reading.readingType.code) || isRespiratoryRate(reading.readingType.code)) && (patientId == "patient-1") ;
+				filter :(isECGLeadI(reading.readingType.code) || isRespiratoryRate(reading.readingType.code));
 			output
 				Functor_12_out0 : patient_id = patientId, readingType =
 					reading.readingType.code ;
