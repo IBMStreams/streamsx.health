@@ -54,6 +54,7 @@ Thank you to all our contributors.  This platform is made available from their c
 
 | Name | Company |
 |------|------|
+| Brandon Swink | [IBM](https://www.ibm.com/analytics/us/en/technology/stream-computing/) |
 | Gergens Polynice | [CleMetric](http://www.clemetric.com/)
 | James Cancilla | [IBM](https://www.ibm.com/analytics/us/en/technology/stream-computing/) |
 | Jonathan Lachman  | [True Process](http://www.trueprocess.com/)|
