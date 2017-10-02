@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
+	<classpathentry kind="var" path="STREAMS_JAVA_FUNCTIONAL_API"/>
+	<classpathentry kind="con" path="com.ibm.streams.java/com.ibm.streams.operator"/>
+	<classpathentry kind="lib" path="opt/lib/com.ibm.streams.devicemgr.jar"/>
+	<classpathentry kind="lib" path="opt/lib/com.ibm.streams.devicemgr.utils.jar"/>
+	<classpathentry kind="lib" path="opt/lib/com.ibm.streams.install.dependency.jar"/>
+	<classpathentry kind="lib" path="opt/lib/com.ibm.streams.management.jmxmp.jar"/>
+	<classpathentry kind="lib" path="opt/lib/com.ibm.streams.management.mx.jar"/>
+	<classpathentry kind="lib" path="opt/lib/com.ibm.streams.operator.jar"/>
+	<classpathentry kind="lib" path="opt/lib/com.ibm.streams.operator.samples.jar"/>
+	<classpathentry kind="lib" path="opt/lib/com.ibm.streams.resourcemgr.jar"/>
+	<classpathentry kind="lib" path="opt/lib/com.ibm.streams.resourcemgr.symphony.jar"/>
+	<classpathentry kind="lib" path="opt/lib/com.ibm.streams.resourcemgr.utils.jar"/>
+	<classpathentry kind="lib" path="opt/lib/com.ibm.streams.resourcemgr.yarn.jar"/>
+	<classpathentry kind="lib" path="opt/lib/com.ibm.streams.security.authc.jar"/>
+	<classpathentry kind="lib" path="opt/lib/com.ibm.streamsx.health.ingest.jar" sourcepath="/home/streamsadmin/hostdir/git/streamsx.health/ingest/common/com.ibm.streamsx.health.ingest"/>
+	<classpathentry kind="lib" path="opt/lib/com.ibm.streamsx.topology.jar"/>
+	<classpathentry kind="lib" path="opt/lib/commons-codec-1.10.jar"/>
+	<classpathentry kind="lib" path="opt/lib/commons-io-2.5.jar"/>
+	<classpathentry kind="lib" path="opt/lib/commons-lang3-3.5.jar"/>
+	<classpathentry kind="lib" path="opt/lib/gson-2.8.0.jar"/>
+	<classpathentry kind="lib" path="opt/lib/hapi-fhir-base-2.5.jar" sourcepath="/home/streamsadmin/hostdir/git/hapi-fhir/hapi-fhir-base/src/main"/>
+	<classpathentry kind="lib" path="opt/lib/httpclient-4.5.2.jar"/>
+	<classpathentry kind="lib" path="opt/lib/httpcore-4.4.5.jar"/>
+	<classpathentry kind="lib" path="opt/lib/jcl-over-slf4j-1.7.25.jar"/>
+	<classpathentry kind="lib" path="opt/lib/stax-api-1.0-2.jar"/>
+	<classpathentry kind="lib" path="opt/lib/stax2-api-3.1.4.jar"/>
+	<classpathentry kind="lib" path="opt/lib/streams.domainmgr.base.jar"/>
+	<classpathentry kind="lib" path="opt/lib/streams.domainmgr.server.jar"/>
+	<classpathentry kind="lib" path="opt/lib/streams.sws.annotation.jar"/>
+	<classpathentry kind="lib" path="opt/lib/streams.sws.base.jar"/>
+	<classpathentry kind="lib" path="opt/lib/streams.sws.bi.jar"/>
+	<classpathentry kind="lib" path="opt/lib/streams.sws.client.jar"/>
+	<classpathentry kind="lib" path="opt/lib/streams.sws.dsmutils.jar"/>
+	<classpathentry kind="lib" path="opt/lib/streams.sws.internal.jar"/>
+	<classpathentry kind="lib" path="opt/lib/streams.sws.tools.jar"/>
+	<classpathentry kind="lib" path="opt/lib/streams.sws.util.jar"/>
+	<classpathentry kind="lib" path="opt/lib/woodstox-core-asl-4.4.1.jar"/>
+	<classpathentry kind="lib" path="opt/lib/hapi-fhir-structures-dstu3-2.5.jar"/>
+	<classpathentry kind="lib" path="opt/lib/hapi-fhir-validation-resources-dstu3-2.5.jar"/>
+	<classpathentry kind="lib" path="opt/lib/xpp3_min-1.1.4c.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/com.ibm.streamsx.health.ingest"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

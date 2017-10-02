@@ -1,0 +1,81 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+
+ext {
+	STREAMS_INSTALL = System.getenv('STREAMS_INSTALL')
+}
+
+
+repositories {
+    mavenCentral()
+    
+   flatDir {
+       dirs STREAMS_INSTALL+'/lib',STREAMS_INSTALL+'/ext/lib',STREAMS_INSTALL+'/toolkits/com.ibm.streamsx.topology/lib'
+   }
+}
+
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+dependencies {
+	compile project(':ingest:common:com.ibm.streamsx.health.ingest')
+	
+	// Hapi-Fhir dependencies
+	compile 'ca.uhn.hapi.fhir:hapi-fhir-base:2.5'
+	compile 'ca.uhn.hapi.fhir:hapi-fhir-structures-dstu3:2.5'
+	compile 'ca.uhn.hapi.fhir:hapi-fhir-validation-resources-dstu3:2.5'
+	
+	// Streams dependencies
+	compile name: 'com.ibm.streams.operator'
+	compile name: 'com.ibm.streams.operator.samples'
+	compile name: 'com.ibm.streamsx.topology'
+	compile name: 'JSON4J'
+	compile name: 'commons-math-2.2'	
+}
+
+task copyLib(type: Copy) {
+    into "$projectDir/release/opt/lib"
+    from configurations.runtime
+}
+
+task copyJar(type: Copy) {
+    into "$projectDir/release"
+    from "$projectDir/build/libs/"
+    include '**/*.jar'
+}
+
+task copyScript(type: Copy) {
+    into "$projectDir/release"
+    from "$projectDir/run.sh"
+    from "$projectDir/runAdt.sh"
+}
+
+task rmRelease(type: Delete) {
+	delete 'release'
+}
+
+task copyLibDev(type: Copy) {
+    into "$projectDir/opt/lib"
+    from configurations.runtime
+}
+
+task deps << {
+	tasks.copyLibDev.execute()
+	tasks.copyLib.execute()
+}
+
+
+jar.doLast {
+    tasks.copyLib.execute()
+    tasks.copyJar.execute()
+    tasks.copyScript.execute()
+}
+
+clean.doLast{
+	tasks.rmRelease.execute()
+}
+
+  
+
+
