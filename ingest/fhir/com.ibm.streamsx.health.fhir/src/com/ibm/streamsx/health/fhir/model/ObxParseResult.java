@@ -12,7 +12,13 @@ import org.hl7.fhir.dstu3.model.Bundle.BundleEntryComponent;
 
 import com.ibm.streamsx.health.ingest.types.model.Observation;
 
+import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.parser.IParser;
+
 public class ObxParseResult implements Serializable{
+	
+	private static FhirContext ctx = FhirContext.forDstu3();
+	private static IParser jsonParser = ctx.newJsonParser();
 
 	/**
 	 * 
@@ -23,7 +29,8 @@ public class ObxParseResult implements Serializable{
 	
 	private Exception exception;
 	
-	private String rawMessage;
+	
+	private BundleEntryComponent bundle;
 
 	public List<Observation> getObservations() {
 		return observations;
@@ -44,12 +51,16 @@ public class ObxParseResult implements Serializable{
 	}
 
 	public String getRawMessage() {
-		return rawMessage;
+		return jsonParser.encodeResourceToString(getBundle().getResource());
 	}
-
-	public ObxParseResult setRawMessage(String rawMessage) {
-		this.rawMessage = rawMessage;
+	
+	public ObxParseResult setBundle(BundleEntryComponent bundle) {
+		this.bundle = bundle;
 		return this;
+	}
+	
+	public BundleEntryComponent getBundle() {
+		return bundle;
 	}
 	
 	

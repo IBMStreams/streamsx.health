@@ -26,15 +26,10 @@ import com.ibm.streamsx.health.ingest.types.model.Reading;
 import com.ibm.streamsx.health.ingest.types.model.ReadingSource;
 import com.ibm.streamsx.health.ingest.types.model.ReadingType;
 
-import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.parser.IParser;
-
 
 public class ObxToSplMapper implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-	private static FhirContext ctx = FhirContext.forDstu3();
-	private static IParser jsonParser = ctx.newJsonParser();
 
 
 	@SuppressWarnings("unchecked")
@@ -46,6 +41,8 @@ public class ObxToSplMapper implements Serializable {
 		try {
 			if (entry.getResource() instanceof org.hl7.fhir.dstu3.model.Observation) {
 				org.hl7.fhir.dstu3.model.Observation obx = (org.hl7.fhir.dstu3.model.Observation) entry.getResource();
+				
+				result.setBundle(entry);
 				
 				// time stamp is the Observation Effective Time
 				DateTimeType effectiveDateTimeType = obx.getEffectiveDateTimeType();
@@ -105,6 +102,9 @@ public class ObxToSplMapper implements Serializable {
 					}
 				}
 				
+//				if (patientId.equals("191025"))
+//					throw new FHIRException("Unable to parse patient 191025");
+				
 				// Create Reading object 
 				if (obx.getValue() instanceof Quantity)
 				{
@@ -136,11 +136,7 @@ public class ObxToSplMapper implements Serializable {
 			}
 		} catch (FHIRException e) {
 			FhirObservationIngestService.TRACE.error("Unable to parser component bundle", e);
-			result.setExceptions(e);
-			
-			// Convert bundle to raw JSON message
-			result.setRawMessage(jsonParser.encodeResourceToString(entry.getResource()));
-			
+			result.setExceptions(e);			
 		}
 		
 		return result.setObservations(observations);

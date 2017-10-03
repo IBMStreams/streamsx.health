@@ -19,6 +19,7 @@ import com.ibm.streamsx.health.fhir.connector.FhirObxConnector;
 import com.ibm.streamsx.health.fhir.mapper.ObxToSplMapper;
 import com.ibm.streamsx.health.fhir.model.ObxParseResult;
 import com.ibm.streamsx.health.fhir.model.ObxQueryParams;
+import com.ibm.streamsx.health.fhir.model.ParseError;
 import com.ibm.streamsx.health.ingest.types.connector.PublishConnector;
 import com.ibm.streamsx.health.ingest.types.model.Observation;
 import com.ibm.streamsx.topology.TStream;
@@ -120,21 +121,23 @@ public class FhirObservationIngestService extends AbstractFhirService {
 		});
 
 		// check if there is any error to report
-		TStream<String> errorBundle = parseResults.transform(t -> {
+		TStream<ParseError> parseError = parseResults.transform(t -> {
 			if (t.getException() != null)
-				return t.getRawMessage();
+				return new ParseError().setException(t.getException().getMessage()).setRawMessage(t.getRawMessage());
 			return null;
 		});
 
 		// Publish data stream for downstream services to analyze
 		if (streamContext.equals("DISTRIBUTED") || streamContext.equals("BUNDLE")) {
 			PublishConnector.publishObservation(observations, IServiceConstants.FHIR_OBX_TOPIC);
-			FhirObxConnector.publishError(errorBundle, IServiceConstants.FHIR_OBX_ERROR_TOPIC);
-		}
-
-		if (isDebug()) {
-			observations.print();
-			errorBundle.print();
+			FhirObxConnector.publishError(parseError, IServiceConstants.FHIR_OBX_ERROR_TOPIC);
+			
+			if (isDebug()) {
+				TStream<String> rawMessage = parseResults.transform(t-> {
+					return t.getRawMessage();
+				});
+				FhirObxConnector.publishDebug(rawMessage, IServiceConstants.FHIR_OBX_DEBUG_TOPIC);
+			}
 		}
 
 		try {

@@ -16,6 +16,9 @@ public interface IServiceConstants {
 	// Topic to report component bundles that cannot be parsed
 	String FHIR_OBX_ERROR_TOPIC = "ingest-fhir-obx-error";
 	
+	// Topic to for raw messages from FHIR server
+	String FHIR_OBX_DEBUG_TOPIC = "ingest-fhir-obx-debug";
+	
 	// Keys in properties file
 	String KEY_PATIENTIDS = "patientids";
 	String KEY_PERIOD = "period";

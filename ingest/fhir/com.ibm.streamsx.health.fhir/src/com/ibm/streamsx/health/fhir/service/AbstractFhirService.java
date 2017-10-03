@@ -136,6 +136,6 @@ public abstract class AbstractFhirService implements Serializable {
 		return getProperties().getProperty(IServiceConstants.KEY_VMARGS);
 	}
 
-	abstract void run();
+	protected abstract void run();
 
 }
