@@ -3,7 +3,7 @@
 //* All Rights Reserved
 //*******************************************************************************
 
-package com.ibm.streamsx.health.fhir.service.model;
+package com.ibm.streamsx.health.fhir.model;
 
 import java.io.Serializable;
 import java.util.List;

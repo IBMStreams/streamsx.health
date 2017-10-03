@@ -15,7 +15,7 @@ import org.hl7.fhir.dstu3.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.dstu3.model.Observation;
 
 import com.ibm.streamsx.health.fhir.internal.PatientQueryMgr;
-import com.ibm.streamsx.health.fhir.service.model.ObxQueryParams;
+import com.ibm.streamsx.health.fhir.model.ObxQueryParams;
 
 import ca.uhn.fhir.model.api.Include;
 import ca.uhn.fhir.rest.client.IGenericClient;
@@ -34,10 +34,11 @@ public class ObservationQuery implements Serializable {
 
 	List<BundleEntryComponent> getObservations(IGenericClient client, ObxQueryParams params) {
 		
-		System.out.println("Patient Query " + params);
+		if (FhirObservationIngestService.TRACE.isDebugEnabled())
+			FhirObservationIngestService.TRACE.debug("Patient Query " + params);
 
 		ArrayList<BundleEntryComponent> allEntries = new ArrayList<BundleEntryComponent>();
-		// TODO: Handle date, and only fetch new result for a particular patient
+
 		IQuery<?> query = client.search().forResource(Observation.class);
 
 		// add patient id
@@ -54,6 +55,7 @@ public class ObservationQuery implements Serializable {
 
 		// If no start and end time is provided, use information from
 		// queryManager
+		// Using date range to scope the search for new observation records only
 		if (params.getStartTime() <= 0 || params.getEndTime() <= 0) {
 			// First query will always get all
 			// Subsequent query will get new observations since we last queried
@@ -63,7 +65,9 @@ public class ObservationQuery implements Serializable {
 				Date end = new Date(range.get(1));
 				DateRangeParam dateRange = new DateRangeParam(start, end);
 				
-				System.out.println("DateRange: " + start + ":" + end);
+				if (FhirObservationIngestService.TRACE.isDebugEnabled())
+					FhirObservationIngestService.TRACE.debug("Query DateRange: " + start + ":" + end);
+				
 				query = query.lastUpdated(dateRange);
 			}
 		}
@@ -78,7 +82,8 @@ public class ObservationQuery implements Serializable {
 			allEntries.addAll(results.getEntry());
 		}
 
-		System.out.println("Total number of entries: " + allEntries.size());
+		if (FhirObservationIngestService.TRACE.isDebugEnabled())
+			FhirObservationIngestService.TRACE.debug("Total number of entries: " + allEntries.size());
 
 		return allEntries;
 	}

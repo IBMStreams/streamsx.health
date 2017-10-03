@@ -15,6 +15,7 @@ import java.util.Properties;
 
 import org.apache.log4j.Logger;
 
+import com.ibm.streamsx.health.fhir.model.ObxQueryParams;
 import com.ibm.streamsx.topology.Topology;
 
 import ca.uhn.fhir.context.FhirContext;
@@ -33,8 +34,6 @@ public abstract class AbstractFhirService implements Serializable {
 
 	protected static Logger TRACE = Logger.getLogger(AbstractFhirService.class);
 	
-	protected static final String KEY_BASEURL = "baseurl";
-
 	public AbstractFhirService() {
 		
 		// Properties is serializable.  This code is called twice.
@@ -47,9 +46,9 @@ public abstract class AbstractFhirService implements Serializable {
 		if (properties == null)
 			properties = readProperties();
 		
-		String url = (String)properties.get(KEY_BASEURL);
+		String url = properties.getProperty(IServiceConstants.KEY_BASEURL);
 		
-		if (url == null)
+		if (url == null || url.isEmpty())
 			throw new RuntimeException("baseurl is not specified in service.properties");
 		
 		this.serverBase = url;
@@ -58,7 +57,7 @@ public abstract class AbstractFhirService implements Serializable {
 	protected  Properties readProperties()
 	{
 		try {
-			FileInputStream iStream = new FileInputStream("etc/service.properties");
+			FileInputStream iStream = new FileInputStream("service.properties");
 			Properties properties = new Properties();
 			properties.load(iStream);
 			iStream.close();
@@ -95,7 +94,7 @@ public abstract class AbstractFhirService implements Serializable {
 			topology.addJarDependency(file.getAbsolutePath());
 		}
 		
-		topology.addFileDependency("etc", "etc");
+		topology.addClassDependency(ObxQueryParams.class);
 	}
 
 	public IGenericClient getFhirClient() {
@@ -111,6 +110,30 @@ public abstract class AbstractFhirService implements Serializable {
 		FhirContext ctx = FhirContext.forDstu3();
 		IGenericClient client = ctx.newRestfulGenericClient(serverBase);
 		return client;
+	}
+	
+	protected boolean isDebug()
+	{
+		String property = getProperties().getProperty(IServiceConstants.KEY_DEBUG);
+		if (property!=null && !property.isEmpty())
+		{
+			return Boolean.valueOf(property);
+		}
+		return false;
+	}
+	
+	protected String getStreamsContext() {
+		String property = getProperties().getProperty(IServiceConstants.KEY_STREAMS_CONTEXT);
+		if (property !=null && !property.isEmpty())
+		{
+			return property.toUpperCase();
+		}
+		return "DISTRIBUTED";
+	}
+	
+	protected String getVmArgs()
+	{
+		return getProperties().getProperty(IServiceConstants.KEY_VMARGS);
 	}
 
 	abstract void run();

@@ -11,30 +11,29 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.log4j.Logger;
 import org.hl7.fhir.dstu3.model.Bundle.BundleEntryComponent;
 
+import com.ibm.streams.operator.logging.TraceLevel;
+import com.ibm.streamsx.health.fhir.connector.PatientQueryParamConnector;
 import com.ibm.streamsx.health.fhir.mapper.ObxToSplMapper;
-import com.ibm.streamsx.health.fhir.service.model.ObxQueryParams;
+import com.ibm.streamsx.health.fhir.model.ObxQueryParams;
 import com.ibm.streamsx.health.ingest.types.connector.PublishConnector;
 import com.ibm.streamsx.health.ingest.types.model.Observation;
 import com.ibm.streamsx.topology.TStream;
 import com.ibm.streamsx.topology.Topology;
-import com.ibm.streamsx.topology.context.StreamsContext;
+import com.ibm.streamsx.topology.context.ContextProperties;
 import com.ibm.streamsx.topology.context.StreamsContextFactory;
 import com.ibm.streamsx.topology.function.Supplier;
 
 public class FhirObservationIngestService extends AbstractFhirService {
+
+	public static Logger TRACE = Logger.getLogger(FhirObservationIngestService.class);
+
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	
-	public static final String FHIR_OBX_TOPIC="ingest-fhir-obx";
-	public static final String FHIR_OBX_PATIENTIDS_TOPIC="ingest-fhir-obx-patientIds";
-	
-	protected static final String KEY_PATIENTIDS = "patientids";
-	protected static final String KEY_PERIOD = "period";
-
 
 	public static void main(String[] args) {
 		FhirObservationIngestService service = new FhirObservationIngestService();
@@ -43,31 +42,33 @@ public class FhirObservationIngestService extends AbstractFhirService {
 
 	@Override
 	public void run() {
+
+		String streamContext = getStreamsContext();
+
 		Topology topology = new Topology("FhirObservationIngestService");
 		ObxToSplMapper mapper = new ObxToSplMapper();
 		ObservationQuery query = new ObservationQuery();
 
 		addDependencies(topology);
-		
-		Object property = getProperties().get(KEY_PERIOD);
+
+		String property = getProperties().getProperty(IServiceConstants.KEY_PERIOD);
 		Long period = Long.valueOf(10);
-		if (property instanceof String && !((String)property).isEmpty()) {
+		if (property != null && !property.isEmpty()) {
 			try {
-				period = Long.valueOf(((String)property).trim());
+				period = Long.valueOf(property.trim());
 			} catch (NumberFormatException e) {
 				TRACE.error("period in service.properties cannot be converted to a number.");
 				throw e;
 			}
 		}
-		
+
 		// Read list of patient ids from properties
 		TStream<List<String>> properties = topology.periodicSource(new Supplier<List<String>>() {
 			@Override
 			public List<String> get() {
-				Object property = getProperties().get(KEY_PATIENTIDS);
-				if (property instanceof String)
-				{
-					String[] pIds = ((String)property).split(",");
+				String property = getProperties().getProperty(IServiceConstants.KEY_PATIENTIDS);
+				if (property != null) {
+					String[] pIds = property.split(",");
 					ArrayList<String> ids = new ArrayList<String>();
 					for (int i = 0; i < pIds.length; i++) {
 						ids.add(pIds[i].trim());
@@ -77,8 +78,9 @@ public class FhirObservationIngestService extends AbstractFhirService {
 				return null;
 			}
 		}, period, TimeUnit.SECONDS);
-		
-		TStream<ObxQueryParams> fromProperties = properties.multiTransform(t->{
+
+		// Transform patient ids to query parameters
+		TStream<ObxQueryParams> fromProperties = properties.multiTransform(t -> {
 			List<String> ids = t;
 			List<ObxQueryParams> queries = new ArrayList<ObxQueryParams>();
 			for (String id : ids) {
@@ -86,31 +88,53 @@ public class FhirObservationIngestService extends AbstractFhirService {
 			}
 			return queries;
 		});
-				
-		// Alternatively, clients may publish patient id to the FHIR_OBX_PATIENTIDS_TOPIC
-		// TODO:  This should be json
-		TStream<ObxQueryParams> fromSubscribe = topology.subscribe(FHIR_OBX_PATIENTIDS_TOPIC, ObxQueryParams.class);
 
-		// Create a single stream for processing
-		TStream<ObxQueryParams> patientQueries = fromProperties.union(fromSubscribe);
-				
+		TStream<ObxQueryParams> patientQueries = null;
+
+		if (streamContext.equals("DISTRIBUTED") || streamContext.equals("BUNDLE")) {
+			// Alternatively, clients may publish patient id to the
+			// FHIR_OBX_PATIENTIDS_TOPIC
+			TStream<ObxQueryParams> fromSubscribe = PatientQueryParamConnector.subscribe(topology,
+					IServiceConstants.FHIR_OBX_PATIENTIDS_TOPIC);
+
+			// Create a single stream for processing
+			patientQueries = fromProperties.union(fromSubscribe);
+		} else {
+			patientQueries = fromProperties;
+		}
+
 		// query for observations
 		TStream<BundleEntryComponent> bundleEntries = patientQueries.multiTransform(t -> {
 			return query.getObservations(getFhirClient(), t);
 		});
-		
+
+		// transform bundle entries to Observation
 		TStream<Observation> observations = bundleEntries.multiTransform(bundleEntry -> {
 			return mapper.messageToModel(bundleEntry);
 		});
-		
-		PublishConnector.publishObservation(observations, FHIR_OBX_TOPIC);
-		
-		observations.print();
+
+		// Publish data stream for downstream services to analyze
+		if (streamContext.equals("DISTRIBUTED") || streamContext.equals("BUNDLE")) {
+			PublishConnector.publishObservation(observations, IServiceConstants.FHIR_OBX_TOPIC);
+		}
+
+		if (isDebug())
+			observations.print();
 
 		try {
 			Map<String, Object> subProperties = new HashMap<>();
-//			subProperties.put(ContextProperties.VMARGS, "-agentlib:jdwp=transport=dt_socket,suspend=y,server=y,address=127.0.0.1:7777");
-			StreamsContextFactory.getStreamsContext(StreamsContext.Type.DISTRIBUTED).submit(topology, subProperties);
+			
+			String vmArgs = getVmArgs();
+
+			if (vmArgs != null && !vmArgs.isEmpty()) {
+				// Add addition VM Arguments as specified in properties file
+				subProperties.put(ContextProperties.VMARGS,vmArgs);
+			}
+
+			if (isDebug())
+				subProperties.put(ContextProperties.TRACING_LEVEL, TraceLevel.DEBUG);
+
+			StreamsContextFactory.getStreamsContext(streamContext).submit(topology, subProperties);
 		} catch (Exception e) {
 			TRACE.error("Unable to submit topology", e);
 		}

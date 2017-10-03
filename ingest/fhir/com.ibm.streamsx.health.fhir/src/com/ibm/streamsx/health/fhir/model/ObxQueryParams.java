@@ -1,4 +1,9 @@
-package com.ibm.streamsx.health.fhir.service.model;
+//*******************************************************************************
+//* Copyright (C) 2017 International Business Machines Corporation
+//* All Rights Reserved
+//*******************************************************************************
+
+package com.ibm.streamsx.health.fhir.model;
 
 import java.io.Serializable;
 
