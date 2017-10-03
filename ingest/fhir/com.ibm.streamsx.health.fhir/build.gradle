@@ -1,6 +1,17 @@
 apply plugin: 'java'
 apply plugin: 'eclipse'
 
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src']
+        }
+        resources {
+            srcDirs = ['etc']
+        }
+    }
+}
+
 ext {
 	STREAMS_INSTALL = System.getenv('STREAMS_INSTALL')
 }
@@ -69,13 +80,17 @@ task deps << {
 jar.doLast {
     tasks.copyLib.execute()
     tasks.copyJar.execute()
-    tasks.copyScript.execute()
+   // tasks.copyScript.execute()
 }
 
 clean.doLast{
 	tasks.rmRelease.execute()
 }
 
+task execute(type: JavaExec) {
+    main='com.ibm.streamsx.health.fhir.service.FhirObservationIngestService'
+    classpath = configurations.runtime + files("$buildDir/libs/com.ibm.streamsx.health.fhir.jar")
+}
   
 
 
