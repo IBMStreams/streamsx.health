@@ -12,7 +12,7 @@ import org.hl7.fhir.dstu3.model.Bundle.BundleEntryComponent;
 
 import com.ibm.streamsx.health.ingest.types.model.Observation;
 
-public class FhirParseResult implements Serializable{
+public class ObxParseResult implements Serializable{
 
 	/**
 	 * 
@@ -23,30 +23,33 @@ public class FhirParseResult implements Serializable{
 	
 	private Exception exception;
 	
-	private BundleEntryComponent rawMessage;
+	private String rawMessage;
 
 	public List<Observation> getObservations() {
 		return observations;
 	}
 
-	public void setObservations(List<Observation> observations) {
+	public ObxParseResult setObservations(List<Observation> observations) {
 		this.observations = observations;
+		return this;
 	}
 
 	public Exception getException() {
 		return exception;
 	}
 
-	public void setExceptions(Exception exceptions) {
+	public ObxParseResult setExceptions(Exception exceptions) {
 		this.exception = exceptions;
+		return this;
 	}
 
-	public BundleEntryComponent getRawMessage() {
+	public String getRawMessage() {
 		return rawMessage;
 	}
 
-	public void setRawMessage(BundleEntryComponent rawMessage) {
+	public ObxParseResult setRawMessage(String rawMessage) {
 		this.rawMessage = rawMessage;
+		return this;
 	}
 	
 	

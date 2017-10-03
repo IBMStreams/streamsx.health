@@ -15,8 +15,9 @@ import org.apache.log4j.Logger;
 import org.hl7.fhir.dstu3.model.Bundle.BundleEntryComponent;
 
 import com.ibm.streams.operator.logging.TraceLevel;
-import com.ibm.streamsx.health.fhir.connector.PatientQueryParamConnector;
+import com.ibm.streamsx.health.fhir.connector.FhirObxConnector;
 import com.ibm.streamsx.health.fhir.mapper.ObxToSplMapper;
+import com.ibm.streamsx.health.fhir.model.ObxParseResult;
 import com.ibm.streamsx.health.fhir.model.ObxQueryParams;
 import com.ibm.streamsx.health.ingest.types.connector.PublishConnector;
 import com.ibm.streamsx.health.ingest.types.model.Observation;
@@ -94,7 +95,7 @@ public class FhirObservationIngestService extends AbstractFhirService {
 		if (streamContext.equals("DISTRIBUTED") || streamContext.equals("BUNDLE")) {
 			// Alternatively, clients may publish patient id to the
 			// FHIR_OBX_PATIENTIDS_TOPIC
-			TStream<ObxQueryParams> fromSubscribe = PatientQueryParamConnector.subscribe(topology,
+			TStream<ObxQueryParams> fromSubscribe = FhirObxConnector.subscribe(topology,
 					IServiceConstants.FHIR_OBX_PATIENTIDS_TOPIC);
 
 			// Create a single stream for processing
@@ -109,26 +110,41 @@ public class FhirObservationIngestService extends AbstractFhirService {
 		});
 
 		// transform bundle entries to Observation
-		TStream<Observation> observations = bundleEntries.multiTransform(bundleEntry -> {
+		TStream<ObxParseResult> parseResults = bundleEntries.transform(bundleEntry -> {
 			return mapper.messageToModel(bundleEntry);
+		});
+
+		// unwind the observation list
+		TStream<Observation> observations = parseResults.multiTransform(t -> {
+			return t.getObservations();
+		});
+
+		// check if there is any error to report
+		TStream<String> errorBundle = parseResults.transform(t -> {
+			if (t.getException() != null)
+				return t.getRawMessage();
+			return null;
 		});
 
 		// Publish data stream for downstream services to analyze
 		if (streamContext.equals("DISTRIBUTED") || streamContext.equals("BUNDLE")) {
 			PublishConnector.publishObservation(observations, IServiceConstants.FHIR_OBX_TOPIC);
+			FhirObxConnector.publishError(errorBundle, IServiceConstants.FHIR_OBX_ERROR_TOPIC);
 		}
 
-		if (isDebug())
+		if (isDebug()) {
 			observations.print();
+			errorBundle.print();
+		}
 
 		try {
 			Map<String, Object> subProperties = new HashMap<>();
-			
+
 			String vmArgs = getVmArgs();
 
 			if (vmArgs != null && !vmArgs.isEmpty()) {
 				// Add addition VM Arguments as specified in properties file
-				subProperties.put(ContextProperties.VMARGS,vmArgs);
+				subProperties.put(ContextProperties.VMARGS, vmArgs);
 			}
 
 			if (isDebug())

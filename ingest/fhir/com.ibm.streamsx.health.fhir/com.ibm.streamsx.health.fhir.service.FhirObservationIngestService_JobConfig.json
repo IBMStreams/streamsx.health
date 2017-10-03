@@ -1,1 +1,0 @@
-{"jobConfigOverlays":[{"jobConfig":{"tracing":"debug"},"deploymentConfig":{"parallelRegionConfig":{"fusionType":"channelIsolation"}}}],"comment":"Job Config Overlays for com.ibm.streamsx.health.fhir.service::FhirObservationIngestService - generated Tue Oct 03 16:39:19 UTC 2017"}

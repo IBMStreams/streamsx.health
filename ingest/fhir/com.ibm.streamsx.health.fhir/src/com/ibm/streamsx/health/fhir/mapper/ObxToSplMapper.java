@@ -17,24 +17,31 @@ import org.hl7.fhir.dstu3.model.DeviceMetric;
 import org.hl7.fhir.dstu3.model.Observation.ObservationComponentComponent;
 import org.hl7.fhir.dstu3.model.Patient;
 import org.hl7.fhir.dstu3.model.Quantity;
-import org.hl7.fhir.dstu3.model.StringType;
 import org.hl7.fhir.exceptions.FHIRException;
 
+import com.ibm.streamsx.health.fhir.model.ObxParseResult;
+import com.ibm.streamsx.health.fhir.service.FhirObservationIngestService;
 import com.ibm.streamsx.health.ingest.types.model.Observation;
 import com.ibm.streamsx.health.ingest.types.model.Reading;
 import com.ibm.streamsx.health.ingest.types.model.ReadingSource;
 import com.ibm.streamsx.health.ingest.types.model.ReadingType;
 
+import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.parser.IParser;
+
 
 public class ObxToSplMapper implements Serializable {
 
 	private static final long serialVersionUID = 1L;
+	private static FhirContext ctx = FhirContext.forDstu3();
+	private static IParser jsonParser = ctx.newJsonParser();
 
 
 	@SuppressWarnings("unchecked")
-	public <T> Iterable<T> messageToModel(BundleEntryComponent entry)  {
+	public ObxParseResult messageToModel(BundleEntryComponent entry)  {
 
 		ArrayList<Observation> observations = new ArrayList<Observation>();
+		ObxParseResult result = new ObxParseResult();
 		
 		try {
 			if (entry.getResource() instanceof org.hl7.fhir.dstu3.model.Observation) {
@@ -105,10 +112,6 @@ public class ObxToSplMapper implements Serializable {
 					
 					observations.add(streamsObx);
 				}
-				else if (obx.getValue() instanceof StringType)
-				{
-					System.out.println("Non numeric value: " + obx.getValueStringType());
-				}
 				
 				// Observation can also come in as a component
 				if (obx.getComponent() != null && obx.getComponent().size() > 0)
@@ -126,19 +129,21 @@ public class ObxToSplMapper implements Serializable {
 							Observation streamsObx = createObservation(obComponent.getValueQuantity(), ts, rType, rSource, sDevice, patientId);
 							observations.add(streamsObx);
 						}
-						else if (obComponent.getValue() instanceof StringType) {
-							System.out.println("Non numeric value: " + obComponent.getValueStringType());
-						}
 					}
 				}
 				
 				
 			}
 		} catch (FHIRException e) {
+			FhirObservationIngestService.TRACE.error("Unable to parser component bundle", e);
+			result.setExceptions(e);
+			
+			// Convert bundle to raw JSON message
+			result.setRawMessage(jsonParser.encodeResourceToString(entry.getResource()));
 			
 		}
 		
-		return (Iterable<T>) observations;
+		return result.setObservations(observations);
 
 	}
 
