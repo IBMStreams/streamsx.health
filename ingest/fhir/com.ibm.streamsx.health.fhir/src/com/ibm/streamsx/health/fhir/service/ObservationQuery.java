@@ -88,8 +88,4 @@ public class ObservationQuery implements Serializable {
 		return allEntries;
 	}
 
-	protected int getPageSize() {
-		return 100;
-	}
-
 }

@@ -11,12 +11,17 @@ import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 import org.apache.log4j.Logger;
 
+import com.ibm.streams.operator.logging.TraceLevel;
 import com.ibm.streamsx.health.fhir.model.ObxQueryParams;
 import com.ibm.streamsx.topology.Topology;
+import com.ibm.streamsx.topology.context.ContextProperties;
+import com.ibm.streamsx.topology.context.StreamsContextFactory;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.client.IGenericClient;
@@ -36,6 +41,10 @@ public abstract class AbstractFhirService implements Serializable {
 	
 	public AbstractFhirService() {
 		
+		initializeService();
+	}
+
+	protected void initializeService() {
 		// Properties is serializable.  This code is called twice.
 		// At the first time, when the Java application is run, it is called locally to generate
 		// the SPL file.  At this time, the properties file should be accessible
@@ -136,6 +145,35 @@ public abstract class AbstractFhirService implements Serializable {
 		return getProperties().getProperty(IServiceConstants.KEY_VMARGS);
 	}
 
-	protected abstract void run();
+	protected void submit(Topology topology) {
+		try {
+			Map<String, Object> subProperties = new HashMap<>();
+	
+			String vmArgs = getVmArgs();
+	
+			if (vmArgs != null && !vmArgs.isEmpty()) {
+				// Add addition VM Arguments as specified in properties file
+				subProperties.put(ContextProperties.VMARGS, vmArgs);
+			}
+	
+			if (isDebug())
+				subProperties.put(ContextProperties.TRACING_LEVEL, TraceLevel.DEBUG);
+	
+			StreamsContextFactory.getStreamsContext("DISTRIBUTED").submit(topology, subProperties);
+		} catch (Exception e) {
+			TRACE.error("Unable to submit topology", e);
+		}
+	}
 
+	protected void run() {
+		
+		Topology topo = createTopology();
+		addDependencies(topo);
+		submit(topo);
+		
+	}
+	
+	protected abstract Topology createTopology();
+
+	
 }

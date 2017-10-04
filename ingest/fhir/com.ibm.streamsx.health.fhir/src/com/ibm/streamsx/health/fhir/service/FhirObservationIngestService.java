@@ -6,15 +6,12 @@
 package com.ibm.streamsx.health.fhir.service;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 import org.hl7.fhir.dstu3.model.Bundle.BundleEntryComponent;
 
-import com.ibm.streams.operator.logging.TraceLevel;
 import com.ibm.streamsx.health.fhir.connector.FhirObxConnector;
 import com.ibm.streamsx.health.fhir.mapper.ObxToSplMapper;
 import com.ibm.streamsx.health.fhir.model.ObxParseResult;
@@ -24,8 +21,6 @@ import com.ibm.streamsx.health.ingest.types.connector.PublishConnector;
 import com.ibm.streamsx.health.ingest.types.model.Observation;
 import com.ibm.streamsx.topology.TStream;
 import com.ibm.streamsx.topology.Topology;
-import com.ibm.streamsx.topology.context.ContextProperties;
-import com.ibm.streamsx.topology.context.StreamsContextFactory;
 import com.ibm.streamsx.topology.function.Supplier;
 
 public class FhirObservationIngestService extends AbstractFhirService {
@@ -43,7 +38,7 @@ public class FhirObservationIngestService extends AbstractFhirService {
 	}
 
 	@Override
-	public void run() {
+	public Topology createTopology() {
 
 		String streamContext = getStreamsContext();
 
@@ -73,7 +68,9 @@ public class FhirObservationIngestService extends AbstractFhirService {
 					String[] pIds = property.split(",");
 					ArrayList<String> ids = new ArrayList<String>();
 					for (int i = 0; i < pIds.length; i++) {
-						ids.add(pIds[i].trim());
+						String pid = pIds[i].trim();
+						if (!pid.isEmpty())
+							ids.add(pid);
 					}
 					return ids;
 				}
@@ -140,23 +137,7 @@ public class FhirObservationIngestService extends AbstractFhirService {
 			}
 		}
 
-		try {
-			Map<String, Object> subProperties = new HashMap<>();
-
-			String vmArgs = getVmArgs();
-
-			if (vmArgs != null && !vmArgs.isEmpty()) {
-				// Add addition VM Arguments as specified in properties file
-				subProperties.put(ContextProperties.VMARGS, vmArgs);
-			}
-
-			if (isDebug())
-				subProperties.put(ContextProperties.TRACING_LEVEL, TraceLevel.DEBUG);
-
-			StreamsContextFactory.getStreamsContext(streamContext).submit(topology, subProperties);
-		} catch (Exception e) {
-			TRACE.error("Unable to submit topology", e);
-		}
+		return topology;
 
 	}
 

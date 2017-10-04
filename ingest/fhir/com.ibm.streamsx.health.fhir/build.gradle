@@ -92,5 +92,18 @@ task execute(type: JavaExec) {
     classpath = configurations.runtime + files("$buildDir/libs/com.ibm.streamsx.health.fhir.jar")
 }
   
+task execute_test_debug(type: JavaExec) {
+    main='com.ibm.streamsx.health.fhir.internal.test.PrintFhirDebugRawMessagesService'
+    classpath = configurations.runtime + files("$buildDir/libs/com.ibm.streamsx.health.fhir.jar")
+}
 
+task execute_test_error(type: JavaExec) {
+    main='com.ibm.streamsx.health.fhir.internal.test.PrintFhirObxErrorService'
+    classpath = configurations.runtime + files("$buildDir/libs/com.ibm.streamsx.health.fhir.jar")
+}
+
+task execute_test_patientid(type: JavaExec) {
+    main='com.ibm.streamsx.health.fhir.internal.test.PublishPatientId'
+    classpath = configurations.runtime + files("$buildDir/libs/com.ibm.streamsx.health.fhir.jar")
+}
 
