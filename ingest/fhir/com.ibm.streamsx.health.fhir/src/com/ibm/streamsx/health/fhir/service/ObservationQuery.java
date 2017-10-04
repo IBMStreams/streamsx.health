@@ -18,7 +18,7 @@ import com.ibm.streamsx.health.fhir.internal.PatientQueryMgr;
 import com.ibm.streamsx.health.fhir.model.ObxQueryParams;
 
 import ca.uhn.fhir.model.api.Include;
-import ca.uhn.fhir.rest.client.IGenericClient;
+import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.gclient.IQuery;
 import ca.uhn.fhir.rest.gclient.ReferenceClientParam;
 import ca.uhn.fhir.rest.param.DateRangeParam;

@@ -33,9 +33,11 @@ dependencies {
 	compile project(':ingest:common:com.ibm.streamsx.health.ingest')
 	
 	// Hapi-Fhir dependencies
-	compile 'ca.uhn.hapi.fhir:hapi-fhir-base:2.5'
-	compile 'ca.uhn.hapi.fhir:hapi-fhir-structures-dstu3:2.5'
-	compile 'ca.uhn.hapi.fhir:hapi-fhir-validation-resources-dstu3:2.5'
+	compile 'ca.uhn.hapi.fhir:hapi-fhir-base:3.0.0'
+	compile 'ca.uhn.hapi.fhir:hapi-fhir-structures-dstu3:3.0.0'
+	compile 'ca.uhn.hapi.fhir:hapi-fhir-utilities:3.0.0'
+	compile 'ca.uhn.hapi.fhir:hapi-fhir-client:3.0.0'
+	
 	
 	// Streams dependencies
 	compile name: 'com.ibm.streams.operator'
