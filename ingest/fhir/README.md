@@ -13,7 +13,7 @@ This service requires the following toolkits:
 
 This service requires the following libraries: 
 
-  * [Hapi FHIR v2.5](http://hapifhir.io/index.html)
+  * [Hapi FHIR v3.0](http://hapifhir.io/index.html)
 
 # Expected Input
 
