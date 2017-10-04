@@ -28,7 +28,7 @@ This service requires the following query parameters:
   "endTime" : numeric
 }
 ```
-* patientId - the patient id to search the observation recrods for
+* patientId - the patient id to search the observation records for
 * pageSize - how many records to retrieve from the server per page, default is 100.
 * starTime - search for records that are last updated between the startTime and endTime.  Default is -1.  It searches for all records that are available.
 * endTime - search for records that are last updated between the startTime and endTime.  Default is -1.  It searches for all records that are available.
