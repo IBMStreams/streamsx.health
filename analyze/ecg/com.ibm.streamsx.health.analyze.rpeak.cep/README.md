@@ -8,6 +8,7 @@ This service makes use of the ComplexEvent operator from the com.ibm.streams.cep
 
 This service depends on the following toolkits: 
 
+  * com.ibm.streamsx.topology
   * com.ibm.streamsx.health.ingest
   * com.ibm.streamsx.json
   * com.ibm.streams.cep
