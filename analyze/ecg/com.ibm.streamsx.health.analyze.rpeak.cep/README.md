@@ -85,7 +85,7 @@ The service properties can be set in the `service.properties` file. The followin
 | topic | The topic to subscribe to | `ingest-beacon` |
 | peakThreshold | The service detects steep jump in the signal.  By default a steep jump is defined as 0.8V between the min and max value in a window of data where a peak is detected | 0.8 |
 
-Run the following command to launch the the QRS Detector Service:
+Run the following command to launch the service:
 
 `gradle execute`
 
