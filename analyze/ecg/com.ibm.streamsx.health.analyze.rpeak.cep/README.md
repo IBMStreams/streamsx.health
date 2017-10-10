@@ -1,7 +1,7 @@
 # R-Peak Detect Service
 
 This service analyzes an ECG wave and submits a tuple indicating an RPeak Event, and also calcualtes the RR interval.
-This service makes use of the ComplexEvent operator from the com.ibm.streams.cep toolkit.
+This service makes use of the ComplexEvent operator from the com.ibm.streams.cep toolkit.  Each reading is inspected one at a time until a peak is detected in the signal. When a peak is detected in the signal, the event is further analyzed to determine if the peak event is an R-Peak event.  By default, a R-Peak event is defined when the min and max value in a window of data is greater than 0.8v.  A window is established from the time when a rise in voltage is first detected, to the time when the peak is found and a decrease in voltage detected.  The algorithm does not look at how long it takes for this jump to happen, but can be improved to take this into acccount.  
 
 
 # Dependencies
@@ -84,7 +84,7 @@ The service properties can be set in the `service.properties` file. The followin
 | --- | --- | :---: |
 | readingCode | The readingType.code value that contains the ECG signal to analyze. | `X100-8` (ECG Lead I) |
 | topic | The topic to subscribe to | `ingest-beacon` |
-| peakThreshold | The service detects steep jump in the signal.  By default a steep jump is defined as 0.8V between the min and max value in a window of data where a peak is detected | 0.8 |
+| peakThreshold | Threshold for identifying a steep jump in voltage | 0.8 |
 
 Run the following command to launch the service:
 
