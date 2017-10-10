@@ -34,6 +34,14 @@ public class RPeakDetectCepService extends AbstractService{
 		try {
 			SPL.addToolkit(topo, new File("./"));
 			SPL.addToolkit(topo, new File("../../../ingest/common/com.ibm.streamsx.health.ingest"));
+			
+			String install = getStreamsInstall();
+			
+			String jsonToolkit = install+"/toolkits/com.ibm.streamsx.json";
+			SPL.addToolkit(topo, new File(jsonToolkit));
+			
+			String cepToolkit = install+"/toolkits/com.ibm.streams.cep";
+			SPL.addToolkit(topo, new File(cepToolkit));			
 		} catch (IOException e) {
 			throw new RuntimeError(e);
 		}

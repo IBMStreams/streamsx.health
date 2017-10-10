@@ -142,6 +142,11 @@ public abstract class AbstractService implements Serializable {
 	protected Map<String, Object> addSubmssionTimeParams(Map<String, Object> params) {
 		return params;
 	}
+	
+	protected String getStreamsInstall() {
+		Map<String, String> envVars = System.getenv();
+		return envVars.get("STREAMS_INSTALL");
+	}
 
 	protected void run() {
 		
