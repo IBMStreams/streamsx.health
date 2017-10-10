@@ -1,0 +1,111 @@
+//*******************************************************************************
+//* Copyright (C) 2017 International Business Machines Corporation
+//* All Rights Reserved
+//*******************************************************************************
+namespace com.ibm.streamsx.health.analyze.rpeak.cep.service ;
+
+use com.ibm.streamsx.health.ingest.connector::IngestSubscribe ;
+use com.ibm.streamsx.health.ingest.types::* ;
+use com.ibm.streams.cep::MatchRegex ;
+use com.ibm.streamsx.topology.topic::Publish ;
+use com.ibm.streamsx.json::TupleToJSON ;
+
+
+type PeakEvent = rstring patientId, int64 ts, float64 data, float64 max,
+	float64 min, int32 count, list<float64> eventData, list<int64> eventTs ;
+type RPeakEvent = rstring patientId, int64 ts, float64 data ;
+type RREvent = rstring patientId, int64 rr, list<RPeakEvent> events ;
+
+composite RPeakDetectCep()
+{
+	param
+		expression<rstring> $subTopic : getSubmissionTimeValue("topic") ;
+		expression<rstring> $pubTopicRPeak : "analyze/rpeak/cep/r" ;
+		expression<rstring> $pubTopicRR : "analyze/rpeak/cep/rr" ;
+		expression<rstring> $readingCode : getSubmissionTimeValue("readingCode") ;
+		expression<float64> $peakThreshold :(float64)
+			getSubmissionTimeValue("peakThreshold", "0.8") ;
+	graph
+		(stream<Observation> SubscribeToObservations) =
+			IngestSubscribe()
+		{
+			param
+				topic : $subTopic ;
+		}
+
+		(stream<PeakEvent> PeakDetectEvents) =
+			MatchRegex(ECGSignal as I0)
+		{
+			param
+				pattern : ". rise+ drop drop drop" ;
+				predicates : { rise = data >= Last(data), drop = data < Last(data) } ;
+				partitionBy : I0.patientId ;
+			output
+				PeakDetectEvents : max = Max(data), min = Min(data), count = Count(),
+					eventData = Collect(data), eventTs = Collect(ts) ;
+		}
+
+		(stream<rstring patientId, int64 ts, float64 data> ECGSignal) = Functor(SubscribeToObservations as I0)
+		{
+			param
+				filter : I0.reading.readingType.code == $readingCode ;
+			output
+				ECGSignal : patientId = I0.patientId, ts = I0.reading.ts, data =
+					I0.reading.value ;
+		}
+
+		() as PublishR = Publish(RPeakToJson as inPort0Alias)
+		{
+			param
+				topic : $pubTopicRPeak ;
+		}
+
+		(stream<rstring jsonString> RPeakToJson)=
+			TupleToJSON(RPeakEvents)
+		{
+		}
+
+		(stream<RPeakEvent> RPeakEvents) = Custom(PeakDetectEvents as
+			I0)
+		{
+			logic
+				onTuple I0 : if(max - eventData [ 0 ] > $peakThreshold)
+				{
+					submit({ patientId = patientId, ts = eventTs [ size(eventTs) - 4 ], data =
+						max }, RPeakEvents) ;
+				}
+
+		}
+
+		(stream<list<RPeakEvent> events> RPeakEventList)  =
+			Aggregate(RPeakEvents as I0)
+		{
+			window
+				I0 : sliding, count(2), count(1), partitioned ;
+			param
+				partitionBy : I0.patientId ;
+			output
+				RPeakEventList : events = Collect(I0) ;
+		}
+
+		() as PublishRR = Publish(RRToJson)
+		{
+			param
+				topic : $pubTopicRR ;
+		}
+
+		(stream<rstring jsonString> RRToJson) =
+			TupleToJSON(RREvents as inPort0Alias)
+		{
+		}
+
+		(stream<RREvent> RREvents)  =
+			Functor(RPeakEventList as I0)
+		{
+			output
+				RREvents: patientId = I0.events[0].patientId, rr=I0.events[1].ts-I0.events[0].ts;
+		
+		}
+
+}
+
