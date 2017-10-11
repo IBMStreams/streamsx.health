@@ -1,0 +1,84 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+
+sourceSets {
+    main {
+        java {
+            srcDirs = ['impl/java/src']
+        }
+        resources {
+            srcDirs = ['etc']
+        }
+    }
+}
+
+ext {
+	STREAMS_INSTALL = System.getenv('STREAMS_INSTALL')
+}
+
+
+repositories {
+    mavenCentral()
+    
+   flatDir {
+       dirs STREAMS_INSTALL+'/lib',STREAMS_INSTALL+'/ext/lib',STREAMS_INSTALL+'/toolkits/com.ibm.streamsx.topology/lib'
+   }
+}
+
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+dependencies {
+	// compile any project that this service may need
+	compile project(':ingest:common:com.ibm.streamsx.health.ingest')
+	
+	// Streams dependencies
+	compile name: 'com.ibm.streams.operator'
+	compile name: 'com.ibm.streams.operator.samples'
+	compile name: 'com.ibm.streamsx.topology'
+	compile name: 'JSON4J'
+	compile name: 'commons-math-2.2'	
+}
+
+task copyLib(type: Copy) {
+    into "$projectDir/release/opt/lib"
+    from configurations.runtime
+}
+
+task copyJar(type: Copy) {
+    into "$projectDir/release"
+    from "$projectDir/build/libs/"
+    include '**/*.jar'
+}
+
+task rmRelease(type: Delete) {
+	delete 'release'
+}
+
+task copyLibDev(type: Copy) {
+    into "$projectDir/opt/lib"
+    from configurations.runtime
+}
+
+task deps << {
+	tasks.copyLibDev.execute()
+	tasks.copyLib.execute()
+}
+
+
+jar.doLast {
+    tasks.copyLib.execute()
+    tasks.copyJar.execute()
+}
+
+clean.doLast{
+	tasks.rmRelease.execute()
+}
+
+task execute(type: JavaExec) {
+    main='com.ibm.streamsx.health.example.java.service.ExampleJavaService'
+    classpath = configurations.runtime + files("$buildDir/libs/com.ibm.streamsx.health.example.java.service.jar")
+}
+
+

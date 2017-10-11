@@ -1,0 +1,38 @@
+//*******************************************************************************
+//* Copyright (C) 2017 International Business Machines Corporation
+//* All Rights Reserved
+//*******************************************************************************
+namespace com.ibm.streamsx.health.example.spl.service ;
+
+use com.ibm.streamsx.health.ingest.connector::IngestSubscribe ;
+use com.ibm.streamsx.health.ingest.types::* ;
+use com.ibm.streamsx.topology.topic::Publish ;
+use com.ibm.streamsx.json::TupleToJSON ;
+use com.ibm.streamsx.health.ingest.connector::IngestPublish ;
+
+composite ExampleSPLService()
+{
+	param
+		expression<rstring> $subTopic : getSubmissionTimeValue("topic") ;
+		expression<rstring> $pubTopic :
+			"/com/ibm/streamsx/health/example/spl/service/observations/v1" ;
+	graph
+		(stream<Observation> SubscribeToObservations) = IngestSubscribe()
+		{
+			param
+				topic : $subTopic ;
+		}
+
+		() as IngestPublish_2 = IngestPublish(Functor_3_out0 as inPort0Alias)
+		{
+			param
+				topic : $pubTopic ;
+		}
+
+		(stream<Observation> Functor_3_out0) as Functor_3 =
+			Functor(SubscribeToObservations)
+		{
+		}
+
+}
+

@@ -1,4 +1,9 @@
-package com.ibm.streamsx.health.example.service;
+//*******************************************************************************
+//* Copyright (C) 2017 International Business Machines Corporation
+//* All Rights Reserved
+//*******************************************************************************
+
+package com.ibm.streamsx.health.example.spl.service;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -56,9 +61,9 @@ public abstract class AbstractService implements Serializable {
 			return properties;
 			
 		} catch (FileNotFoundException e) {
-			TRACE.error("Unable to read patientIds.properties");
+			TRACE.error("Unable to find service.properties");
 		} catch (IOException e) {
-			TRACE.error("Unable to read patientIds.properties");
+			TRACE.error("Unable to read service.properties");
 		}
 		return null;
 	}
@@ -136,6 +141,11 @@ public abstract class AbstractService implements Serializable {
 	
 	protected Map<String, Object> addSubmssionTimeParams(Map<String, Object> params) {
 		return params;
+	}
+	
+	protected String getStreamsInstall() {
+		Map<String, String> envVars = System.getenv();
+		return envVars.get("STREAMS_INSTALL");
 	}
 
 	protected void run() {

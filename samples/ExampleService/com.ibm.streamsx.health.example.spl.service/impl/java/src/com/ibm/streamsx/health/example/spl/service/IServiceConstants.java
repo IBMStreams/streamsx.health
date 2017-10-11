@@ -3,7 +3,7 @@
 //* All Rights Reserved
 //*******************************************************************************
 
-package com.ibm.streamsx.health.example.service;
+package com.ibm.streamsx.health.example.spl.service;
 
 public interface IServiceConstants {
 	
@@ -11,5 +11,11 @@ public interface IServiceConstants {
 	String KEY_DEBUG = "debug";
 	String KEY_STREAMS_CONTEXT = "streamscontext";
 	String KEY_VMARGS = "vmargs";
+	
+	
+	// Service properties
+	String KEY_TOPIC="topic";
+	String KEY_READINGCODE="readingCode";
+	String KEY_PEAKTHRESHOLD="peakThreshold";
 
 }
