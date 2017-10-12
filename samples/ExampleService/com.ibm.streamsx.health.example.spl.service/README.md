@@ -37,8 +37,9 @@ A service may define a set of custom properties.  Custom properties should be sc
 ### Publishing Data
 
 Services employ a publish-subcribe model to receive or send data to another service.  When publishing data, topic definition should follow these guidelines:
-    * The topic be defined using the MQTT convention as noted by the Publish/Subscribe operator in the streamsx.topology toolkit. (e.g. /a/b/c/d)
-    * The topic should begin with the name of the service, delimited by "/"
+
+* The topic be defined using the MQTT convention as noted by the Publish/Subscribe operator in the streamsx.topology toolkit. (e.g. /a/b/c/d)
+* The topic should begin with the name of the service, delimited by "/"
     * Next the topic should describe the data being published  
     * The last segment of the topic should be a version number.  
     * For example: /com/ibm/streamsx/health/example/spl/service/observations/v1
