@@ -1,5 +1,6 @@
 apply plugin: 'java'
 apply plugin: 'eclipse'
+apply from: "$rootProject.projectDir/common.gradle"
 
 sourceSets {
     main {
@@ -41,6 +42,16 @@ dependencies {
 	compile name: 'commons-math-2.2'	
 }
 
+task buildToolkit {
+    doLast {
+        splMakeToolkit()
+    }
+}
+
+build.doLast {
+	tasks.buildToolkit.execute()
+}
+
 task copyLib(type: Copy) {
     into "$projectDir/release/opt/lib"
     from configurations.runtime
@@ -77,8 +88,8 @@ clean.doLast{
 }
 
 task execute(type: JavaExec) {
-    main='com.ibm.streamsx.health.example.service.ExampleHealthService'
-    classpath = configurations.runtime + files("$buildDir/libs/com.ibm.streamsx.health.example.service.jar")
+    main='com.ibm.streamsx.health.example.spl.service.ExampleSPLHealthService'
+    classpath = configurations.runtime + files("$buildDir/libs/com.ibm.streamsx.health.example.spl.service.jar")
 }
 
 
