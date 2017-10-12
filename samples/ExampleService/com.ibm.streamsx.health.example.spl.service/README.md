@@ -1,13 +1,13 @@
 # Streams Healthcare SPL Example Service
 
-This project demonstrates how one can create a SPL service to work with Streams Healthcare Analtyics paltform.  The SPl service is compiled and run by a Java wrapper.  The Java wrapper prvoides a consistent user experience to the end user.
+This project demonstrates how one can create a SPL service to work with Streams Healthcare Analtyics paltform.  The SPl service is compiled and run by a Java wrapper.  The Java wrapper provides a consistent user experience to the end user.
 
 ## Directory Structure
 
 Service has this directory structure:
 
 ```
-com.ibm.streamsx.health.example.service
+com.ibm.streamsx.health.example.spl.service
   |
   |---- info.xml - toolkit information of the service
   |---- build.gradle - build script for the Java service wrapper
@@ -36,7 +36,7 @@ A service may define a set of custom properties.  Custom properties should be sc
 
 ### Publishing Data
 
-Services employ a publish-subcribe model to receive or send data to another service.  When publishing data, topic definition should follow these guidelines:
+Services employ a publish-subscribe model to receive or send data to another service.  When publishing data, topic definition should follow these guidelines:
 
 * The topic be defined using the MQTT convention as noted by the Publish/Subscribe operator in the streamsx.topology toolkit. (e.g. /a/b/c/d)
 * The topic should begin with the name of the service, delimited by "/"
@@ -46,7 +46,7 @@ Services employ a publish-subcribe model to receive or send data to another serv
 * All services publish data in JSON format, to maximize service interoperability with different languages.  
 * If the data schema needs to change as the service evolves, follow these guidelines:
     1.  Adding a new attribute to the schema is not a breaking change.  Update the *minor* number of the topic version as follows to indicate a change in the schema:  e.g. a/b/c/observations/v1 -> **/a/b/c/observations/v1/1**
-    1.  Renaming or removing of an attribute breaks compatibility.  If this has to be done, update the *major* nmber of the topic version as follows to indicate a breaking change:  e.g. **/a/b/c/observations/v2** 
+    1.  Renaming or removing of an attribute breaks compatibility.  If this has to be done, update the *major* number of the topic version as follows to indicate a breaking change:  e.g. **/a/b/c/observations/v2** 
     1.  Renaming or removing attributes is discouraged as it breaks application compatibility.  It is recommended that existing data stream is maintained.  New data stream can be added to a microservice to maintain compatibility.
  
 ### Subscribing Data
