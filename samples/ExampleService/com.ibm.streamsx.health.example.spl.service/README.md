@@ -32,7 +32,7 @@ Customization of a service should be defined in a service.properties file.  All 
 * streamscontext
 * vmargs
 
-A service may define a set of custom properties.  Custom properties should be scoped and prefixed with the service's fully qualified name.  (e.g.  com.ibm.streamsx.health.example.spl.service.property1).   The scoping allow us to combine properties from multiple services into a single property file, without running into name collision.    
+A service may define a set of custom properties.  Custom properties should be scoped and prefixed with the service's fully qualified name.  (e.g.  com.ibm.streamsx.health.example.spl.service.property1).   The scoping allows us to combine properties from multiple services into a single property file, without running into name collision.    
 
 ### Publishing Data
 
