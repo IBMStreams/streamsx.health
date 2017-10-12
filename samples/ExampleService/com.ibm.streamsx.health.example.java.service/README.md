@@ -1,4 +1,4 @@
-# Streams Healthcare Example Service
+# Streams Healthcare Java Example Service
 
 This project demonstrates how one can create a service to work with Streams Healthcare Analtyics paltform.  
 
@@ -16,7 +16,7 @@ Service has this directory structure:
 
 The service is written in Java, using the Streams Java Application API.  A service should adhere to the following guidelines:
 
-* The service class should reside in a package with a *.service suffix. (e.g. com.ibm.streamsx.health.example.service)
+* The service class should reside in a package with a *.service suffix. (e.g. com.ibm.streamsx.health.example.java.service)
 * The service class should be named with at `Service` suffix. (e.g. ExampleHealthService)
 * The service class should subclass from AbstractService.  Abstract service provides infrastructure support:
     * Handling of properties files for service customization

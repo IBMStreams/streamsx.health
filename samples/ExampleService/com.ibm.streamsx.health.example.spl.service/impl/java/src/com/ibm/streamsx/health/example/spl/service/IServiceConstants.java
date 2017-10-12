@@ -14,8 +14,6 @@ public interface IServiceConstants {
 	
 	
 	// Service properties
-	String KEY_TOPIC="topic";
-	String KEY_READINGCODE="readingCode";
-	String KEY_PEAKTHRESHOLD="peakThreshold";
+	String KEY_TOPIC="com.ibm.streamsx.health.example.spl.service.topic";
 
 }

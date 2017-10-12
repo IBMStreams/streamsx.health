@@ -1,92 +1,43 @@
-# R-Peak Detect Service
+# Streams Healthcare SPL Example Service
 
-This service analyzes an ECG wave and submits a tuple indicating an RPeak Event, and also calcualtes the RR interval.
-This service makes use of the ComplexEvent operator from the com.ibm.streams.cep toolkit.  Each reading is inspected one at a time until a peak is detected in the signal. When a peak is detected in the signal, the event is further analyzed to determine if the peak event is an R-Peak event.  By default, a R-Peak event is defined when the min and max value in a window of data is greater than 0.8v.  A window is established from the time when a rise in voltage is first detected, to the time when the peak is found and a decrease in voltage detected.  The algorithm does not look at how long it takes for this jump to happen, but can be improved to take this into acccount.  
+This project demonstrates how one can create a SPL service to work with Streams Healthcare Analtyics paltform.  
 
+## Directory Structure
 
-# Dependencies
+Service has this directory structure:
 
-This service depends on the following toolkits: 
+* info.xml - toolkit information of the service
+* com.ibm.streamsx.health.example.spl.service - contains SPL application code for the service
+* build.gradle - gradle script for building service
+* service.properties - contain properties for customizing the behavior of the service
+* impl/java/src - java source code of the service wrapper
+* opt/lib - third-party libraries required by the services
 
-  * com.ibm.streamsx.topology
-  * com.ibm.streamsx.health.ingest
-  * com.ibm.streamsx.json
-  * com.ibm.streams.cep
+## Service
 
-# Expected Input
+The service is written in SPL.  The Java topology application provides a wrapper to the SPL service to allow user to have a more consistent user experience when invoking the service.
 
-This service expects an `Observation` tuple as the input: 
+A SPL service should adhere to the following guidelines:
 
-```
-{
-  "patientId" : string,
-  "device" : {
-    "id" : string,
-    "locationId" : string
-  },
-  "readingSource" : {
-    "id" : string,
-    "sourceType" : string,
-    "deviceId" : string
-  },
-  "reading" : {
-    "ts" : numeric,
-    "readingType" : {
-      "system" : string,
-      "code" : string
-    },
-    "value" : numeric,
-    "uom" : string
-  }
-}
-```
+* The SPL main composite should reside in a package with a *.service suffix. (e.g. com.ibm.streamsx.health.example.spl.service)
+* The SPL main composite should be named with at `Service` suffix. (e.g. ExampleSPLService)
+* Customization of a service should be done in a service.properties file.  All services should support the following properties.  These properties are handled by AbstractService by default.
+    * debug
+    * streamscontext
+    * vmargs
+* The Java service wrapper is responsible for the following:
+    * Creation of a topology.  The topology invokes the SPL main composite.
+    * Define additional properties a service may support.
+    * Passing the properties found in service.properties to the SPL application
+        
+## Building a Service
 
-# Output
+A service is to be built using the build.gradle script.  The script is set up to build any Java code residing in the impl/java/src directory.
+If a service require a third-party library, client is responsible to define these libraries in the build script.  The dependencies will be downloaded
+by the build script and  stored in the opt/lib directory.  
 
-  * **Published Topics:** "analyze/rpeak/cep/r"
-  * **Output JSON Schema:** 
+## Executing a Service
 
-```
-{
-  "ts" : numeric (epoch),
-  "patientId" : string,
-  "data" : numeric,
-}
-```
-
-  * **Published Topics:** "analyze/rpeak/cep/rr"
-  * **Output JSON Schema:** 
-
-```
-{
-  "rr" : numeric,
-  "patientId" : string,
-  "events" : [{
-    "ts" : numeric (epoch),
-    "patientId" : string,
-    "data" : numeric,
-  }]
-}
-```
-
-# Build
-
-Run the following command to build this service: 
-
-`gradle build`
-
-
-# Execute
-
-The service properties can be set in the `service.properties` file. The following properties are available: 
-
-| Property | Description | Default |
-| --- | --- | :---: |
-| readingCode | The readingType.code value that contains the ECG signal to analyze. | `X100-8` (ECG Lead I) |
-| topic | The topic to subscribe to | `ingest-beacon` |
-| peakThreshold | Threshold for identifying a steep jump in voltage | 0.8 |
-
-Run the following command to launch the service:
-
-`gradle execute`
-
+build.gradle is set up to execute the service, using the **execute** target.  
+Clients are expected to configure this target to identify the main class and jar file for running the service wrapper.
+Clients may also define additional execute targets if the project contains more than one service.
