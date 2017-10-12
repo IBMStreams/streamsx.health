@@ -1,6 +1,6 @@
 # Streams Healthcare SPL Example Service
 
-This project demonstrates how one can create a SPL service to work with Streams Healthcare Analtyics paltform.  
+This project demonstrates how one can create a SPL service to work with Streams Healthcare Analtyics paltform.  The SPl service is then invoked by a Java wrapper.  The wrapper prvoides a consistent user experience to the end user.
 
 ## Directory Structure
 
@@ -8,14 +8,12 @@ Service has this directory structure:
 
 * info.xml - toolkit information of the service
 * com.ibm.streamsx.health.example.spl.service - contains SPL application code for the service
-* build.gradle - gradle script for building service
+* build.gradle - gradle script for building service wrapper
 * service.properties - contain properties for customizing the behavior of the service
 * impl/java/src - java source code of the service wrapper
 * opt/lib - third-party libraries required by the services
 
 ## Service
-
-The service is written in SPL.  The Java topology application provides a wrapper to the SPL service to allow user to have a more consistent user experience when invoking the service.
 
 A SPL service should adhere to the following guidelines:
 
@@ -25,6 +23,9 @@ A SPL service should adhere to the following guidelines:
     * debug
     * streamscontext
     * vmargs
+    
+## Service Wrapper   
+
 * The Java service wrapper is responsible for the following:
     * Creation of a topology.  The topology invokes the SPL main composite.
     * Define additional properties a service may support.
