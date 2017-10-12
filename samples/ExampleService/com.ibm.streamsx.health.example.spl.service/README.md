@@ -28,9 +28,9 @@ A SPL service should adhere to the following guidelines:
 
 Customization of a service should be defined in a service.properties file.  All services should support the following properties.  These properties are handled by AbstractService by default.
 
-    * debug
-    * streamscontext
-    * vmargs
+* debug
+* streamscontext
+* vmargs
 
 A service may define a set of custom properties.  Custom properties should be scoped and prefixed with the service's fully qualified name.  (e.g.  com.ibm.streamsx.health.example.spl.service.property1).   The scoping allow us to combine properties from multiple services into a single property file, without running into name collision.    
 
@@ -44,7 +44,7 @@ Services employ a publish-subcribe model to receive or send data to another serv
     * For example: /com/ibm/streamsx/health/example/spl/service/observations/v1
  * All services publish data in JSON format, to maximize service interoperability with different languages.  
  * If the data schema needs to change as the service evolves, follow these guidelines:
-    * Adding a new attribute to the schema is not a breaking change.  Update the *minor* number of the topic version as follows to indicate a change in the schema:  e.g. a/b/c/observations/v1 becomes / a/b/c/observations/v1**/1**
+    * Adding a new attribute to the schema is not a breaking change.  Update the *minor* number of the topic version as follows to indicate a change in the schema:  e.g. a/b/c/observations/v1 becomes / a/b/c/observations/v1/1
     * Renaming or removing of an attribute breaks compatibility.  If this has to be done, update the *major* nmber of the topic version as follows to indicate a breaking change:  e.g. /a/b/c/observations/v2 - Downstream applications cannot connect to this data stream without being updated.  
     * Renaming or removing attributes is discouraged as it breaks application compatibility.  It is recommended that existing data stream is maintained.  New data stream can be added to the microservice to maintain compatibility.
  
