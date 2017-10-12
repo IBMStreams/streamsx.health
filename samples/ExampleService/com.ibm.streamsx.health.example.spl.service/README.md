@@ -31,7 +31,7 @@ A SPL service should adhere to the following guidelines:
 * Service employs a publish-subcribe model to receive or send data to another service.  The topic definition should follow these guidelines:
     * The topic be defined using the MQTT convention as noted by the Publish/Subscribe operator in the streamsx.topology toolkit. (e.g. /a/b/c/d)
     * The topic should begin with the name of the service, delimited by "/"
-    * Next the topic should the data being published  
+    * Next the topic should describe the data being published  
     * The last segment of the topic should be a version number.  
     * For example: /com/ibm/streamsx/health/example/spl/service/observations/v1
  * All services publish data in JSON format, to maximize service interoperability with different languages.
