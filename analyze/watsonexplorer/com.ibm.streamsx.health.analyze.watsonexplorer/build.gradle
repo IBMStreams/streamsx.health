@@ -21,7 +21,7 @@ dependencies {
 
 task getWEXToolkit << {
 	exec {
-		commandLine 'curl', '-LJO', 'https://github.com/IBMStreams/streamsx.watsonexplorer/releases/download/1.0.1/com.ibm.streamsx.watsonexplorer.tar.gz'
+		commandLine 'wget', 'https://github.com/IBMStreams/streamsx.watsonexplorer/releases/download/1.0.1/com.ibm.streamsx.watsonexplorer.tar.gz'
 	}
 	copy {
 		from tarTree("com.ibm.streamsx.watsonexplorer.tar.gz")
