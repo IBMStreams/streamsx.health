@@ -40,11 +40,11 @@ Services employ a publish-subcribe model to receive or send data to another serv
 
 * The topic be defined using the MQTT convention as noted by the Publish/Subscribe operator in the streamsx.topology toolkit. (e.g. /a/b/c/d)
 * The topic should begin with the name of the service, delimited by "/"
-    * Next the topic should describe the data being published  
-    * The last segment of the topic should be a version number.  
-    * For example: /com/ibm/streamsx/health/example/spl/service/observations/v1
- * All services publish data in JSON format, to maximize service interoperability with different languages.  
- * If the data schema needs to change as the service evolves, follow these guidelines:
+* Next the topic should describe the data being published  
+* The last segment of the topic should be a version number.  
+* For example: /com/ibm/streamsx/health/example/spl/service/observations/v1
+* All services publish data in JSON format, to maximize service interoperability with different languages.  
+* If the data schema needs to change as the service evolves, follow these guidelines:
     * Adding a new attribute to the schema is not a breaking change.  Update the *minor* number of the topic version as follows to indicate a change in the schema:  e.g. a/b/c/observations/v1 becomes / a/b/c/observations/v1/1
     * Renaming or removing of an attribute breaks compatibility.  If this has to be done, update the *major* nmber of the topic version as follows to indicate a breaking change:  e.g. /a/b/c/observations/v2 - Downstream applications cannot connect to this data stream without being updated.  
     * Renaming or removing attributes is discouraged as it breaks application compatibility.  It is recommended that existing data stream is maintained.  New data stream can be added to the microservice to maintain compatibility.
