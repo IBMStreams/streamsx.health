@@ -27,6 +27,7 @@ A SPL service should adhere to the following guidelines:
 ### Service Properties
 
 Customization of a service should be defined in a service.properties file.  All services should support the following properties.  These properties are handled by AbstractService by default.
+
     * debug
     * streamscontext
     * vmargs
