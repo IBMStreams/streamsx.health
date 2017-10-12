@@ -74,5 +74,5 @@ To maintain backwards compatibility and avoid breaking downstream applications, 
 |Name of Service | Cannot be changed after it is defined |
 |Properties in service.properties | New properties can be added without breaking compatibility.  Removing or renaming a property result in a breaking change. |
 |Parameters defined in SPL application | New parameter can be added without breaking compatility.  Removing or renaming a parameter result in a breaking change.|
-|Data publication topic | Adding new segments to the topic name can be done without breaking compatibility.  Removing or renaming a segment is a breaking change.|
+|Data publication topic | New topic can be added without breaking compatibility.  Adding new segments to existing topic can also be done without breaking compatibility.  Removing or renaming a segment of an existing topic is a breaking change.|
 |Data Schema | New attributes can be added to the schema without breaking compatbility.  Removing or renaming an attribute is a breaking change.|
