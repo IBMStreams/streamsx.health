@@ -7,7 +7,7 @@ This project demonstrates how one can create a Java service to work with Streams
 Service has this directory structure:
 
 ```
-com.ibm.streamsx.health.example.service
+com.ibm.streamsx.health.example.java.service
   |
   |---- info.xml - toolkit information of the service
   |---- build.gradle - build script for the Java service 
