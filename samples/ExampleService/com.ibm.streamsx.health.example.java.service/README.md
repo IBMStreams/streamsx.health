@@ -10,10 +10,10 @@ Service has this directory structure:
 com.ibm.streamsx.health.example.service
   |
   |---- info.xml - toolkit information of the service
-  |---- build.gradle - build script for the Java service wrapper
+  |---- build.gradle - build script for the Java service 
   |---- service.properties - contain properties to be passed to the service
-  |---- impl/java/src - contains Java code of the service wrapper
-  |---- opt/lib - contains third-party libraries required by the wrapper or SPL service
+  |---- impl/java/src - contains Java code of the service 
+  |---- opt/lib - contains third-party libraries required by the service
 ```
 
 ## Service
