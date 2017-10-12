@@ -71,9 +71,10 @@ by the build script and  stored in the opt/lib directory.
 
 ## Executing a Service
 
-build.gradle is set up to execute the service, using the **execute** target.  
-Clients are expected to configure this target to identify the main class and jar file for running the service wrapper.
-Clients may also define additional execute targets if the project contains more than one service.
+* build.gradle is set up to execute the service, using the **execute** target.  
+* Clients are expected to configure this target to identify the main class and jar file for running the service wrapper.
+* Clients may also define additional execute targets if the project contains more than one service.
+* Execution of the service will execute the Java service wrapper.  The wrapper in turn compiles the SPL service and submit the job to a streams context as described in service.properties.
 
 ## Evolving a Service
 
