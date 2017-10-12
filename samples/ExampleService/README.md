@@ -1,4 +1,4 @@
-#Example Services
+# Example Services
 
 This directory contains the following examples to demonstrate how one can create a microservice to analyze the data ingested into the Streams Healthcare Analytics Platform:
 
