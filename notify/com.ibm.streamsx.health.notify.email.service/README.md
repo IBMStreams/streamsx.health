@@ -30,7 +30,7 @@ Run the following command to build this service:
 `gradle build`
 
 
-# Execute
+# Configure
 
 The service properties can be set in the `service.properties` file. The following properties are available.
 Properties must be prefixed with `com.ibm.streamsx.health.notify.email.service.EmailService`
@@ -47,7 +47,8 @@ Properties must be prefixed with `com.ibm.streamsx.health.notify.email.service.E
 | from | Originator of email | Default "IBM Sterams" |
 | to | Recipient of email |  |
 
-Run the following command to launch the service:
+
+# Before you execute
 
 This service depends on having the streamsx.mail toolkit to be part of the STREAMS_SPLPATH.
 
@@ -55,6 +56,10 @@ Before executing this service for the first time:
 
 1.  Follow instructions from here to download and build toolkit:  [streamsx.mail](https://github.com/IBMStreams/streamsx.mail_
 1.  export STREAMS_SPLPATH=location_of_mail_toolkit:$STREAMS_SPLPATH
+
+# Execute
+
+Run the following command to launch the service:
 
 `gradle execute`
 
