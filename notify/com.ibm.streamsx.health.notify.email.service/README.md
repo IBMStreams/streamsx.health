@@ -43,7 +43,7 @@ Properties must be prefixed with `com.ibm.streamsx.health.notify.email.service.E
 | host | Host to email server |  |
 | port | Port to email server | Default is 587  |
 | authentication | Authentication method to email server | Default is TLS |
-| subject | Subject line for the email | Default "Notifcation from IBM Streams" |
+| subject | Subject line for the email | Default "Notification from IBM Streams" |
 | from | Originator of email | Default "IBM Streams" |
 | to | Recipient of email |  |
 
