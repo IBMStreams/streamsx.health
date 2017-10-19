@@ -6,8 +6,6 @@
 package com.ibm.streamsx.health.example.spl.service;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 public class ExampleSPLHealthService extends AbstractSPLService {
 
@@ -21,19 +19,6 @@ public class ExampleSPLHealthService extends AbstractSPLService {
 		service.run();
 	}
 
-	protected Map<String, Object> getParameters() {
-		String topic = getTopic();
-		if (topic == null)
-			throw new RuntimeException("Topic cannot be found in service.properties");
-
-		Map<String, Object> params = new HashMap<>();
-		params.put("subTopic", topic);
-		return params;
-	}
-
-	private String getTopic() {
-		return getProperties().getProperty(IServiceConstants.KEY_TOPIC, null);
-	}
 
 	protected String[] getToolkitDependencies() {
 
@@ -47,11 +32,6 @@ public class ExampleSPLHealthService extends AbstractSPLService {
 		dependencies.add(install + "/toolkits/com.ibm.streamsx.topology");
 
 		return (String[]) dependencies.toArray(new String[0]);
-	}
-
-	@Override
-	String getName() {
-		return "ExampleSPLHealthServiceWrapper";
 	}
 
 	@Override

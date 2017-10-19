@@ -2,7 +2,11 @@ package com.ibm.streamsx.health.example.spl.service;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
 
 import com.ibm.streamsx.topology.Topology;
 import com.ibm.streamsx.topology.TopologyElement;
@@ -41,7 +45,20 @@ public abstract class AbstractSPLService extends AbstractService {
 	}
 
 	protected Map<String, Object> getParameters() {
-		return null;
+		Properties properties = getProperties();
+		Map<String, Object> params = new HashMap<>();
+		
+		String paramPrefix = getMainCompositeFQN().replace("::", ".");
+		
+		Set<Object> keys = properties.keySet();
+		for (Iterator iter = keys.iterator(); iter.hasNext();) {
+			String key = (String) iter.next();
+			if (key.startsWith(paramPrefix)){
+				String param  = key.substring(paramPrefix.length()+1);
+				params.put(param, properties.getProperty(key));
+			}
+		}
+		return params;
 	}
 
 	protected String[] getToolkitDependencies() {
@@ -54,7 +71,9 @@ public abstract class AbstractSPLService extends AbstractService {
 		}
 	}
 	
-	abstract String getName();
+	protected String getName() {
+		return getMainCompositeFQN().substring(getMainCompositeFQN().lastIndexOf("::") + 2) + "Wrapper";
+	}
 	
 	
 	abstract String getMainCompositeFQN();
