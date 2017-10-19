@@ -54,8 +54,8 @@ This service depends on having the streamsx.mail toolkit to be part of the STREA
 
 Before executing this service for the first time:
 
-1.  Follow instructions from here to download and build toolkit:  [streamsx.mail](https://github.com/IBMStreams/streamsx.mail_
-1.  export STREAMS_SPLPATH=location_of_mail_toolkit:$STREAMS_SPLPATH
+1.  Follow instructions from here to download and build toolkit:  [streamsx.mail](https://github.com/IBMStreams/streamsx.mail)
+1.  `export STREAMS_SPLPATH=location_of_mail_toolkit:$STREAMS_SPLPATH`
 
 # Execute
 
