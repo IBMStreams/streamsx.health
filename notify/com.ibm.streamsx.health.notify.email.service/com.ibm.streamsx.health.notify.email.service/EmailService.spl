@@ -1,0 +1,66 @@
+//*******************************************************************************
+//* Copyright (C) 2017 International Business Machines Corporation
+//* All Rights Reserved
+//*******************************************************************************
+namespace com.ibm.streamsx.health.notify.email.service ;
+
+use com.ibm.streamsx.topology.topic::Publish ;
+use com.ibm.streamsx.topology.topic::Subscribe ;
+use com.ibm.streamsx.mail::* ;
+
+public composite EmailService
+{
+	param
+		expression<rstring> $subTopic : getSubmissionTimeValue("topic") ;
+		
+		expression<rstring> $authentication : getSubmissionTimeValue("authentication", "TLS");
+		expression<rstring> $host: getSubmissionTimeValue("host");
+		expression<rstring> $port: getSubmissionTimeValue("port", (rstring)587);
+		expression<rstring> $to: getSubmissionTimeValue("to");
+		expression<rstring> $username: getSubmissionTimeValue("username");
+		expression<rstring> $from: getSubmissionTimeValue("from", "IBM Streams");
+		expression<rstring> $password: getSubmissionTimeValue("password");
+		expression<rstring> $subject: getSubmissionTimeValue("subject", "Notification from IBM Streams");
+		
+		
+	type
+		JsonType = rstring jsonString ;
+	graph
+		(stream<JsonType> Subscribe_1_out0) as Subscribe_1 = Subscribe()
+		{
+			param
+				topic :$subTopic ;
+				streamType : JsonType ;
+		}
+		
+		(stream<MAIL> Custom_15_out0) as Custom_15 = Custom(Subscribe_1_out0 as
+			inputStream)
+		{
+			logic
+				onTuple inputStream :
+				{
+					
+					
+					MAIL email = {to="", replyto="", from=$from, date = (int64)getTimestampInSecs(), subject=$subject, content=jsonString };
+					submit(email, 0u);
+
+				}
+
+		}
+
+		() as SendMail_2 = SendMail(Custom_15_out0)
+		{
+			param
+				authentication : $authentication ;
+				content : "content" ;
+				password : $password ;
+				hostport : (int32)$port ;
+				hostname : $host ;
+				subject : $subject ;
+				to : $to ;
+				username : $username ;
+		}
+
+}
+
+
