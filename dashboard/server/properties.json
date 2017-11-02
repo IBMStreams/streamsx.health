@@ -1,0 +1,21 @@
+{
+    "streams": {
+        "is_docker": false,
+        "port": 22,
+        "instanceName": "StreamsInstance",
+        "username": "streamsadmin",
+        "apiPort": 8443,
+        "password": "passw0rd",
+        "host": "192.168.216.100",
+        "domainName": "StreamsDomain"
+    },
+    "redis": {
+        "is_docker": false,
+        "url": "redis://192.168.216.100:6379"
+    },
+    "is_setup": true,
+    "kafka": {
+        "is_docker": false,
+        "bootstrap_servers": "stark1.fyre.ibm.com:9091"
+    }
+}

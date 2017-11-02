@@ -1,0 +1,193 @@
+{
+  "services": [{
+      "name": "BeaconService",
+      "type": "adapter",
+      "disabled" : true,
+      "launch_details": {
+        "type": "sab",
+        "details": {
+          "sab_filename": "com.ibm.streamsx.health.simulate.beacon.services.HealthDataBeaconService.sab"
+        }
+      },
+      "parameters": [{
+          "name": "num.patients",
+          "default": "1",
+          "description": "Number of patients to generate"
+        },
+        {
+          "name": "patient.prefix",
+          "default": "patient-",
+          "description": "The prefix for the patient IDs"
+        }
+      ]
+    },
+    {
+      "name": "PhysionetIngestService",
+      "type": "adapter",
+      "disabled" : true,
+      "launch_details": {
+        "type": "sab",
+        "details": {
+          "sab_filename": "com.ibm.streamsx.health.ingest.physionet.service.PhysionetIngestServiceWithControlPlane.sab"
+        }
+      },
+      "parameters": [{
+          "name": "frequency",
+          "default": "360",
+          "description": "The sample rate of the data"
+        },
+        {
+          "name": "record.name",
+          "default": "mitdb/100",
+          "description": "The physionet database to retrieve data from"
+        }
+      ]
+    },
+    {
+      "name": "KafkaIngestService",
+      "type": "adapter",
+      "disabled" : false,
+      "bridgeTopics" : ["streamsx/health/ingest/kafka"],
+      "launch_details": {
+        "type": "sab",
+        "details": {
+          "sab_filename": "com.ibm.streamsx.health.ingest.kafka.service.SubscribeJsonFromKafka.sab"
+        }
+      },
+      "parameters": [{
+        "name": "kafkaTopic",
+        "default": "patient_vitals"
+      },
+      {
+        "name" : "appConfigName",
+        "default" : "health-kafka"
+      }]
+    },
+    {
+      "name": "ATSIngestService",
+      "type": "adapter",
+      "disabled" : false,
+      "bridgeTopics" : ["com/ibm/streamsx/health/ingest/ats/resampled"],
+      "launch_details": {
+        "type": "sab",
+        "details": {
+          "sab_filename": "application.ATSAdapter.sab"
+        }
+      },
+      "parameters": [{
+        "name" : "num.patients",
+        "default" : "1"
+      },
+      {
+        "name" : "base.dir",
+        "default" : "/home/streamsadmin/atsdata"
+      }]
+    },
+    {
+      "name": "PatientDiscoveryService",
+      "type": "app",
+      "disabled" : false,
+      "launch_details": {
+        "type": "sab",
+        "details": {
+          "sab_filename": "com.ibm.streamsx.health.analyze.patientdiscovery.services.PatientDiscoveryService.sab"
+        }
+      },
+      "parameters": [{
+        "name": "topic",
+        "default": "streamsx.health.aggregated.observations"
+      },
+      {
+        "name" : "app.config.name",
+        "default" : "patient_control_plane"
+      }]
+    },
+    {
+      "name": "SampleDynamicFilterService",
+      "type": "app",
+      "disabled" : true,
+      "launch_details": {
+        "type": "sab",
+        "details": {
+          "sab_filename": "com.ibm.streamsx.health.service.sample.SampleDynamicFilterService.sab"
+        }
+      },
+      "parameters": [{
+        "name": "topic",
+        "default": "streamsx.health.aggregated.observations"
+      }]
+    },
+    {
+      "name": "VitalsCollectorService",
+      "type": "app",
+      "disabled" : true,
+      "launch_details": {
+        "type": "sab",
+        "details": {
+          "sab_filename": "com.ibm.streamsx.health.analytics.vitalscollector.service.VitalsCollectorService.sab"
+        }
+      },
+      "parameters": [{
+        "name": "topic",
+        "default": "streamsx.health.aggregated.observations"
+      }]
+    },
+    {
+      "name": "PatientAlertsService",
+      "type": "app",
+      "disabled" : false,
+      "launch_details": {
+        "type": "sab",
+        "details": {
+          "sab_filename": "com.ibm.streamsx.health.analytics.alerts.services.PatientAlertsService.sab"
+        }
+      },
+      "parameters": [{
+        "name": "topic",
+        "default": "streamsx.health.aggregated.observations"
+      }]
+    },
+    {
+      "name": "VitalStoreService",
+      "type": "app",
+      "disabled" : false,
+      "launch_details": {
+        "type": "sab",
+        "details": {
+          "sab_filename": "com.ibm.streamsx.health.store.vitalstore.service.VitalStoreService.sab"
+        }
+      },
+      "parameters": [{
+        "name": "topic",
+        "default": "streamsx.health.aggregated.observations"
+      },
+      {
+        "name" : "app.config.name",
+        "default" : "patient_control_plane"
+      }]
+    },
+    {
+      "name" : "RPeakDetectCepService",
+      "type" : "app",
+      "disabled" : false,
+      "launch_details" : {
+        "type" : "sab",
+        "details" : {
+          "sab_filename" : "com.ibm.streamsx.health.analyze.rpeak.cep.service.RPeakDetectCep.sab"
+        }
+      },
+      "parameters" : [{
+        "name" : "topic",
+        "default" : "com/ibm/streamsx/health/ingest/ats/raw"
+      },
+      {
+        "name" : "readingCode",
+        "default" : "ecg"
+      },
+      {
+        "name" : "observation.topic",
+        "default" : "streamsx.health.aggregated.observations"
+      }]
+    }
+  ]
+}
