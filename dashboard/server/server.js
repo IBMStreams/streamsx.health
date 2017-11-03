@@ -4,12 +4,14 @@ var redis = require('./models/redis_backend')
 var st = require('./models/streamtool')
 var fs = require('fs-extra')
 var bodyParser = require('body-parser')
+var expressLogging = require('express-logging')
+var logger = require('logops');
 
 var properties = JSON.parse(fs.readFileSync('properties.json', 'utf8'))
 redis.connect(properties['redis']['url'])
 st.connect(properties['streams'])
 
-
+app.use(expressLogging(logger))
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(require('./controllers'))
 

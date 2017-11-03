@@ -36,4 +36,31 @@ router.get('/', function(req, res) {
   })
 })
 
+router.post('/add', function(req, res) {
+  var oldAlertRule = req.body.oldAlertRule
+  var newAlertRule = req.body.newAlertRule
+
+  async.series([
+    function(callback) {
+      if(typeof oldAlertRule !== 'undefined') {
+        // remove old rule
+        client.removeAlertRule(oldAlertRule, (reply) => {
+          callback(null, reply)
+        })
+      }
+    },
+    function(callback) {
+      // add new rule
+      client.addAlertRule(newAlertRule, (reply) => {
+        callback(null, reply)
+      })
+    }
+  ], function(err, result) {
+    var response = {
+      status : "Alert added"
+    }
+    res.json(response);
+  })
+})
+
 module.exports = router

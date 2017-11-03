@@ -64,26 +64,6 @@
       }]
     },
     {
-      "name": "ATSIngestService",
-      "type": "adapter",
-      "disabled" : false,
-      "bridgeTopics" : ["com/ibm/streamsx/health/ingest/ats/resampled"],
-      "launch_details": {
-        "type": "sab",
-        "details": {
-          "sab_filename": "application.ATSAdapter.sab"
-        }
-      },
-      "parameters": [{
-        "name" : "num.patients",
-        "default" : "1"
-      },
-      {
-        "name" : "base.dir",
-        "default" : "/home/streamsadmin/atsdata"
-      }]
-    },
-    {
       "name": "PatientDiscoveryService",
       "type": "app",
       "disabled" : false,
