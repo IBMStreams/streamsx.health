@@ -28,7 +28,7 @@ const rowCellStyle = {
 class ServicesTable extends React.Component {
 
   static propTypes = {
-    servicesMap : array,
+    servicesMap : object,
     selectedServices : array,
     onServiceClick : func
   };
@@ -156,9 +156,12 @@ class ServicesTableServiceRow extends React.Component {
 
   render() {
     var props = this.props;
-    var rowClass = props.status === 'stopped'
-      ? 'table-danger'
-      : 'table-success';
+    var rowClass = 'table-warning'
+    if(props.status === 'stopped')
+      rowClass = 'table-danger'
+    else
+      rowClass = 'table-success'
+
     return (
       <tr className={rowClass}>
         <td className="serviceRowName">{props.name}</td>

@@ -128,7 +128,7 @@ Streamtool.prototype.getOutputTopics = function(jobName, jobGroup, callback) {
 Streamtool.prototype.jobStatus = function(jobName, jobGroup, callback) {
   var self = this;
   var url = this.restURL + "/instances/" + this.instanceName + "/jobs"
-  //console.log("url=", url)
+  console.log("url=", url)
   var status = 'stopped';
 
   axios({

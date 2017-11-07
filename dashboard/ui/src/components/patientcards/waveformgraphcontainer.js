@@ -70,7 +70,7 @@ class WaveformGraphContainer extends React.Component {
     this.state = {
       dataBuffer : dataBuffer,
       dataToSend : dataToSend,
-      nextStartTimestamp : new Date().getTime(), //"-inf",
+      nextStartTimestamp : "-inf",
       lastEnqueuedTimestamp : -1,
       minValue : Number.MAX_SAFE_INTEGER,
       maxValue : Number.MIN_SAFE_INTEGER
@@ -124,11 +124,28 @@ class WaveformGraphContainer extends React.Component {
       queryStr += "&vitalName=" + this.props.vitalNames[idx]
     }
 
-    var restURL = '/data/' + patientId + '?start=' + start + '&end=' + end + queryStr
+    var restURL = '/data/' + patientId + '?startTime=' + start + '&endTime=' + end + queryStr
     console.log("[updateData] ", restURL)
     axios.get(restURL)
          .then(response => {
-           self.updateDataBuffer(response.data);
+           if(start === '-inf') {
+             // this is the first run, so only retrieve the last timestamp
+             // so the graph has somewhere to start
+             // this prevents the graph from sitting idle in the case that the data is lagged
+             var ts = -1
+             for(var vitalName in response.data) {
+               var dataArr = response.data[vitalName];
+               if(typeof dataArr !== 'undefined' && dataArr.length > 0) {
+                 var lastTS = dataArr[dataArr.length-1].ts
+                 if(ts === -1 || ts > lastTS) {
+                   ts = lastTS;
+                 }
+               }
+             }
+             this.setState({nextStartTimestamp : ts+1})
+           } else {
+             self.updateDataBuffer(response.data);
+           }
          })
          .then(() => {
            self.timerId = setTimeout(self.updateData.bind(self), self.updateDataPeriod);

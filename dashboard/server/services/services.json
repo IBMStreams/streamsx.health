@@ -149,7 +149,7 @@
     {
       "name" : "RPeakDetectCepService",
       "type" : "app",
-      "disabled" : false,
+      "disabled" : true,
       "launch_details" : {
         "type" : "sab",
         "details" : {

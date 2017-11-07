@@ -92,4 +92,46 @@ router.post('/:patientId/update', function(req, res) {
   })
 })
 
+router.all('/stop', function(req, res) {
+  services.stopService(function(response) {
+    res.send(response);
+  })
+})
+
+router.all('/start', function(req, res) {
+  var serviceNames = req.method === 'POST' ? JSON.parse(req.body.services) : services.getServiceNames();
+
+  async.series([
+    // launch all services
+    function(callback) {
+      async.eachSeries(serviceNames, function(serviceName, launchServiceCallback) {
+        async.series([
+          // check if service is started
+          // if started, error is returned and no attempt will be made to start the service
+          function(cb) {
+              services.checkIfServiceStarted(serviceName, cb);
+          },
+          // start service if not already started
+          function(cb) {
+            services.startService(serviceName, cb);
+          }
+        ], function(err, results) {
+          launchServiceCallback(null, results);
+        })
+      }, function(err, results) {
+        callback();
+      })
+    },
+    // launch bridge adapters
+    function(callback) {
+      console.log("Launching bridge services...");
+      services.launchBridgeServices(callback);
+    }
+  ], function(err, results) {
+    console.log("All services launched!");
+    res.send('Services started')
+  });
+
+})
+
 module.exports = router

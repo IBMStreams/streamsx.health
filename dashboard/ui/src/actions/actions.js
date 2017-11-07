@@ -142,7 +142,7 @@ export function updatePatientVitalsData(patientId, vitalNames, start, end) {
     queryStr += "&vitalName=" + vitalNames[idx]
   }
 
-  var restURL = '/data/' + patientId + '?start=' + '&start=' + start + '&end=' + end + queryStr
+  var restURL = '/data/' + patientId + '?startTime=' + start + '&endTime=' + end + queryStr
   console.log("[updatePatientVitalsData] ", restURL)
   return {
     type : FETCH_PATIENT_VITALS_DATA,
@@ -313,7 +313,7 @@ export function toggleSelectService(serviceName) {
 export function startServices(dispatch, servicesMap) {
   var params = new URLSearchParams();
   params.append('services', JSON.stringify(Object.keys(servicesMap)));
-  axios.post('/start', params)
+  axios.post('/services/start', params)
     .then(response => {
       dispatch({
         type: START_SERVICES_FINISHED,
@@ -337,7 +337,7 @@ export function startServices(dispatch, servicesMap) {
 export function stopServices(dispatch, servicesMap) {
   var params = new URLSearchParams();
   params.append('services', JSON.stringify(Object.keys(servicesMap)));
-  axios.post('/stop', params)
+  axios.post('/services/stop', params)
     .then(response => {
       dispatch({
         type: STOP_SERVICES_FINISHED,
