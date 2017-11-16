@@ -1,0 +1,38 @@
+
+/*
+ * Parse an XML document
+ */
+namespace com.ibm.streamsx.health.analyze.nlp.casparser ;
+
+use spl.XML::* ;
+
+public composite SymptomDiseaseParser(input input0 ; output output0)
+{
+	type
+		static SymptomDisease = tuple<rstring conceptid, rstring ccsCode,
+			rstring end, rstring modifiers, rstring sofa, rstring begin,
+			rstring section, rstring xmi_0x3a_id, rstring dateInMilliseconds,
+			rstring modality, rstring normalized, rstring icd9Code, rstring date,
+			rstring hccCode, rstring dateSource, rstring icd10Code, rstring ruleId,
+			rstring origin> ;
+	graph
+		stream<SymptomDisease> output0 = XMLParse(input0)
+		{
+			param
+				trigger : "/xmi:XMI/en2:SymptomDiseaseInd" ;
+				parsing : permissive ; // log and ignore errors
+
+			output
+				output0 : conceptid = XPath("@conceptid"), ccsCode = XPath("@ccsCode"),
+					end = XPath("@end"), modifiers = XPath("@modifiers"), sofa =
+					XPath("@sofa"), begin = XPath("@begin"), section = XPath("@section"),
+					xmi_0x3a_id = XPath("@xmi:id"), dateInMilliseconds =
+					XPath("@dateInMilliseconds"), modality = XPath("@modality"), normalized =
+					XPath("@normalized"), icd9Code = XPath("@icd9Code"), date =
+					XPath("@date"), hccCode = XPath("@hccCode"), dateSource =
+					XPath("@dateSource"), icd10Code = XPath("@icd10Code"), ruleId =
+					XPath("@ruleId"), origin = XPath("@origin") ; // *trigger: /xmi:XMI/en2:SymptomDiseaseInd
+
+		}
+
+}
