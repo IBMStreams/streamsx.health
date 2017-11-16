@@ -15,7 +15,7 @@ composite ExampleSPLService()
 	param
 		expression<rstring> $subTopic : getSubmissionTimeValue("topic") ;
 		expression<rstring> $pubTopic :
-			"/com/ibm/streamsx/health/example/spl/service/observations/v1" ;
+			"/com/ibm/streamsx/health/example/spl/service/ExampleSPLService/observations/v1" ;
 	graph
 		(stream<Observation> SubscribeToObservations) = IngestSubscribe()
 		{

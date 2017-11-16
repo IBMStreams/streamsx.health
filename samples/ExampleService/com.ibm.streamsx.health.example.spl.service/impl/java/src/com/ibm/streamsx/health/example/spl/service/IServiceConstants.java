@@ -11,9 +11,5 @@ public interface IServiceConstants {
 	String KEY_DEBUG = "debug";
 	String KEY_STREAMS_CONTEXT = "streamscontext";
 	String KEY_VMARGS = "vmargs";
-	
-	
-	// Service properties
-	String KEY_TOPIC="com.ibm.streamsx.health.example.spl.service.topic";
 
 }
