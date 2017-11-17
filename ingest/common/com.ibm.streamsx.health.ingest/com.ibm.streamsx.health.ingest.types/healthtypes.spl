@@ -16,7 +16,7 @@ public rstring STREAMS_SYSTEM_NAME() {
 /**
  * Observation Data Types
  */
-type Reading = int64 ts, ReadingType readingType, float64 value, rstring uom;
+type Reading = int64 ts, ReadingType readingType, float64 value, rstring uom, rstring valueString;
 
 type ReadingType = rstring system, rstring code;
 

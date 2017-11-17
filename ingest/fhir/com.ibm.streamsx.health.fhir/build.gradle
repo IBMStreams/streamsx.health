@@ -78,6 +78,9 @@ task deps << {
 	tasks.copyLib.execute()
 }
 
+build.doFirst {
+	tasks.deps.execute()
+}
 
 jar.doLast {
     tasks.copyLib.execute()

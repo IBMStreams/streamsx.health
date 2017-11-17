@@ -119,7 +119,7 @@ composite PhysionetIngestService
 						ReadingSource readingSource = { id = "ch" + (rstring)i, sourceType = SOURCE_TYPE(), deviceId = DEVICE_ID() };
 						Reading reading = { ts = baseTs + (int64)fromPhysionet.ts, 
 							readingType = populateReadingType(codeMap, fromPhysionet.descriptions[i]), 
-							value = fromPhysionet.signals[i], uom = fromPhysionet.uoms[i] };
+							value = fromPhysionet.signals[i], uom = fromPhysionet.uoms[i], valueString = (rstring)fromPhysionet.signals[i]};
 						Observation obx = { device = device, patientId = patientId, readingSource = readingSource, reading = reading };
 						submit(obx, 0u);
 						

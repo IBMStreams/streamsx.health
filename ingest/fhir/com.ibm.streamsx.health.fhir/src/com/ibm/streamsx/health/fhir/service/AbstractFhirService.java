@@ -99,8 +99,10 @@ public abstract class AbstractFhirService implements Serializable {
 			}
 		});
 
-		for (File file : jarFiles) {
-			topology.addJarDependency(file.getAbsolutePath());
+		if (jarFiles != null) {
+			for (File file : jarFiles) {
+				topology.addJarDependency(file.getAbsolutePath());
+			}
 		}
 		
 		topology.addClassDependency(ObxQueryParams.class);
