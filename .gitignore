@@ -1,6 +1,7 @@
 *.*~
 .gradle
 build/
+.toolkits
 
 # SPL toolkit files
 .toolkitList
@@ -33,4 +34,4 @@ hs_err_pid*
 # Python
 __pycache__
 .pyc
-
+.idea

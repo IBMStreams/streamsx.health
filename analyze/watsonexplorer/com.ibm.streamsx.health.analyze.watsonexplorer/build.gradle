@@ -68,6 +68,12 @@ task executeSymptomService(type: JavaExec) {
 		]
 }
 
+task execute<< {
+	tasks.executeSymptomService.execute()
+	tasks.executeMedicationService.execute()
+
+}
+
 compileJava.dependsOn getWEXToolkit
 clean.finalizedBy cleanup
 build.finalizedBy getDeps

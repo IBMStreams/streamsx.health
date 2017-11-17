@@ -18,19 +18,22 @@ public class Reading implements Serializable {
 	private ReadingType readingType;
 	private double value;
 	private String uom;
+	private String valueString;
 
 	public Reading() {
 		ts = -1;
 		readingType = new ReadingType();
 		value = -1;
 		uom = "";
+		valueString = "";
 	}
 	
 	public Reading(Reading reading) {
 		this.ts = reading.ts;
 		this.readingType = reading.readingType;
-		this.value = reading.value;
 		this.uom = reading.uom;
+		
+		setValue(reading.value);
 	}
 
 	public long getTimestamp() {
@@ -55,6 +58,9 @@ public class Reading implements Serializable {
 
 	public void setValue(double value) {
 		this.value = value;
+		
+		if (valueString == null || valueString.isEmpty())
+			setValueString(String.valueOf(value));
 	}
 
 	public String getUom() {
@@ -64,11 +70,19 @@ public class Reading implements Serializable {
 	public void setUom(String uom) {
 		this.uom = uom;
 	}
+	
+	public void setValueString(String valueString) {
+		this.valueString = valueString;
+	}
+	
+	public String getValueString() {
+		return valueString;
+	}
 
 	@Override
 	public String toString() {
 		return "Reading [ts=" + ts + ", readingType=" + readingType + ", value=" + value + ", uom=" + uom
-				+ "]";
+				+ ", valueString=" + valueString + "]";
 	}
 
 }
