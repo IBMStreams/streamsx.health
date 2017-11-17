@@ -47,6 +47,16 @@ def getReadingValue(obxDict):
     reading = getReading(obxDict)
     return float(reading.get('value'))
 
+def getReadingValueString(obxDict):
+    """Get reading value from the observation
+    Args:
+        obxDict(dict): Observation in dictionary
+    Returns:
+        float: Value of the reading
+    """
+    reading = getReading(obxDict)
+    return str(reading.get('valueString'))
+
 def getUom(obxDict):
     """Get the unit of measure from the observation
     Args:

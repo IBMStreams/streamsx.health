@@ -16,7 +16,9 @@ import org.hl7.fhir.dstu3.model.Device;
 import org.hl7.fhir.dstu3.model.DeviceMetric;
 import org.hl7.fhir.dstu3.model.Observation.ObservationComponentComponent;
 import org.hl7.fhir.dstu3.model.Patient;
+import org.hl7.fhir.dstu3.model.PrimitiveType;
 import org.hl7.fhir.dstu3.model.Quantity;
+import org.hl7.fhir.dstu3.model.Type;
 import org.hl7.fhir.exceptions.FHIRException;
 
 import com.ibm.streamsx.health.fhir.model.ObxParseResult;
@@ -25,6 +27,8 @@ import com.ibm.streamsx.health.ingest.types.model.Observation;
 import com.ibm.streamsx.health.ingest.types.model.Reading;
 import com.ibm.streamsx.health.ingest.types.model.ReadingSource;
 import com.ibm.streamsx.health.ingest.types.model.ReadingType;
+
+import ca.uhn.fhir.context.FhirContext;
 
 
 public class ObxToSplMapper implements Serializable {
@@ -101,17 +105,14 @@ public class ObxToSplMapper implements Serializable {
 						patientId=inferId(obx.getSubject().getReference());
 					}
 				}
-				
-//				if (patientId.equals("191025"))
-//					throw new FHIRException("Unable to parse patient 191025");
-				
+						
 				// Create Reading object 
-				if (obx.getValue() instanceof Quantity)
+				if (obx.getValue() != null)
 				{
-					Observation streamsObx = createObservation(obx.getValueQuantity(), ts, rType, rSource, sDevice, patientId);
-					
+					Observation streamsObx = createObservation(obx.getValue(), ts, rType, rSource, sDevice, patientId);					
 					observations.add(streamsObx);
 				}
+
 				
 				// Observation can also come in as a component
 				if (obx.getComponent() != null && obx.getComponent().size() > 0)
@@ -125,8 +126,8 @@ public class ObxToSplMapper implements Serializable {
 							rType = new ReadingType(system, code);
 						}
 						
-						if (obComponent.getValue() != null && obComponent.getValue() instanceof Quantity) {
-							Observation streamsObx = createObservation(obComponent.getValueQuantity(), ts, rType, rSource, sDevice, patientId);
+						if (obComponent.getValue() != null) {
+							Observation streamsObx = createObservation(obComponent.getValue(), ts, rType, rSource, sDevice, patientId);
 							observations.add(streamsObx);
 						}
 					}
@@ -143,18 +144,34 @@ public class ObxToSplMapper implements Serializable {
 
 	}
 
-	private Observation createObservation(Quantity quantity, long ts, ReadingType rType,
+	@SuppressWarnings("rawtypes")
+	private Observation createObservation(org.hl7.fhir.dstu3.model.Type value, long ts, ReadingType rType,
 			ReadingSource rSource, com.ibm.streamsx.health.ingest.types.model.Device sDevice, String patientId) {
 		Reading reading;
-		BigDecimal dValue = quantity.getValue();
 		
-		String uom = quantity.getUnit();
+		String uom = "";
+		BigDecimal dValue = BigDecimal.ZERO;
+		String strValue = "";
+		
+		if (value instanceof Quantity)
+		{
+			Quantity qValue = (Quantity)value;
+			dValue = qValue.getValue();
+			uom = qValue.getUnit();
+			strValue = String.valueOf(dValue);
+		}
+		
+		if (value instanceof PrimitiveType){
+			strValue = ((PrimitiveType)value).getValueAsString();
+		}
 		
 		reading = new Reading();
 		reading.setReadingType(rType);
 		reading.setTimestamp(ts);
 		reading.setUom(uom);
 		reading.setValue(dValue.doubleValue());
+		reading.setValueString(strValue);
+		
 		
 		Observation streamsObx = new Observation();
 		streamsObx.setPatientId(patientId);
