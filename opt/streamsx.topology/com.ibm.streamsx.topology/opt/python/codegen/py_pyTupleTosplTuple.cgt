@@ -1,0 +1,69 @@
+<%
+# Generates a function in an operator that converts a Python
+# tuple to an SPL tuple for a given port.
+#
+# $oport must be set on entry to required output port
+# $iport can be set to automatically copy input attributes to
+# output attributes when the Python tuple does not supply a value.
+
+  my $itypeparam = "";
+  if (defined $iport) {
+     $itypeparam = ", " . $iport->getCppTupleType() . " const & ituple";
+  }
+%>
+ 
+void MY_OPERATOR::fromPythonToPort<%=$oport->getIndex()%>(PyObject *pyTuple, <%=$oport->getCppTupleType()%> & otuple <%=$itypeparam%>) {
+
+  Py_ssize_t frs = PyTuple_GET_SIZE(pyTuple); 
+    
+<%
+  if (defined $iport) {
+    print 'bool setAttr = false;';
+  }
+
+  for (my $ai = 0; $ai < $oport->getNumberOfAttributes(); ++$ai) {
+    
+    my $attribute = $oport->getAttributeAt($ai);
+    my $name = $attribute->getName();
+    my $atype = $attribute->getSPLType();
+    splToPythonConversionCheck($atype);
+    
+    if (defined $iport) {
+             print 'setAttr = false;';
+    }
+%>
+    if (<%=$ai%> < frs) {
+         // Value from the Python function
+         PyObject *pyAttrValue = PyTuple_GET_ITEM(pyTuple, <%=$ai%>);
+         if (!SplpyGeneral::isNone(pyAttrValue)) {
+                  streamsx::topology::pySplValueFromPyObject(
+                               otuple.get_<%=$name%>(), pyAttrValue);
+<%
+    if (defined $iport) {
+             print 'setAttr = true;';
+    }
+%>
+      }
+   }
+<%
+    if (defined $iport) {
+    
+    # Only copy attributes across if they match on name and type
+    my $matchInputAttr = $iport->getAttributeByName($name);
+    if (defined $matchInputAttr) {
+       if ($matchInputAttr->getSPLType() eq $attribute->getSPLType()) {
+%>
+    if (!setAttr) {
+      // value from the input attribute
+      otuple.set_<%=$name%>(ituple.get_<%=$name%>());
+    }
+<%
+      }
+    }
+   }
+%>
+         
+<%
+}
+ %>
+}

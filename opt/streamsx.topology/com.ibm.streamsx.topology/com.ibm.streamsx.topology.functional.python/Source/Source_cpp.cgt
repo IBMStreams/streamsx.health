@@ -1,0 +1,115 @@
+/* Additional includes go here */
+
+#include "splpy.h"
+#include "splpy_funcop.h"
+
+using namespace streamsx::topology;
+
+<%SPL::CodeGen::implementationPrologue($model);%>
+
+<% my $pywrapfunc='source_pickle'; %>
+
+// Constructor
+MY_OPERATOR::MY_OPERATOR() :
+    funcop_(NULL),
+    occ_(-1)
+{
+    const char * wrapfn = "<%=$pywrapfunc%>";
+<%
+# If occ parameter is positive then pass-by-ref is possible
+# Generate code to allow pass by ref but only use when
+# not connected to a PE output port.
+
+ my $oc = $model->getParameterByName("outputConnections");
+
+ if ($oc) {
+    my $occ = $oc->getValueAt(0)->getSPLExpression();
+    if ($occ > 0) {
+%>
+
+    if (!this->getOutputPortAt(0).isConnectedToAPEOutputPort()) {
+       // pass by reference
+       wrapfn = "source_object";
+       occ_ = <%=$occ%>;
+    }
+<%
+    } 
+ }
+%>
+
+    funcop_ = new SplpyFuncOp(this, wrapfn);
+}
+
+// Destructor
+MY_OPERATOR::~MY_OPERATOR() 
+{
+    delete funcop_;
+}
+
+// Notify port readiness
+void MY_OPERATOR::allPortsReady() 
+{
+  createThreads(1);
+}
+ 
+// Notify pending shutdown
+void MY_OPERATOR::prepareToShutdown() 
+{
+    funcop_->prepareToShutdown();
+}
+
+// Processing for source and threaded operators   
+void MY_OPERATOR::process(uint32_t idx)
+{
+  PyObject *pyReturnVar = NULL;
+
+  while(!getPE().getShutdownRequested()) {
+    
+    OPort0Type otuple;
+
+    { // start lock
+      SplpyGIL lock;
+      if (pyReturnVar != NULL)
+          Py_DECREF(pyReturnVar);
+
+      pyReturnVar = PyObject_CallObject(funcop_->callable(), NULL);
+
+      if (pyReturnVar == NULL) {
+         throw SplpyGeneral::pythonException("source");
+      }
+ 
+      if (SplpyGeneral::isNone(pyReturnVar)) {
+        Py_DECREF(pyReturnVar);
+        pyReturnVar = NULL;
+        break;
+      }
+
+      if (occ_ > 0) {
+          // passing by reference
+
+          pyTupleByRef(otuple.get___spl_po(), pyReturnVar, occ_);
+          pyReturnVar = NULL;
+      }
+      else {
+
+          // Use the pointer of the pickled bytes object
+          // as the blob data so we need to maintain the
+          // reference count across the submit.
+          // We decrement it on the next loop iteration
+          // which is when we natually regain the lock.
+
+          pySplValueUsingPyObject(otuple.get___spl_po(), pyReturnVar);
+      }
+
+    } // end lock
+
+    submit(otuple, 0);
+  }
+
+  if (pyReturnVar != NULL) {
+     SplpyGIL lock;
+     Py_DECREF(pyReturnVar);
+  }
+}
+
+<%SPL::CodeGen::implementationEpilogue($model);%>

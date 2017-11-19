@@ -1,0 +1,30 @@
+apply plugin: 'java'
+
+dependencies {
+    compile project(':analyze:patientdiscovery:com.ibm.streamsx.health.analyze.patientdiscovery')
+}
+
+task sab() {
+    doLast {
+        project(':analyze:patientdiscovery:com.ibm.streamsx.health.analyze.patientdiscovery').tasks.sab.execute()
+        mkdir 'services/PatientDiscoveryService'
+        copy {
+            from fileTree(dir : '../../analyze/patientdiscovery/com.ibm.streamsx.health.analyze.patientdiscovery', include: ['*.sab'])
+            into('services/PatientDiscoveryService')
+        }
+
+    }
+}
+
+task cleanServices() {
+    doLast {
+        FileTree tree = fileTree(dir : 'services', exclude : ['services.json'])
+        tree.visit { FileVisitDetails details ->
+            if(details.file.isDirectory()) {
+                delete details.file.path
+            }
+        }
+    }
+}
+
+clean.dependsOn cleanServices

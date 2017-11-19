@@ -1,0 +1,14 @@
+/*
+# Licensed Materials - Property of IBM
+# Copyright IBM Corp. 2016
+ */
+
+/**
+ * Stream types supporting interchange of
+ * streams between IBM Streams applications implemented
+ * in different languages.
+ *
+*/
+
+namespace com.ibm.streamsx.topology;
+

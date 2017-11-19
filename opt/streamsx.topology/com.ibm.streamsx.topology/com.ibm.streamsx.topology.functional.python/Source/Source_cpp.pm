@@ -1,0 +1,132 @@
+
+package Source_cpp;
+use strict; use Cwd 'realpath';  use File::Basename;  use lib dirname(__FILE__);  use SPL::Operator::Instance::OperatorInstance; use SPL::Operator::Instance::Annotation; use SPL::Operator::Instance::Context; use SPL::Operator::Instance::Expression; use SPL::Operator::Instance::ExpressionTree; use SPL::Operator::Instance::ExpressionTreeEvaluator; use SPL::Operator::Instance::ExpressionTreeVisitor; use SPL::Operator::Instance::ExpressionTreeCppGenVisitor; use SPL::Operator::Instance::InputAttribute; use SPL::Operator::Instance::InputPort; use SPL::Operator::Instance::OutputAttribute; use SPL::Operator::Instance::OutputPort; use SPL::Operator::Instance::Parameter; use SPL::Operator::Instance::StateVariable; use SPL::Operator::Instance::TupleValue; use SPL::Operator::Instance::Window; 
+sub main::generate($$) {
+   my ($xml, $signature) = @_;  
+   print "// $$signature\n";
+   my $model = SPL::Operator::Instance::OperatorInstance->new($$xml);
+   unshift @INC, dirname ($model->getContext()->getOperatorDirectory()) . "/../impl/nl/include";
+   $SPL::CodeGenHelper::verboseMode = $model->getContext()->isVerboseModeOn();
+   print '/* Additional includes go here */', "\n";
+   print "\n";
+   print '#include "splpy.h"', "\n";
+   print '#include "splpy_funcop.h"', "\n";
+   print "\n";
+   print 'using namespace streamsx::topology;', "\n";
+   print "\n";
+   SPL::CodeGen::implementationPrologue($model);
+   print "\n";
+   print "\n";
+    my $pywrapfunc='source_pickle'; 
+   print "\n";
+   print "\n";
+   print '// Constructor', "\n";
+   print 'MY_OPERATOR_SCOPE::MY_OPERATOR::MY_OPERATOR() :', "\n";
+   print '    funcop_(NULL),', "\n";
+   print '    occ_(-1)', "\n";
+   print '{', "\n";
+   print '    const char * wrapfn = "';
+   print $pywrapfunc;
+   print '";', "\n";
+   # If occ parameter is positive then pass-by-ref is possible
+   # Generate code to allow pass by ref but only use when
+   # not connected to a PE output port.
+   
+    my $oc = $model->getParameterByName("outputConnections");
+   
+    if ($oc) {
+       my $occ = $oc->getValueAt(0)->getSPLExpression();
+       if ($occ > 0) {
+   print "\n";
+   print "\n";
+   print '    if (!this->getOutputPortAt(0).isConnectedToAPEOutputPort()) {', "\n";
+   print '       // pass by reference', "\n";
+   print '       wrapfn = "source_object";', "\n";
+   print '       occ_ = ';
+   print $occ;
+   print ';', "\n";
+   print '    }', "\n";
+       } 
+    }
+   print "\n";
+   print "\n";
+   print '    funcop_ = new SplpyFuncOp(this, wrapfn);', "\n";
+   print '}', "\n";
+   print "\n";
+   print '// Destructor', "\n";
+   print 'MY_OPERATOR_SCOPE::MY_OPERATOR::~MY_OPERATOR() ', "\n";
+   print '{', "\n";
+   print '    delete funcop_;', "\n";
+   print '}', "\n";
+   print "\n";
+   print '// Notify port readiness', "\n";
+   print 'void MY_OPERATOR_SCOPE::MY_OPERATOR::allPortsReady() ', "\n";
+   print '{', "\n";
+   print '  createThreads(1);', "\n";
+   print '}', "\n";
+   print ' ', "\n";
+   print '// Notify pending shutdown', "\n";
+   print 'void MY_OPERATOR_SCOPE::MY_OPERATOR::prepareToShutdown() ', "\n";
+   print '{', "\n";
+   print '    funcop_->prepareToShutdown();', "\n";
+   print '}', "\n";
+   print "\n";
+   print '// Processing for source and threaded operators   ', "\n";
+   print 'void MY_OPERATOR_SCOPE::MY_OPERATOR::process(uint32_t idx)', "\n";
+   print '{', "\n";
+   print '  PyObject *pyReturnVar = NULL;', "\n";
+   print "\n";
+   print '  while(!getPE().getShutdownRequested()) {', "\n";
+   print '    ', "\n";
+   print '    OPort0Type otuple;', "\n";
+   print "\n";
+   print '    { // start lock', "\n";
+   print '      SplpyGIL lock;', "\n";
+   print '      if (pyReturnVar != NULL)', "\n";
+   print '          Py_DECREF(pyReturnVar);', "\n";
+   print "\n";
+   print '      pyReturnVar = PyObject_CallObject(funcop_->callable(), NULL);', "\n";
+   print "\n";
+   print '      if (pyReturnVar == NULL) {', "\n";
+   print '         throw SplpyGeneral::pythonException("source");', "\n";
+   print '      }', "\n";
+   print ' ', "\n";
+   print '      if (SplpyGeneral::isNone(pyReturnVar)) {', "\n";
+   print '        Py_DECREF(pyReturnVar);', "\n";
+   print '        pyReturnVar = NULL;', "\n";
+   print '        break;', "\n";
+   print '      }', "\n";
+   print "\n";
+   print '      if (occ_ > 0) {', "\n";
+   print '          // passing by reference', "\n";
+   print "\n";
+   print '          pyTupleByRef(otuple.get___spl_po(), pyReturnVar, occ_);', "\n";
+   print '          pyReturnVar = NULL;', "\n";
+   print '      }', "\n";
+   print '      else {', "\n";
+   print "\n";
+   print '          // Use the pointer of the pickled bytes object', "\n";
+   print '          // as the blob data so we need to maintain the', "\n";
+   print '          // reference count across the submit.', "\n";
+   print '          // We decrement it on the next loop iteration', "\n";
+   print '          // which is when we natually regain the lock.', "\n";
+   print "\n";
+   print '          pySplValueUsingPyObject(otuple.get___spl_po(), pyReturnVar);', "\n";
+   print '      }', "\n";
+   print "\n";
+   print '    } // end lock', "\n";
+   print "\n";
+   print '    submit(otuple, 0);', "\n";
+   print '  }', "\n";
+   print "\n";
+   print '  if (pyReturnVar != NULL) {', "\n";
+   print '     SplpyGIL lock;', "\n";
+   print '     Py_DECREF(pyReturnVar);', "\n";
+   print '  }', "\n";
+   print '}', "\n";
+   print "\n";
+   SPL::CodeGen::implementationEpilogue($model);
+   print "\n";
+   CORE::exit $SPL::CodeGen::USER_ERROR if ($SPL::CodeGen::sawError);
+}
+1;

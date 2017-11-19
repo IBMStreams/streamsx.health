@@ -1,0 +1,99 @@
+/*
+ * # Licensed Materials - Property of IBM
+ * # Copyright IBM Corp. 2015,2016
+ */
+
+#include "splpy.h"
+#include "splpy_pyop.h"
+
+using namespace streamsx::topology;
+
+<%SPL::CodeGen::implementationPrologue($model);%>
+
+<%
+ my $cmnDir = $model->getContext()->getToolkitDirectory()."/opt/.__splpy/common/";
+
+ require "splpy_operator.pm";
+ require $cmnDir."/splpy.pm";
+
+ my $module = splpy_Module();
+ my $functionName = splpy_FunctionName();
+ my $paramStyle = splpy_ParamStyle();
+ my $fixedParam = splpy_FixedParam();
+ my @packages = splpy_Packages();
+ spl_pip_packages($model, \@packages);
+ 
+ my $iport = $model->getInputPortAt(0);
+ my $itupleType = $iport->getSPLTupleType();
+ my @inames = SPL::CodeGen::Type::getAttributeNames($itupleType);
+ my @itypes = SPL::CodeGen::Type::getAttributeTypes($itupleType);
+
+ my $inputAttrs2Py = $iport->getNumberOfAttributes();
+ if ($fixedParam != -1) {
+    $inputAttrs2Py = $fixedParam;
+ }
+ if ($fixedParam > $iport->getNumberOfAttributes()) {
+   SPL::CodeGen::exitln('%s requires at least %i attributes in input port but schema is %s',
+           $model->getContext()->getKind(), $fixedParam, $iport->getSPLTupleType());
+ }
+ 
+  my $ituple = $iport->getCppTupleName();
+%>
+
+// Constructor
+MY_OPERATOR::MY_OPERATOR() :
+    pyop_(NULL),
+    pyInNames_(NULL)
+{
+   PyObject * callable;
+@include  "../../opt/.__splpy/common/py_constructor.cgt"
+
+<% if ($paramStyle eq 'dictionary') { %>
+   {
+      SplpyGIL lock;
+      pyInNames_ = streamsx::topology::Splpy::pyAttributeNames(
+               getInputPortAt(0));
+   }
+<% } %>
+
+   pyop_->setCallable(callable);
+}
+
+// Destructor
+MY_OPERATOR::~MY_OPERATOR() 
+{
+   {
+   SplpyGIL lock;
+   if (pyInNames_)
+      Py_DECREF(pyInNames_);
+    }
+   delete pyop_;
+}
+
+// Notify pending shutdown
+void MY_OPERATOR::prepareToShutdown() 
+{
+    pyop_->prepareToShutdown();
+}
+
+// Tuple processing for non-mutating ports
+void MY_OPERATOR::process(Tuple const & tuple, uint32_t port)
+{
+ @include  "../../opt/.__splpy/common/py_splTupleCheckForBlobs.cgt"
+
+   SplpyGIL lock;
+
+ @include  "../../opt/.__splpy/common/py_splTupleToFunctionArgs.cgt"
+  
+    PyObject * pyReturnNone = PyObject_CallObject(pyop_->callable(), pyTuple);
+
+    Py_DECREF(pyTuple);
+    if (pyReturnNone == NULL) {
+        SPLAPPTRC(L_ERROR, "Fatal error: function failed: " << "<%=$functionName%>", "python");
+        throw SplpyGeneral::pythonException("<%=$functionName%>");
+    }
+
+    Py_DECREF(pyReturnNone);
+}
+
+<%SPL::CodeGen::implementationEpilogue($model);%>

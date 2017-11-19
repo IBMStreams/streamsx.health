@@ -1,0 +1,36 @@
+/*
+ * # Licensed Materials - Property of IBM
+ * # Copyright IBM Corp. 2015,2016
+ */
+
+#include "splpy_pyop.h"
+
+using namespace streamsx::topology;
+
+<%SPL::CodeGen::headerPrologue($model);%>
+
+class MY_OPERATOR : public MY_BASE_OPERATOR 
+{
+public:
+  // Constructor
+  MY_OPERATOR();
+
+  // Destructor
+  virtual ~MY_OPERATOR(); 
+
+  // Notify pending shutdown
+  void prepareToShutdown(); 
+
+  // Tuple processing for non-mutating ports
+  void process(Tuple const & tuple, uint32_t port);
+
+  // Punctuation processing
+  void process(Punctuation const & punct, uint32_t port);
+private:
+  // Members
+    SplpyPyOp *pyop_;
+    PyObject *pyInNames_;
+}; 
+
+<%SPL::CodeGen::headerEpilogue($model);%>
+

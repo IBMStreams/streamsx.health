@@ -1,0 +1,63 @@
+/* Additional includes go here */
+
+#include "splpy.h"
+#include "splpy_funcop.h"
+
+using namespace streamsx::topology;
+
+<%SPL::CodeGen::implementationPrologue($model);%>
+
+@include "../pyspltuple.cgt"
+<%
+ # Select the Python wrapper function
+ my $pywrapfunc= $pystyle . '_in';
+%>
+
+// Constructor
+MY_OPERATOR::MY_OPERATOR():
+   funcop_(NULL),
+   pyInNames_(NULL)
+{
+    funcop_ = new SplpyFuncOp(this, "<%=$pywrapfunc%>");
+
+<% if ($pystyle eq 'dict') { %>
+     SplpyGIL lock;
+     pyInNames_ = streamsx::topology::Splpy::pyAttributeNames(
+               getInputPortAt(0));
+<% } %>
+}
+
+// Destructor
+MY_OPERATOR::~MY_OPERATOR() 
+{
+<% if ($pystyle eq 'dict') { %>
+    if (pyInNames_) {
+      SplpyGIL lock;
+      Py_DECREF(pyInNames_);
+    }
+<% } %>
+
+  delete funcop_;
+}
+
+// Notify pending shutdown
+void MY_OPERATOR::prepareToShutdown() 
+{
+    funcop_->prepareToShutdown();
+}
+
+// Tuple processing for non-mutating ports
+void MY_OPERATOR::process(Tuple const & tuple, uint32_t port)
+{
+  IPort0Type const &ip = static_cast<IPort0Type const &>(tuple);
+
+<%
+print splpy_inputtuple2value($pystyle);
+%>
+<%if ($pystyle eq 'dict') {%>
+@include "../pyspltuple2dict.cgt"
+<%}%>
+  streamsx::topology::Splpy::pyTupleForEach(funcop_->callable(), value);
+}
+
+<%SPL::CodeGen::implementationEpilogue($model);%>

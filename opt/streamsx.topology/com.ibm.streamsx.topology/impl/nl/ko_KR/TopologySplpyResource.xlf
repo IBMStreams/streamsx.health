@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (C) 2012-2017, International Business Machines Corporation -->
+<!-- All Rights Reserved                                                   -->
+
+<xliff version="1.1" xmlns="urn:oasis:names:tc:xliff:document:1.1" 
+                     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                     xsi:schemaLocation="urn:oasis:names:tc:xliff:document:1.1 _path_/xliff-core-1.1.xsd">
+  <file datatype="plaintext" original="root.txt" source-language="en" target-language="ko" xml:space="preserve">
+    <body>
+      <!-- =============================================================== -->
+      <!--                                                                 -->
+      <!-- This is the resource file which is used commonly in the Python  -->
+      <!-- Application API :                                               -->
+      <!-- to Develop IBM Streams applications with Python and             -->
+      <!-- to create SPL operators from Python code.                       -->
+      <!--                                                                 -->
+      <!-- TRNOTE Please refer to the "XML Localization Interchange File   -->
+      <!-- Format (.xlf) files" section in the translation instructions    -->
+      <!-- file for more information on this file.                         -->
+      <!--                                                                 -->
+      <!-- NLS_ENCODING=UTF-8                                              -->
+      <!-- TRNOTE Return this file using the UTF-8 encoding.               -->
+      <!--                                                                 -->
+      <!-- NLS_MESSAGEFORMAT_ALL                                           -->
+      <!-- TRNOTE Because of a behavior with the Java MessageFormat class, -->
+      <!-- any message in the Java Resource Bundle that has a {0} string   -->
+      <!-- in it, must escape all single quotes in that message. To escape -->
+      <!-- the single quote, just insert another single quote before it.   -->
+      <!-- For example, the following message                              -->
+      <!--    "Can't find card with name [{0}]"                            -->
+      <!-- would be changed to                                             -->
+      <!--    "Can''t find card with name [{0}]"                           -->
+      <!--                                                                 -->
+      <!-- TRNOTE Do not translate the text between the curly braces. This -->
+      <!-- text is reserved and should not be translated. For example,     -->
+      <!-- the text in the following curly braces should not be translated:-->
+      <!--    {0,number} {0,number,percent} {0,date} {0,time}              -->
+      <!--                                                                 -->
+      <!-- TRNOTE For the target language setting, please use the          -->
+      <!-- appropriate value for your locale as indicated in parenthesis:  -->
+      <!--   Danish (da), Dutch (nl), Finnish (fi), French (fr),           -->
+      <!--   German (de), Italian (it), Norwegian - Bokmal (no),           -->
+      <!--   Brazilian Portuguese (pt-BR), Portuguese (pt-PT),             -->
+      <!--   Spanish (es), Swedish (sv), Czech (cs), Hungarian (hu),       -->
+      <!--   Polish (pl), Russian (ru), Simplified Chinese (zh),           -->
+      <!--   Traditional Chinese (zh-TW), Japanese (ja), Korean (ko),      -->
+      <!--   Arabic (ar), Hebrew (he), Slovakian (sk), Slovenian (sl),     -->
+      <!--   Thai (th), Turkish (tr)                                       -->
+      <!--                                                                 -->
+      <!-- TRNOTE Please start translating the following entries.          -->
+      <!-- =============================================================== -->
+      <group>
+        <!-- NOTE:  The Topology Toolkit is assigned message ID range CDIST0300 - CDIST0349 -->
+        
+        <trans-unit id="StreamsTopologyMessages_CDIST0301" extraData="TOPOLOGY_PYTHONHOME" resname="CDIST0301I">
+          <source>PYTHONHOME={0}.</source>
+          <!--TRNOTE Do not translate the word PYTHONHOME -->
+          <target>PYTHONHOME={0}.</target>
+        </trans-unit>
+        <trans-unit id="StreamsTopologyMessages_CDIST0302" extraData="TOPOLOGY_PYTHONHOME_NO" resname="CDIST0302I">
+          <source>PYTHONHOME environment variable not set. Please set PYTHONHOME to a valid Python {0} install.</source>
+          <!--TRNOTE Do not translate the word PYTHONHOME -->
+          <target>PYTHONHOME 환경 변수가 설정되지 않았습니다. PYTHONHOME을 유효한 Python {0} 설치로 설정하십시오.</target>
+        </trans-unit>
+        <trans-unit id="StreamsTopologyMessages_CDIST0303" extraData="TOPOLOGY_LOAD_LIB" resname="CDIST0303I">
+          <source>Loading Python library: {0}.</source>
+          <!--TRNOTE Do not translate the word Python -->
+          <target>Python 라이브러리 로딩: {0}.</target>
+        </trans-unit>
+        <trans-unit id="StreamsTopologyMessages_CDIST0304" extraData="TOPOLOGY_LOAD_LIB_ERROR" resname="CDIST0304E">
+          <source>Fatal error: could not open Python library: {0} : {2}. Please set PYTHONHOME to a valid Python {1} install.</source>
+          <!--TRNOTE Do not translate the words Python, PYTHONHOME -->
+          <target>치명적 오류: Python 라이브러리를 열 수 없음: {0} : {2}. PYTHONHOME을 유효한 Python {1} 설치로 설정하십시오.</target>
+        </trans-unit>
+        <trans-unit id="StreamsTopologyMessages_CDIST0305" extraData="TOPOLOGY_IMPORT_MODULE_ERROR" resname="CDIST0305E">
+          <source>Fatal error: missing module: {0}.</source>
+          <target>치명적 오류: 모듈 누락: {0}.</target>
+        </trans-unit>
+        <trans-unit id="StreamsTopologyMessages_CDIST0306" extraData="TOPOLOGY_IMPORT_MODULE" resname="CDIST0306I">
+          <source>Imported  module: {0}.</source>
+          <target>임포트한 모듈: {0}.</target>
+        </trans-unit>
+      </group>
+    </body>
+  </file>
+</xliff>

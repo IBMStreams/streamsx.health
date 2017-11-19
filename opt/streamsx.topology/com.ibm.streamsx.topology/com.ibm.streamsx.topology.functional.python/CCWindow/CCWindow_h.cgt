@@ -1,0 +1,64 @@
+/* Additional includes go here */
+#include "splpy_funcop.h"
+#include <SPL/Runtime/Window/Window.h>
+
+using namespace streamsx::topology;
+
+<%SPL::CodeGen::headerPrologue($model);%>
+
+@include "../pyspltuple.cgt"
+<%
+ my $pyoutstyle = splpy_tuplestyle($model->getOutputPortAt(0));
+ my $oport = $model->getOutputPortAt(0);
+%>
+
+class MY_OPERATOR : public MY_BASE_OPERATOR,
+      public WindowEvent<PyObject *>
+{
+public:
+  // Constructor
+  MY_OPERATOR();
+
+  // Destructor
+  virtual ~MY_OPERATOR(); 
+
+  // Notify termination
+  void prepareToShutdown(); 
+
+  // Tuple processing for non-mutating ports
+  void process(Tuple const & tuple, uint32_t port);
+
+  // Window
+  void onWindowTriggerEvent(
+     Window<PyObject *> & window, Window<PyObject *>::PartitionType const& key);
+  
+void afterTupleEvictionEvent(
+     Window<PyObject *> & window,  Window<PyObject *>::TupleType & tuple,
+     Window<PyObject *>::PartitionType const & partition);
+
+private:
+<%
+if ($pyoutstyle eq 'dict') {
+%>
+    void fromPythonToPort0(PyObject * pyTuple, <%=$oport->getCppTupleType()%> & otuple);
+<%}%>
+
+    // Members
+    // Control for interaction with Python
+    SplpyFuncOp *funcop_;
+    PyObject *spl_in_object_out;
+    
+    // Names of input attributes
+    PyObject *pyInNames_;
+
+    // Number of output connections when passing by ref
+    // -1 when cannot pass by ref
+    int32_t occ_;
+
+    // Window definition
+    SlidingWindow<PyObject *>  window_;	       
+
+}; 
+
+<%SPL::CodeGen::headerEpilogue($model);%>
+

@@ -1,0 +1,11 @@
+<%
+   #Check if a blob exists in the input schema
+   for (my $i = 0; $i < $inputAttrs2Py; ++$i) {
+      if (typeHasBlobs($itypes[$i])) {
+%>
+   PYSPL_MEMORY_VIEW_CLEANUP();
+<%
+         last;
+      }
+   }
+%>

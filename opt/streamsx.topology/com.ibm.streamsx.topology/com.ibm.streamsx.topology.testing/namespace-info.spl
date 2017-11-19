@@ -1,0 +1,11 @@
+/*
+# Licensed Materials - Property of IBM
+# Copyright IBM Corp. 2015  
+ */
+ 
+/**
+* @exclude
+*/
+
+namespace com.ibm.streamsx.topology.testing;
+

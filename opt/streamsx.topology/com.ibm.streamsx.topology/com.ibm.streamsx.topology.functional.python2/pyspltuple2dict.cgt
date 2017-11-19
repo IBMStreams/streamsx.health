@@ -1,0 +1,21 @@
+
+// process the attributes in the spl tuple
+// into a python dictionary object
+<%
+# Fix up names for blobs script
+my $inputAttrs2Py = $pynumattrs;
+my @itypes = @pyatypes;
+%>
+@include "../opt/python/codegen/py_splTupleCheckForBlobs.cgt"
+
+  PyObject *value = 0;
+  {
+  SplpyGIL lockdict;
+  PyObject * pyDict = PyDict_New();
+<%
+     for (my $i = 0; $i < $pynumattrs; ++$i) {
+         print convertAndAddToPythonDictionaryObject("ip", $i, $pyatypes[$i], $pyanames[$i], 'pyInNames_');
+     }
+%>
+  value = pyDict;
+  }

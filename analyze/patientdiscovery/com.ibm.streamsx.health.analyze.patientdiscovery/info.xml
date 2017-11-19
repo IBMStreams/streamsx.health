@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<info:toolkitInfoModel xmlns:common="http://www.ibm.com/xmlns/prod/streams/spl/common"
+ xmlns:info="http://www.ibm.com/xmlns/prod/streams/spl/toolkitInfo">
+ <info:identity>
+   <info:name>com.ibm.streamsx.health.analyze.patientdiscovery</info:name>
+   <info:description>com.ibm.streamsx.health.analyze.patientdiscovery</info:description>
+   <info:version>1.0.0</info:version>
+   <info:requiredProductVersion>4.2.1.2</info:requiredProductVersion>
+ </info:identity>
+ <info:dependencies/>
+</info:toolkitInfoModel>

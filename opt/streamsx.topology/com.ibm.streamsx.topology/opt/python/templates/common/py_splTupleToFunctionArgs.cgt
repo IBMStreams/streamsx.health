@@ -1,0 +1,49 @@
+//
+// Takes the input SPL tuple and converts it to
+// the arguments needed to be passed to a Python
+// function/callable decorated as a SPL operator.
+//
+
+   IPort0Type const & <%=$ituple%> = static_cast<IPort0Type const &>(tuple);
+
+<%
+    if ($paramStyle eq 'tuple') {
+%>
+// START-Processing passing SPL tuple as a Python tuple
+// Declares: PyObject * pyTuple 
+// Declares: PyObject * pyDict as NULL
+
+    PyObject *pyDict = NULL; 
+    PyObject * pyTuple = PyTuple_New(<%=$inputAttrs2Py%>);
+    PyObject *pyValue;
+<%
+     for (my $i = 0; $i < $inputAttrs2Py; ++$i) {
+         print convertToPythonValueAsTuple($ituple, $i, $itypes[$i], $inames[$i]);
+     }
+%>
+// END-Processing passing SPL tuple as a Python tuple
+<%
+    }
+%>
+
+<%
+    if ($paramStyle eq 'dictionary') {
+%>
+// START-Processing passing SPL tuple as a Python dictionary
+// All attributes are passed in the dictionary
+// Declares: PyObject * pyTuple as empty tuple
+// Declares: PyObject * pyDict
+
+    PyObject * pyTuple = PyTuple_New(0);
+    PyObject * pyDict = PyDict_New();
+<%
+     for (my $i = 0; $i < $iport->getNumberOfAttributes(); ++$i) {
+         my $la = $iport->getAttributeAt($i);
+         print convertAndAddToPythonDictionaryObject($ituple, $i, $la->getSPLType(), $la->getName(), 'pyInNames_');
+     }
+%>
+// END-Processing passing SPL tuple as a Python dictionary
+<%
+    }
+%>
+

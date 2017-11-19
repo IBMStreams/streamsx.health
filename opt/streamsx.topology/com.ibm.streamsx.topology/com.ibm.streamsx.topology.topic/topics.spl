@@ -1,0 +1,379 @@
+/*
+# Licensed Materials - Property of IBM
+# Copyright IBM Corp. 2015,2016
+ */
+
+/**
+ * Topic based publish-subscribe model for streams.
+ * Supports a microservice architecture for IBM Streams
+ * applications where streams are published to topics
+ * and can be subscribed to be independent applications.
+ * Use of interchange schema types allows applications
+ * to be implemented in different langauges, including
+ * SPL, Python, Java & Scala.
+*/
+
+namespace com.ibm.streamsx.topology.topic ;
+
+use com.ibm.streamsx.topology::String;
+
+/**
+ * Publish a stream to a topic. Allows other IBM Streams
+ * applications to subscribe to the input stream, including
+ * those written in different languages.
+ * See [namespace:com.ibm.streamsx.topology.topic] for details.
+ * @input In Stream to be published as a topic.
+ * @param topic Topic to publish stream to.
+ * @param allowFilter True if filters can be pushed from
+ *  subscribing SPL applications. Optional, defaults to `false`.
+*/
+public composite Publish(input In )
+{
+    param
+      expression<rstring> $topic ;
+      expression<boolean> $allowFilter : false;
+
+    graph
+    () as PublishTopic = _Publish(In) {
+       param
+          topic: $topic;
+          allowFilter: $allowFilter;
+    }
+}
+
+composite _Publish(input In) {
+	param
+          expression<rstring> $exportType : "topic";
+          expression<rstring> $topic ;
+          expression<boolean> $allowFilter;
+          expression<rstring> $class : "";
+	graph
+		() as ExportTopic = Export(TopicProperties)
+		{
+                param
+                  properties :
+                  {
+                     __spl_exportType = "__setup__"
+                  };
+                  allowFilter: $allowFilter;
+		}
+                stream<In> TopicProperties = Filter(In) {
+                   logic state: int32 rc = setTopicNameProperties($exportType, $topic, $allowFilter, $class);
+                }
+}
+
+stateful int32 setTopicNameProperties(rstring exportType, rstring topicName, boolean allowFilter, rstring class) {
+   appTrc(spl::Trace.debug, "Setting Topic name:" + topicName);
+   if (!checkTopicName(topicName)) {
+       appLog(spl::Log.error, "Topic name is invalid:" + topicName);
+       appTrc(spl::Trace.error, "Topic name is invalid:" + topicName);
+       assert(true, "Topic name is invalid:" + topicName);
+       abort();
+       return -1;
+   }
+   list<rstring> levels = tokenize(topicName, "/", true);
+   
+   int32 rc = setOutputPortExportProperties(
+                  {
+                     __spl_version = 3l,
+                     __spl_exportType = exportType,
+                     __spl_topic = topicName,
+                     __spl_topicLevels = levels,
+                     __spl_topicLevelCount = (int64) size(levels),
+                     __spl_allowFilter = allowFilter ? "true" : "false",
+                     __spl_channel = (int64) getChannel(),
+                     __spl_maxChannels = (int64) getMaxChannels(),
+                     __spl_randomId = (int64) (random() * 2147483647.0),
+                     __spl_class = class
+                  }, 0u);
+
+   appTrc(spl::Trace.debug, "Set Topic name:" + topicName + " = " + (rstring) rc);
+   if (rc != 0) {
+       appLog(spl::Log.error, "Setting topic name failed:" + topicName + " rc=" + (rstring) rc);
+       assert(true, "Setting topic name failed:" + topicName + " rc=" + (rstring) rc);
+       abort();
+   }
+
+   return rc;
+}
+
+/**
+ * Subscribe to topics using a topic filter.
+ * Generates a stream that is subscribed, through
+ * IBM Streams dynamic connections, to all streams
+ * published to topics that match the topic filter `topic`
+ * and are an exact stream type match to `streamType`.
+ * See [namespace:com.ibm.streamsx.topology.topic] for details.
+ 
+ * @output Topic Subscription to `topic`.
+ * @param topic Topic filter to subscribe to.
+ * @param streamType Type of output stream `Topic`.
+*/
+public composite Subscribe(output Topic )
+{
+	param		
+		expression<rstring> $topic ;
+		type $streamType ;
+	graph
+         stream<$streamType> TopicImport = Import()
+         {
+           param
+              // Initially match nothing, the initialization
+              // of the no-op Filter sets the expression.
+              subscription : __spl_exportType == "none";
+         }
+
+         // Use a Filter to dynamically set the subscription
+         // expression based upon the UDP state of this invocation.
+         stream<TopicImport> Topic = Filter(TopicImport) {
+             logic state:
+               int32 rc = setSubscribeSubscription(getTopicSubscription($topic));
+         }
+}
+
+/**
+ * Get the subscription that matches a topic for
+ * topic based subscription.
+ *
+ * This is a low-level function that allows applications
+ * to build custom composites with functionality similar
+ * to [Subscribe]. The preference should be to
+ * use [Subscribe] where possible.
+ *  
+ * @param topic Topic to subscribe to.
+*/
+public stateful rstring getTopicSubscription(rstring topic) {
+    return getTopicSubscription("topic", topic);
+}
+
+stateful rstring getTopicSubscription(rstring exportType, rstring topic) {
+  appTrc(spl::Trace.debug, "Topic filter:" + topic);
+  if (!checkTopicFilter(topic)) {
+       appLog(spl::Log.error, "Topic filter is invalid:" + topic);
+       assert(true, "Topic filter is invalid:" + topic);
+       abort();
+       return "invalid topic filter:" + topic;
+  }
+
+  // Wildcard expression is more complicated
+  if (findFirst(topic, "+") != -1 || findFirst(topic, "#") != -1) {
+      return wildcardExpression(exportType, topic);
+  }
+       
+  return "( __spl_exportType == " + makeRStringLiteral(exportType)
+         + ") && ( __spl_topic == " + makeRStringLiteral(topic) + " )";
+}
+
+/**
+  Create the subscription expression for supporting
+  wildcards. Assumes that:
+  1) the filter has been checked to be valid.
+  2) the filter does contain a wildcard. If there is no
+     wildcard then the simpler direct equality on topic is used.
+*/
+rstring wildcardExpression(rstring exportType, rstring filter) {
+
+    appTrc(spl::Trace.debug, "Wildcard topic filter:" + filter);
+
+    list<rstring> tokens = tokenize(filter, "/", true);
+    
+    boolean hasHash = findFirst(filter, "#") != -1;
+    
+    mutable rstring tw = "( ( __spl_exportType ==" + makeRStringLiteral(exportType) + " )";
+    
+    // If there is not a hash wildcard then the topic name
+    // must have the same number of levels as the filter
+    if (!hasHash) {
+       tw += "&& ( __spl_topicLevelCount == " + (rstring) size(tokens) + " )";
+    }
+
+    // Single plus, single level, the level count check is sufficient.
+    // Single hash every topic is matched, just have the exportType check
+    if (filter == "+" || filter == "#") {
+      tw += ")";
+      return tw;
+    }
+
+    // If hashHash is true:
+    // This must be a '/#' wildcard at the end of the filter
+    // so we need to make sure we have at least the required
+    // number of levels, at least to cover a/+/# as the
+    // code below will not add any checks for the + sign.
+    // Note that a/+/# matches the parent as well, so
+    // there must be at least 2 levels (not 3).
+    if (hasHash) {
+       tw += "&& ( __spl_topicLevelCount >= " + (rstring) (size(tokens) - 1) + " )";
+    }
+
+    for (int32 i in range(tokens)) {
+      rstring level = tokens[i];
+      
+      // match anything at this level
+      if (level == "+")
+          continue;
+
+      // must be the last element
+      if (level == "#")
+          break;
+          
+       tw += " && ";
+
+       if (hasHash) {
+           tw += "( ";
+           tw += "( __spl_topicLevelCount > " + (rstring) i + " )";
+           tw += " && ";
+       }
+       tw += "( __spl_topicLevels["+((rstring) i)+"] == " + makeRStringLiteral(level) + " )";
+       if (hasHash) {
+           tw += " )";
+       }
+       
+    }
+    tw += " )";
+    
+    return tw;
+}
+
+/**
+ * Take a subscription and modify it to account for
+ * parallel regions in the publisher or subscriber.
+ *
+ * This is a low-level function that allows applications
+ * to build custom composites with functionality similar
+ * to [Subscribe] or [FilteredSubscribe]. The preference should be to
+ * use [Subscribe] or [FilteredSubscribe] where possible.
+ *  
+ * @param subscription Base subscription.
+*/
+public rstring addUDPSubscription(rstring subscription) {
+    mutable rstring udpSub = subscription + " && ( ";
+
+    // My (subscriber) channel info
+    rstring maxChan = (rstring) getMaxChannels();
+    rstring chan = (rstring) getChannel();
+
+    //
+    // Subscribe to non-udp publisher and udp publisher
+    // with width one the same.
+    // Ideally we use the random number to
+    // randomly assign the sole publish channel
+    // to one of the subscriber channels.
+    //
+    // If the publisher is at the older version (2)
+    // then the single channel is always sent to
+    // subscriber zero
+
+    // getMaxChannels() returns 0 for non-udp
+    udpSub = udpSub + "((__spl_maxChannels <= 1) && ";
+
+    if (getChannel() == 0)
+            udpSub = udpSub + "( ";
+
+    udpSub = udpSub
+            + " ((__spl_version >= 3) && (__spl_randomId % " +maxChan+ " == " +chan+ "))";
+
+    if (getChannel() == 0) 
+       udpSub = udpSub
+            + " || "
+            + " (__spl_version == 2))";
+
+     udpSub = udpSub + ")";
+
+     //
+     // Now expression to handle publisher with UDP width >= 2
+     //
+     udpSub = udpSub 
+                 + " || ((__spl_maxChannels >=2) && (__spl_channel % " +maxChan+ " == " +chan+ "))";
+
+     udpSub = udpSub + ")";
+
+     return udpSub;
+}
+
+/**
+ * Set a subscription expression adding in UDP
+ * channel based matching if the subscriber
+ * is in a parallel region.
+ * @param subscription Subscription to be set on input port
+ * connected to `Import` operator.
+*/
+public stateful int32 setSubscribeSubscription(rstring subscription) {
+    // None-UDP or a single width
+    mutable rstring actualSub = "";
+
+    // Subsriber is not UDP, subscribe to all publishers
+    if (getMaxChannels() == 0 || getMaxChannels() == 1)
+        actualSub = subscription;
+    else 
+        actualSub = addUDPSubscription(subscription);
+
+    int32 rc = setInputPortImportSubscription(actualSub, 0u);
+    if (rc != 0) {
+       appLog(spl::Log.error, "Failed subscription (" + (rstring) rc
+       + "):" + actualSub);
+       assert(rc != 0, "Failed subscription (" + (rstring) rc + "):" + actualSub);
+       abort();
+    }
+    
+    return rc;
+}
+
+/**
+  Check a topic name is valid.
+*/
+public boolean checkTopicName(rstring topic) {
+    if (!checkNoNul(topic))
+        return false;
+        
+    // Check no wildcards
+    if (findFirst(topic, "+") != -1)
+         return false;
+        
+    if (findFirst(topic, "#") != -1)
+         return false;
+    
+    return true;
+}
+
+boolean checkNoNul(rstring topic) {
+   return (findFirst(topic, "\u0000") == -1)
+          && (length(topic) !=  0);
+}
+
+/**
+  Check a topic filter is valid.
+*/
+public boolean checkTopicFilter(rstring topic) {
+
+    if (!checkNoNul(topic))
+        return false;
+            
+    // Must be the last character
+    if (findFirst(topic, "#") != -1) {
+       if (topic == "#")
+           return true;
+           
+       if (findFirst(topic, "#") != length(topic) - 1)
+           return false;
+       
+       if (findFirst(topic, "/#") != length(topic) - 2)
+           return false;
+    }
+    
+    if (findFirst(topic, "+") == -1)
+        return true;
+        
+    if (topic == "+")
+        return true;
+
+    list<rstring> tokens = tokenize(topic, "/", false);
+    for (rstring token in tokens) {
+       if (token == "+")
+           continue;
+       if (findFirst(token, "+") != -1)
+           return false;
+    }
+      
+    return true;
+}
+

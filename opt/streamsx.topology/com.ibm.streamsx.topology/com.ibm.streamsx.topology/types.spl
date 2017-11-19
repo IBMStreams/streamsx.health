@@ -1,0 +1,97 @@
+/*
+# Licensed Materials - Property of IBM
+# Copyright IBM Corp. 2015  
+ */
+
+/**
+ * Interchangeable SPL types.
+ * SPL tuple types that can be used to interchange
+ * streams between IBM Streams applications implemented
+ * in different languages, such as SPL, Python, Java & Scala.
+ *
+ * SPL uses structural equivalence for types,
+ * which means that types of the same structural composition
+ * are considered identical. This means that another
+ * toolkit or application need not use these type
+ * definitions, and thus can avoid being dependent
+ * on this toolkit. For example all these streams
+ * definitions are identical:
+ *
+ * * `stream<rstring jsonString>`
+ * * `stream<com.ibm.streamsx.json.Json>`
+ * * `stream<com.ibm.streamsx.topology.Json>`
+*/
+
+namespace com.ibm.streamsx.topology;
+
+/**
+* Tuple type for representing JSON.
+* 
+* Using this schema in an SPL application with
+* [com.ibm.streamsx.topology.topic::Publish]
+* and [com.ibm.streamsx.topology.topic::Subscribe]
+* allows exchange of tuples between SPL, Python, Java & Scala.
+* SPL applications can use the `com.ibm.streamsx.json` toolkit
+* to convert SPL tuples into JSON.
+*
+* Any stream published by a Python application
+* using `schema.CommonSchema.Json` will have this schema.
+* 
+* Any stream of type `TStream<JSONObject>`
+* published by a Java application will have this schema.
+*
+* Any stream of type `TStream\[JSONObject\]`
+* published by a Scala application will have this schema.
+*/
+type Json = rstring jsonString;
+
+/**
+* Tuple type representing string tuples.
+*
+* Using this schema in an SPL application with
+* [com.ibm.streamsx.topology.topic::Publish]
+* and [com.ibm.streamsx.topology.topic::Subscribe]
+* allows exchange of tuples between SPL, Python, Java & Scala.
+*
+* Any stream published by a Python application
+* using `schema.CommonSchema.String` will have this schema.
+* 
+* Any stream of type `TStream<String>`
+* published by a Java application will have this schema.
+*
+* Any stream of type `TStream\[String\]`
+* published by a Scala application will have this schema.
+*/
+type String = rstring string;
+
+/**
+* Tuple type representing XML tuples.
+*
+* Using this schema in an SPL application with
+* [com.ibm.streamsx.topology.topic::Publish]
+* and [com.ibm.streamsx.topology.topic::Subscribe]
+* allows exchange of tuples between SPL, Java & Scala.
+*
+* Any stream of type `TStream<com.ibm.streams.operator.types.XML>`
+* published by a Java application will have this schema.
+*
+* Any stream of type `TStream\[com.ibm.streams.operator.types.XML\]`
+* published by a Scala application will have this schema.
+*/
+type XML = xml document;
+
+/**
+* Tuple type representing binary tuples.
+*
+* Using this schema in an SPL application with
+* [com.ibm.streamsx.topology.topic::Publish]
+* and [com.ibm.streamsx.topology.topic::Subscribe]
+* allows exchange of tuples between SPL, Java & Scala.
+* 
+* Any stream of type `TStream<com.ibm.streams.operator.types.Blob>`
+* published by a Java application will have this schema.
+*
+* Any stream of type `TStream\[com.ibm.streams.operator.types.Blob\]`
+* published by a Scala application will have this schema.
+*/
+type Blob = blob binary;

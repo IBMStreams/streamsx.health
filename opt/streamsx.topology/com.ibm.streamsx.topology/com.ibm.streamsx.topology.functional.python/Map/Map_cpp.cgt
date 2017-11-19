@@ -1,0 +1,134 @@
+/* Additional includes go here */
+
+#include "splpy.h"
+#include "splpy_funcop.h"
+
+using namespace streamsx::topology;
+
+<%SPL::CodeGen::implementationPrologue($model);%>
+
+@include "../pyspltuple.cgt"
+<%
+ # Select the Python wrapper function
+ my $pyoutstyle = splpy_tuplestyle($model->getOutputPortAt(0));
+ my $pywrapfunc= $pystyle . '_in__' . $pyoutstyle . '_out';
+%>
+
+#define SPLPY_TUPLE_MAP(f, v, r, occ) \
+    streamsx::topology::Splpy::pyTupleMap(f, v, r)
+
+// Constructor
+MY_OPERATOR::MY_OPERATOR() :
+   funcop_(NULL),
+   pyInNames_(NULL),
+   occ_(-1)
+{
+    const char * wrapfn = "<%=$pywrapfunc%>";
+
+<%
+# If occ parameter is positive then pass-by-ref is possible
+# Generate code to allow pass by ref but only use when
+# not connected to a PE output port.
+
+ my $oc = $model->getParameterByName("outputConnections");
+
+ if ($oc) {
+    my $occ = $oc->getValueAt(0)->getSPLExpression();
+    if ($occ > 0) {
+        my $pybyrefwrapfunc = $pystyle . '_in__object_out';
+%>
+
+#undef SPLPY_TUPLE_MAP
+#define SPLPY_TUPLE_MAP(f, v, r, occ) \
+    streamsx::topology::Splpy::pyTupleMapByRef(f, v, r, occ)
+
+    if (!this->getOutputPortAt(0).isConnectedToAPEOutputPort()) {
+       // pass by reference
+       wrapfn = "<%=$pybyrefwrapfunc%>";
+       occ_ = <%=$occ%>;
+    }
+<%
+    } 
+ }
+%>
+
+    funcop_ = new SplpyFuncOp(this, wrapfn);
+
+<% if ($pystyle eq 'dict') { %>
+     SplpyGIL lock;
+     pyInNames_ = streamsx::topology::Splpy::pyAttributeNames(
+               getInputPortAt(0));
+<% } %>
+}
+
+// Destructor
+MY_OPERATOR::~MY_OPERATOR() 
+{
+<% if ($pystyle eq 'dict') { %>
+    if (pyInNames_) {
+      SplpyGIL lock;
+      Py_DECREF(pyInNames_);
+    }
+<% } %>
+
+  delete funcop_;
+}
+
+// Notify pending shutdown
+void MY_OPERATOR::prepareToShutdown() 
+{
+    funcop_->prepareToShutdown();
+}
+
+// Tuple processing for non-mutating ports
+void MY_OPERATOR::process(Tuple const & tuple, uint32_t port)
+{
+  IPort0Type const &ip = static_cast<IPort0Type const &>(tuple);
+
+<%
+print splpy_inputtuple2value($pystyle);
+%>
+
+<%if ($pystyle eq 'dict') {%>
+@include "../pyspltuple2dict.cgt"
+<%}%>
+
+  OPort0Type otuple;
+
+<%if ($pyoutstyle eq 'dict') {%>
+  {
+  SplpyGIL lock;
+  PyObject * ret = streamsx::topology::Splpy::pyTupleMap(funcop_->callable(), value);
+  if (ret == NULL)
+     return;
+  fromPythonToPort0(ret, otuple);
+  Py_DECREF(ret);
+  }
+  
+<% } else { %>
+
+  if (SPLPY_TUPLE_MAP(funcop_->callable(), value,
+       otuple.get_<%=$model->getOutputPortAt(0)->getAttributeAt(0)->getName()%>(), occ_))
+
+<%}%>
+     submit(otuple, 0);
+}
+
+<%
+if ($pyoutstyle eq 'dict') {
+  # In this case we don't want the function that
+  # converts the Python tuple to an SPL tuple to
+  # copy attributes from the input port
+  my $iport;
+
+  my $oport = $model->getOutputPortAt(0);
+  my $otupleType = $oport->getSPLTupleType();
+  my @onames = SPL::CodeGen::Type::getAttributeNames($otupleType);
+  my @otypes = SPL::CodeGen::Type::getAttributeTypes($otupleType);
+
+%>
+// Create member function that converts Python tuple to SPL tuple
+@include  "../../opt/python/codegen/py_pyTupleTosplTuple.cgt"
+<%}%>
+
+<%SPL::CodeGen::implementationEpilogue($model);%>

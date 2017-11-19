@@ -1,0 +1,70 @@
+    // Common code for the constructor of SPL Python operators
+    // that are created from Python functions
+    // Loads the Python runtime and initializes the function and module variables.
+    pyop_ = new SplpyPyOp(this);
+    
+    {
+    SplpyGIL lock;
+
+    // Set the function the operator will call as a member field
+    callable =
+      SplpyGeneral::loadFunction("<%=$module%>", "<%=$functionName%>");   
+<%
+    if (splpy_OperatorCallable() eq 'class') {
+%>
+   { 
+#if __SPLPY_EC_MODULE_OK
+     // Set the operator capsule as a Python thread local
+     // use streamsx.ec._set_opc so that it is availble
+     // through the operator's class __init__ function.
+     this->pyop_->setopc();
+#endif
+ 
+     // Pass all the arguments by name in a dictionary
+     // object, effectively as **kwargs. Python will
+     // unpack correctly to the actual __init__ args
+     PyObject *empty_tuple = PyTuple_New(0);
+     PyObject *param_dict = PyDict_New();
+<%
+     for (my $i = 0; $i < $model->getNumberOfParameters(); ++$i) {
+         my $tp = $model->getParameterAt($i);
+
+         print '{';
+         print 'PyObject * param_key = PyUnicode_DecodeUTF8((const char*)  "' . $tp->getName() . '", ((int)(sizeof("' . $tp->getName() . '")))-1 , NULL);';
+
+         # cardinality == 1
+         print 'PyObject * param_value = ' .
+              convertToPythonValueFromExpr(
+                 $tp->getValueAt(0)->getSPLType(),
+                 $tp->getValueAt(0)->getCppExpression()) . ";\n";
+
+         print " PyDict_SetItem(param_dict, param_key, param_value);\n";
+         print " Py_DECREF(param_key);\n";
+         print " Py_DECREF(param_value);\n";
+         print "}\n";
+     }
+%>
+
+     // At this point callable is the callable class object
+     // we call it to create an instance of the class
+     // (which itself is callable)
+     PyObject *tmp_instance = PyObject_Call(callable, empty_tuple, param_dict);
+     Py_DECREF(callable);
+     Py_DECREF(empty_tuple);
+     Py_DECREF(param_dict);
+     if (tmp_instance == NULL) {
+         SPLAPPTRC(L_ERROR, "Fatal error: cannot create instance of class " << "<%=$functionName%>" << " in module " << "<%=$module%>", "python");
+         throw SplpyGeneral::pythonException("<%=$module%>");
+     }
+   
+     callable = tmp_instance;
+
+#if __SPLPY_EC_MODULE_OK
+     this->pyop_->clearopc();
+#endif
+   }
+<%
+    }
+%>
+
+    }

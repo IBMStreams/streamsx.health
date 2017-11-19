@@ -1,0 +1,208 @@
+/*
+# Licensed Materials - Property of IBM
+# Copyright IBM Corp. 2015  
+ */
+ 
+/**
+ * Topic based publish-subscribe model supporting a
+ * microservice architecture style for Streams applications.
+ * + Publish-subscribe Overview
+ * Applications can publish streams to a topic name which
+ * can then be subscribed to by other applications
+ * (or even the same application). Publish-subscribe
+ * works across applications written in SPL and
+ * those written using application APIs
+ * provided by this toolkit.
+ *
+ * A subscriber matches a publisher if their topic filter matches
+ * a publisher's topic name
+ * and the stream type is an exact match to that of the publisher.
+ * It is recommended that a single stream type is used for a topic name.
+ *
+ * A topic is a `rstring` value (encoded with UTF-8), based upon the
+ * [http://public.dhe.ibm.com/software/dw/webservices/ws-mqtt/mqtt-v3r1.html#appendix-a|MQTT topic style].
+ *
+ * Topic names for publishing a stream:
+ *
+ *  * Must be at least one character long.
+ *  * Use `/` as a level separator, zero length topic levels are valid.
+ *  * Must not include wild card characters `\+` and `\#`.
+ *  * Must not include the nul character `\\u0000`.
+ *
+ * Topic filters for subscribing to streams:
+ *  * Must be at least one character long.
+ *  * Use `/` as a level separator.
+ *  * Must not include the nul character `\\u0000`.
+ *  * `\+` is a single-level wildcard character that can be used at any level, but it must occupy the entire level. `+`, `a/b/+`, `+/b/+` and `+/b` are valid but `a/b/c+` is not valid.
+ *  * `\#` is a wildcard character that matches any number of levels including the parent and any number of child levels. The multi-level wildcard character must be specified either on its own or following a topic level separator. In either case it must be the last character specified in the topic filter. `#` and 'a/b/#' are valid but `a/b/c#` and `a/#/c` are not valid.
+ *
+ * Without a wildcard character a topic filter is an exact match for a topic name
+ * so that filter `a/b/c` only matches `a/b/c`.
+ *
+ * Single-level filter (`+`) match examples are:
+ * * filter `+` matches `a` and `b` but not `a/b`
+ * * filter `a/+` matches `a/b`, `a/c` and `a/` but not `a`, `b/c` or `a/b/c`
+ * * filter `+/+` matches `a/b`, `b/c`, `d/` and `/`  but not `a` or `a/b/c`
+ *
+ * Multi-level filter (`#`) match examples are:
+ * * filter `#` matches every topic name such as `a`, `b/c`, `//`
+ * * filter `a/b/#` matches `a/b` (parent), `a/b/c`, `a/b/d` and `a/b/c/d`
+ *
+ * **Note:** *a publish-subscribe match requires the stream type
+ * to match as well as the topic filter matching the topic name.*
+ *
+ * **Note:** *For correct wildcard matching both pblisher and
+ * subscriber must have been compiled with version 1.3.0 or later.*
+ *
+ * Publish-subscribe is a many to many relationship,
+ * any number of publishers can publish to the same topic
+ * and stream type, and there can be many subscribers to a topic.
+ *
+ * For example a telco ingest application may process
+ * Call Detail Records from network switches and publish processed
+ * records on multiple topics, `cdr/voice/normal`, `cdr/voice/dropped`, `cdr/sms`, etc.
+ * by publishing each processed stream with its own topic.
+ * Then a dropped call analytic application would subscribe to the
+ * `cdr/voice/dropped` topic.
+ *
+ * Publish-subscribe is dynamic, using IBM Streams
+ * dynamic connections, an application
+ * can be submitted that subscribes to topics
+ * published by other already running applications.
+ * Once the new application has initialized, it will
+ * start consuming tuples from published streams from existing applications.
+ * And any stream the new application publishes will be subscribed to
+ * by existing applications where the topic and stream type matches.
+ *
+ * An application only receives tuples that are published while
+ * it is connected, thus tuples are lost during a connection
+ * failure.
+ * 
+ * # SPL Publish-Subscribe
+ * An SPL application uses [Publish] to publish a stream to a topic, and [Subscribe]
+ * to subscribe to a topic.
+ *
+ * # Java & Scala Publish-Subscribe
+ * A Java application uses [../../javadoc/com/ibm/streamsx/topology/TStream.html#publish(java.lang.String)|TStream.publish(topic)]
+ * to publish streams.
+ * 
+ * # Python Publish-Subscribe
+ * A Python application uses `Stream.publish(topic)` to publish
+ * streams and `Topology.subscribe(topic)` to subscribe to published
+ * streams.
+ *
+ * Python only supports publishing and subscribing to streams
+ * containing Python, [com.ibm.streamsx.topology::Json|JSON]
+ * or [com.ibm.streamsx.topology::String|String] objects.
+igy
+ *
+ * # Interchangeable Stream Types
+ * 
+ * Published streams can be subscribed to by IBM Streams applications
+ * written in different languages, by ensuring common stream types (schemas).
+ * 
+ * * SPL Tuples
+ *   * SPL : SPL schema of the stream.
+ *   * Java : [../../javadoc/com/ibm/streamsx/topology/spl/SPLStream.html|SPLStream] with a schema matching the SPL schema.
+ *   * Scala : `com.ibm.streamsx.topology.spl.SPLStream` with a schema matching the SPL schema.
+ * * JSON tuples
+ *   * SPL : [com.ibm.streamsx.topology::Json]  
+ *   * Java: `TStream<JSONObject>`.
+       See [../../javadoc/com/ibm/streamsx/topology/json/package-summary.html#package_description|com.ibm.streamsx.topology.json].
+ *   * Scala: `TStream\[JSONObject\]`
+ *   * Python: `schema.CommonSchema.Json` - Tuples are Python dictionary objects converted to from JSON using `json.loads` and `json.dumps`.
+ * * String tuples
+ *   * SPL : [com.ibm.streamsx.topology::String]
+ *   * Java: `TStream<String>`
+ *   * Scala: `TStream\[String\]`
+ *   * Python: `schema.CommonSchema.String` - Tuples are Python string objects. Python object tuples are converted to strings using `str()` when publishing as `String`
+ * * XML tuples
+ *   * SPL : [com.ibm.streamsx.topology::XML]
+ *   * Java: `TStream<com.ibm.streams.operator.types.XML>`
+ *   * Java: `TStream\[com.ibm.streams.operator.types.XML\]`
+ * * Binary tuples
+ *   * SPL : [com.ibm.streamsx.topology::Blob]
+ *   * Java: `TStream<com.ibm.streams.operator.types.Blob>`
+ *   * Scala: `TStream\[com.ibm.streams.operator.types.Blob\]`
+ *
+ * # Behavior with parallel regions
+ * 
+ * Topic publish-subscribe model was changed for releases 1.1.6
+ * to have intuitive and defined behavior when the publisher or subscriber
+ * is in a parallel region (with width > 1).
+ * 
+ * *It is recommended that if either publisher or subscriber is
+ * in a parallel region then applications should be compiled against
+ * released versions of this toolkit*:
+ *  * 1.1.x with x >= 6
+ *  * 1.2.x with x >= 6
+ *  * or any new version in future
+ *
+ * The intuitive case is that parallel regions are used to partition tuple processing across the channels,
+ * so that each channel processes a subset of the tuples, and each tuple is processed by a single channel.
+ * 
+ * Any subscriber connecting to a publisher must then process the complete output from the publisher
+ * and only process each published tuple only once. For example if a publisher is in a parallel region
+ * with width three, then there are three published channels. A connecting subscriber with width two
+ * will have two subscribing channels. Each published channel must connect to a single subscribing channel,
+ * and in this case one subscriber channel will connect to two published channels and the other to the remaining published channel.
+ *
+ * --- Publish-Subscribe with Parallel Regions
+ * -----------------------------------------------
+ * | Publisher | Subscriber | Behavior |
+ * |===|
+ * | *not-parallel* | *not-parallel* | Single connection between the publisher and subscriber containing all the tuples |
+ * |----|----|    |
+ * | *parallel(1)*  | *parallel(1)*  |     |
+ * |----|----|----|
+ * | *not-parallel* | *parallel(N)* | One and only one of the N subscribers connects to the single publisher and thus the subscriber region correctly processes the tuples once.  Note that which subscriber channel processes the single published channel is not defined, it could be any of 0,1,...,N-1. |
+ * |----|    |    |
+ * | *parallel(1)*  |   *N > 1*     |    |
+ * |-----|-----|-----|
+ * | *parallel(M)* | *not-parallel* | Single subscriber connects to each of the M publishers so that the subscriber region will process all the the published tuples once. |
+ * |    |----|    |
+ * | *M > 1*       | *parallel(1)*  |    |
+ * |-----|-----|-----|
+ * | *parallel(M)* | *parallel(N)* | Each published channel is connected to a single subscribe channel with channel number `publish channel % N`. Thus the subscriber region processes the tuples once. |
+ * | *M > 1*       | *N > 1*       |                                                                                                                                                                    |
+ * -----------------------------------------------
+
+ * **Note:** *It's important to remember there may be multiple applications publishing and/or subscribing to the same topic and thus publish/subscribe must work in all combinations,
+ * e.g. there may be a publishers to the same topic of non-parallel, parallel(5) and parallel(3), and subscribers of non-parallel and parallel(7). This is especially true in a microservices style
+ * architecture where analytic applications may come and go and there may not be pre-assigned agreement that publisher and subscribers will have matching channel numbers.*
+ * 
+ * + Relationship to Export & Import
+ * Publish-subscribe is a simplification of IBM Streams `Export` and `Import`.
+ * 
+ * It is recommended that SPL applications do not use stream properties for
+ * `Export` that start with `__spl_` (double underscore - spl - underscore)
+ * to avoid clashes with functionality provided by this toolkit.
+ * # Details
+ * [Publish] is a composite operator that invokes an `spl.adapter::Export` operator
+ * using these stream properties:
+ * * `int64 __spl_version`: Version of the publish properties scheme, set to.
+ *   * unset - Initial version - 1.1.2 release
+ *   * `2` - Second version - 1.1.6 release - Support for filtering and parallel regions
+ *   * `3` - Third version - 1.3.0 release - Support for topic filters with wildcards
+ * * `rstring __spl_exportType` : Set to the literal `topic` for SPL publish, `topic.java` for publishing by a Java class.
+ * * `rstring __spl_topic` : Set to the topic to publish to.
+ * * `rstring __spl_allowFilter` : Set to `true` if the [Publish] operator allows filters, otherwise `false`. Earlier releases have the value missing indicating filters are allowed.
+ *   * Set if:`__spl_version >= 2`
+ * * `rstring __spl_class` : Set to the Java class of the stream when `__spl_exportType` is `topic.java`, otherwise unset.
+ * * `int64 __spl_channel` : Set to the publisher's parallel channel index returned by `getChannel()`.
+ *   * Set if:`__spl_version >= 2`
+ * * `int64 __spl_maxChannels` : Set to the publisher's maximum number of parallel channels returned by `getMaxChannels()`.
+ *   * Set if:`__spl_version >= 2`
+ * * `list<rstring> __spl_topicLevels` : list of the levels within the topic.
+ *   * Set if:`__spl_version >= 3`
+ * * `int64 __spl_topicLevelCount` : count of the levels within the topic.
+ *   * Set if:`__spl_version >= 3`
+ * * `int64 __spl_randomId` : Random value between 0 and 2147483647. Note a new random value is generated when the PE restarts. Used when a subscriber is in a parallel region to randomly distribute non-parallel or single channel publishers across the subscriber channels.
+ *   * Set if:`__spl_version >= 3`
+ *
+ * [Subscribe] is a composite operator that invokes an `spl.adapter::Import` operator
+ * using a subscription to match the published topics.
+*/
+
+namespace com.ibm.streamsx.topology.topic;
+

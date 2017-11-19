@@ -1,0 +1,13 @@
+/*
+# Licensed Materials - Property of IBM
+# Copyright IBM Corp. 2015  
+ */
+ 
+/**
+* These operators are invoked by the Python Application API
+* and are not intended for direct use by SPL developers.
+* @exclude
+*/
+
+namespace com.ibm.streamsx.topology.functional.python;
+

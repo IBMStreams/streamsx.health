@@ -1,0 +1,283 @@
+/* Additional includes go here */
+
+#include "splpy.h"
+#include "splpy_funcop.h"
+
+using namespace streamsx::topology;
+
+<%SPL::CodeGen::implementationPrologue($model);%>
+
+@include "../pyspltuple.cgt"
+
+
+<%
+ # Select the Python wrapper function
+ my $pyoutstyle = splpy_tuplestyle($model->getOutputPortAt(0));
+
+ if (($pystyle eq 'dict') || ($pyoutstyle eq 'dict')) {
+    SPL::CodeGen::exitln("Dictionary input and output not supported.");
+ }
+ 
+ my $in_pywrapfunc =  $pystyle . '_in__object_out';
+ my $out_pywrapfunc=  'pickle_in__' . $pyoutstyle . '_out';
+%>
+
+#define SPLPY_TUPLE_MAP(f, v, r, occ) \
+    streamsx::topology::Splpy::pyTupleMap(f, v, r)
+
+// Constructor
+MY_OPERATOR::MY_OPERATOR() :
+   funcop_(NULL),
+   pyInNames_(NULL),
+   occ_(-1),
+   window_(*this, 0,
+   CountWindowPolicy(<%=$model->getParameterByName("evictConfig")->getValueAt(0)->getSPLExpression()%>),
+   CountWindowPolicy(<%=$model->getParameterByName("triggerConfig")->getValueAt(0)->getSPLExpression()%>))
+{
+    window_.registerOnWindowTriggerHandler(this);
+    window_.registerAfterTupleEvictionHandler(this);
+
+    const char * in_wrapfn = "<%=$in_pywrapfunc%>";
+    const char * out_wrapfn = "<%=$out_pywrapfunc%>";
+    const char * functions_module = "streamsx.topology.functions";
+    const char * identity_function = "identity";
+
+<%
+# If occ parameter is positive then pass-by-ref is possible
+# Generate code to allow pass by ref but only use when
+# not connected to a PE output port.
+
+ my $oc = $model->getParameterByName("outputConnections");
+
+ if ($oc) {
+    my $occ = $oc->getValueAt(0)->getSPLExpression();
+    if ($occ > 0) {
+        my $pybyrefwrapfunc = 'pickle_in__object_out';
+%>
+
+#undef SPLPY_TUPLE_MAP
+#define SPLPY_TUPLE_MAP(f, v, r, occ) \
+    streamsx::topology::Splpy::pyTupleMapByRef(f, v, r, occ)
+
+    if (!this->getOutputPortAt(0).isConnectedToAPEOutputPort()) {
+       // pass by reference
+       out_wrapfn = "<%=$pybyrefwrapfunc%>";
+       occ_ = <%=$occ%>;
+    }
+<%
+    } 
+ }
+%>
+
+    funcop_ = new SplpyFuncOp(this, out_wrapfn);
+
+    // spl_in_object_out points to the wrapped identity function used to convert incoming tuples to 
+    // Python objects.
+    {
+        SplpyGIL lock;
+        spl_in_object_out = SplpyGeneral::loadFunction(functions_module, identity_function);
+        spl_in_object_out = SplpyGeneral::callFunction("streamsx.topology.runtime", in_wrapfn, spl_in_object_out, NULL);
+    }
+
+<% if ($pystyle eq 'dict') { %>
+     SplpyGIL lock;
+     pyInNames_ = streamsx::topology::Splpy::pyAttributeNames(
+               getInputPortAt(0));
+<% } %>
+}
+
+// Destructor
+MY_OPERATOR::~MY_OPERATOR() 
+{
+<% if ($pystyle eq 'dict') { %>
+    if (pyInNames_) {
+      SplpyGIL lock;
+      Py_DECREF(pyInNames_);
+    }
+<% } %>
+
+  delete funcop_;
+  {
+      SplpyGIL lock;
+      Py_DECREF(spl_in_object_out);
+  }
+}
+
+// Notify pending shutdown
+void MY_OPERATOR::prepareToShutdown() 
+{
+    funcop_->prepareToShutdown();
+}
+
+// Tuple processing for non-mutating ports
+void MY_OPERATOR::process(Tuple const & tuple, uint32_t port)
+{
+  IPort0Type const &ip = static_cast<IPort0Type const &>(tuple);
+
+<%
+print splpy_inputtuple2value($pystyle);
+%>
+
+<%if ($pystyle eq 'dict') {%>
+@include "../pyspltuple2dict.cgt"
+<%}%>
+
+  PyObject *python_value;
+
+// If the input style is pickle,
+
+  // None of the streamsx::topology methods in this scope grab the lock
+  // so we need to do it here.
+  
+  <%if ($pystyle eq 'pickle'){%>
+
+      unsigned char const *data = value.getData();
+      unsigned char fmt = *data;
+      if (fmt == STREAMSX_TPP_PTR) {
+          __SPLTuplePyPtr *stp = (__SPLTuplePyPtr *)(data);
+          python_value = stp->pyptr;
+      }
+      // Anything ASCII is also Pickle (Python 2 default format)
+      else if (fmt <= STREAMSX_TPP_PICKLE) {
+      	  // This is a pickled value. Need to depickle it.
+	  {
+	      SplpyGIL lock; 
+              python_value = pySplValueToPyObject(value);
+
+	      // Create a tuple to pass to the depickling wrapper function.	  
+	      PyObject * pyTuple;
+              pyTuple = PyTuple_New(2);
+              PyTuple_SET_ITEM(pyTuple, 0, python_value);
+              Py_INCREF(python_value);
+              PyTuple_SET_ITEM(pyTuple, 1, python_value);
+
+	      // Depickle the tuple.
+	      python_value = streamsx::topology::SplpyGeneral::pyCallObject(spl_in_object_out, pyTuple);
+	  } // End SplpyGIL lock
+      }
+  <%} else {%>
+      	{
+	    // If the tuple is not a pickled object, or a reference, convert it to a PyObject
+	    // using pySplProcessTuple
+	    SplpyGIL lock;
+            python_value = streamsx::topology::pySplProcessTuple(spl_in_object_out, value);
+	} // End SplpyGIL lock
+  <%}%>
+
+
+  window_.insert(python_value);
+}
+
+
+// ##############################
+// Window Event Handler Overrides
+// ##############################
+
+
+void MY_OPERATOR::afterTupleEvictionEvent(
+     Window<PyObject *> & window,  Window<PyObject *>::TupleType & tuple,  Window<PyObject *>::PartitionType const & partition) {
+     // Drop reference to tuple after it is removed from the window.
+     SplpyGIL lock;
+     Py_DECREF(tuple);
+}
+
+void MY_OPERATOR::onWindowTriggerEvent(Window<PyObject *> & window, Window<PyObject *>::PartitionType const & key){    
+    Window<PyObject *>::StorageType & storage = window.getWindowStorage();
+
+    Window<PyObject *>::DataType & content = storage[key];
+    PyObject *items;
+    {
+    SplpyGIL lock;
+    items = PyTuple_New(std::distance(content.begin(), content.end()));
+    unsigned int idx = 0;
+    for(WindowType::DataType::iterator it=content.begin(); it!=content.end(); ++it) {
+        PyObject *item = *it;
+	// The tuple steals a reference, increment such that the window can maintain a copy
+	// once the tuple is deleted.
+	Py_INCREF(item);
+	PyTuple_SET_ITEM(items, idx, item);
+	++idx;
+    }
+    }
+    PyObject *value = items;
+  OPort0Type otuple;
+
+<%if ($pyoutstyle eq 'dict') {%>
+  {
+  {
+  SplpyGIL lock;
+
+  PyObject * pyTuple;
+  pyTuple = PyTuple_New(1);
+  PyTuple_SET_ITEM(pyTuple, 0, value);
+  PyObject * ret = streamsx::topology::SplpyGeneral::pyCallObject(funcop_->callable(), pyTuple);
+  if (streamsx::topology::SplpyGeneral::isNone(ret)){
+     return;
+  }
+
+  fromPythonToPort0(ret, otuple);
+  Py_DECREF(ret);
+  }
+  }
+  
+<% } else { %>
+
+  if (SPLPY_TUPLE_MAP(funcop_->callable(), value,
+       otuple.get_<%=$model->getOutputPortAt(0)->getAttributeAt(0)->getName()%>(), occ_))
+
+<%}%>{
+     submit(otuple, 0);
+     }
+}
+
+// ##################################
+// End Window Event Handler Overrides
+// ##################################
+
+
+<%
+if ($pyoutstyle eq 'dict') {
+  # In this case we don't want the function that
+  # converts the Python tuple to an SPL tuple to
+  # copy attributes from the input port
+  my $iport;
+
+  my $oport = $model->getOutputPortAt(0);
+  my $otupleType = $oport->getSPLTupleType();
+  my @onames = SPL::CodeGen::Type::getAttributeNames($otupleType);
+  my @otypes = SPL::CodeGen::Type::getAttributeTypes($otupleType);
+
+%>
+// Create member function that converts Python tuple to SPL tuple
+@include  "../../opt/python/codegen/py_pyTupleTosplTuple.cgt"
+<%}%>
+
+
+namespace SPL{
+    Checkpoint & operator <<(Checkpoint &ostr, const PyObject  & obj){
+        return ostr;
+    }
+
+    Checkpoint & operator >>(Checkpoint &ostr, const PyObject  & obj){
+        return ostr;
+    }
+
+    ByteBuffer<Checkpoint> & operator<<(ByteBuffer<Checkpoint> & ckpt, PyObject * obj){
+        return ckpt;
+    }
+
+
+    ByteBuffer<Checkpoint> & operator>>(ByteBuffer<Checkpoint> & ckpt, PyObject * obj){
+        return ckpt;
+    }
+
+ }
+
+std::ostream & operator <<(std::ostream &ostr, const PyObject  & obj){
+    return ostr;
+}
+
+std::ostream & operator >>(std::ostream &ostr, const PyObject  & obj){
+    return ostr;
+}
+<%SPL::CodeGen::implementationEpilogue($model);%>

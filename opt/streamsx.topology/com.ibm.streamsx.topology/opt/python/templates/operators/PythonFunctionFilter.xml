@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+     # Licensed Materials - Property of IBM
+     # Copyright IBM Corp. 2015,2016
+-->
+<operatorModel xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.ibm.com/xmlns/prod/streams/spl/operator" xmlns:cmn="http://www.ibm.com/xmlns/prod/streams/spl/common" xsi:schemaLocation="http://www.ibm.com/xmlns/prod/streams/spl/operator operatorModel.xsd">
+  <cppOperatorModel>
+    <context>
+      <description>
+__SPLPY__DESCRIPTION__SPLPY__
+      </description>
+      <iconUri size="16">../../opt/.__splpy/icons/python-powered16.gif</iconUri>
+      <iconUri size="32">../../opt/.__splpy/icons/python-powered32.gif</iconUri>
+      <metrics>
+      </metrics>
+      <libraryDependencies>
+        <library>
+          <cmn:description>SPLPY header</cmn:description>
+          <cmn:managedLibrary>
+            <cmn:includePath>../../opt/.__splpy/include</cmn:includePath>
+          </cmn:managedLibrary>
+        </library>
+        <library>
+          <cmn:description>Python libraries.</cmn:description>
+          <cmn:managedLibrary>
+            <cmn:command>../../opt/.__splpy/common/pyversion__SPLPY__MAJOR_VERSION__SPLPY__.sh</cmn:command>
+          </cmn:managedLibrary>
+        </library>
+      </libraryDependencies>
+      <providesSingleThreadedContext>Always</providesSingleThreadedContext>
+      <allowCustomLogic>false</allowCustomLogic>
+    </context>
+    <parameters>
+      <allowAny>false</allowAny>
+      __SPLPY__PARAMETERS__SPLPY__
+    </parameters>
+    <inputPorts>
+      <inputPortSet>
+        <description>
+__SPLPY__INPORT_0_DESCRIPTION__SPLPY__
+        </description>
+        <tupleMutationAllowed>false</tupleMutationAllowed>
+        <windowingMode>NonWindowed</windowingMode>
+        <windowPunctuationInputMode>Oblivious</windowPunctuationInputMode>
+        <cardinality>1</cardinality>
+        <optional>false</optional>
+      </inputPortSet>
+    </inputPorts>
+    <outputPorts>
+      <outputPortSet>
+        <expressionMode>Nonexistent</expressionMode>
+        <autoAssignment>true</autoAssignment>
+        <completeAssignment>false</completeAssignment>
+        <rewriteAllowed>true</rewriteAllowed>
+        <windowPunctuationOutputMode>Preserving</windowPunctuationOutputMode>
+        <windowPunctuationInputPort>0</windowPunctuationInputPort>
+        <tupleMutationAllowed>false</tupleMutationAllowed>
+        <cardinality>1</cardinality>
+        <optional>false</optional>
+      </outputPortSet>
+      <outputPortSet>
+        <expressionMode>Nonexistent</expressionMode>
+        <autoAssignment>false</autoAssignment>
+        <completeAssignment>false</completeAssignment>
+        <rewriteAllowed>true</rewriteAllowed>
+        <windowPunctuationOutputMode>Preserving</windowPunctuationOutputMode>
+        <windowPunctuationInputPort>0</windowPunctuationInputPort>
+        <tupleMutationAllowed>false</tupleMutationAllowed>
+        <cardinality>1</cardinality>
+        <optional>true</optional>
+      </outputPortSet>
+    </outputPorts>
+  </cppOperatorModel>
+</operatorModel>

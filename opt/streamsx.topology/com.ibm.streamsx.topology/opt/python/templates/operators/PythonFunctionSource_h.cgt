@@ -1,0 +1,44 @@
+/*
+ * # Licensed Materials - Property of IBM
+ * # Copyright IBM Corp. 2015  
+ */
+
+#include "splpy_pyop.h"
+
+using namespace streamsx::topology;
+
+<%SPL::CodeGen::headerPrologue($model);%>
+
+<%
+  my $oport = $model->getOutputPortAt(0);
+%>
+
+class MY_OPERATOR : public MY_BASE_OPERATOR 
+{
+public:
+  // Constructor
+  MY_OPERATOR();
+
+  // Destructor
+  virtual ~MY_OPERATOR(); 
+
+   // Notify port readiness
+  void allPortsReady(); 
+
+  // Notify pending shutdown
+  void prepareToShutdown(); 
+
+  // Processing for source and threaded operators
+  void process(uint32_t idx);
+
+private:
+  // Members
+    SplpyPyOp *pyop_;
+    PyObject *pyOutNames_;
+
+    void fromPythonToPort0(PyObject * pyTuple, <%=$oport->getCppTupleType()%> & otuple);
+
+}; 
+
+<%SPL::CodeGen::headerEpilogue($model);%>
+

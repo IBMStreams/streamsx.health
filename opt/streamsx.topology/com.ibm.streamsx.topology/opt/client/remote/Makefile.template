@@ -1,0 +1,5 @@
+all:
+	@for toolkit in `/bin/cat manifest_tk.txt`; do \
+		${STREAMS_INSTALL}/bin/spl-make-toolkit -i $${toolkit}; \
+	done;
+	${STREAMS_INSTALL}/bin/sc -M `cat main_composite.txt` --rebuild-toolkits --no-toolkit-indexing -t ${STREAMS_INSTALL}/toolkits

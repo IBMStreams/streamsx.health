@@ -1,0 +1,91 @@
+/* Additional includes go here */
+
+#include "splpy.h"
+
+<%SPL::CodeGen::implementationPrologue($model);%>
+
+
+// Constructor
+MY_OPERATOR::MY_OPERATOR() : function_(NULL)
+{
+  std::string tkDir = ProcessingElement::pe().getToolkitDirectory();
+  std::string streamsxDir = tkDir + "/opt/python/packages/streamsx/topology";
+  std::string splpySetup = streamsxDir + "/splpy_setup.py";
+  const char* spl_setup_py = splpySetup.c_str();
+
+  streamsx::topology::Splpy::loadCPython(spl_setup_py);
+
+  streamsx::topology::PyGILLock lock;
+
+    PyObject *_module_;
+    PyObject *_function_;
+
+    std::string appDirSetup = "import streamsx.topology.runtime\n";
+    appDirSetup += "streamsx.topology.runtime.setupOperator(\"";
+    appDirSetup += <%=$model->getParameterByName("toolkitDir")->getValueAt(0)->getCppExpression()%>;
+    appDirSetup += "\")\n";
+
+    const char* spl_setup_appdir = appDirSetup.c_str();
+    if (PyRun_SimpleString(spl_setup_appdir) != 0) {
+         SPLAPPTRC(L_ERROR, "Python script splpy_setup.py failed!", "python");
+         throw streamsx::topology::pythonException("splpy_setup.py");
+    }
+
+<% my $pywrapfunc='iterableSource'; %>
+@include "../pywrapfunction.cgt"
+}
+
+// Destructor
+MY_OPERATOR::~MY_OPERATOR() 
+{
+    // Finalization code goes here
+    if (function_) {
+      streamsx::topology::PyGILLock lock;
+      Py_DECREF(function_);
+    }
+}
+
+// Notify port readiness
+void MY_OPERATOR::allPortsReady() 
+{
+  createThreads(1);
+}
+ 
+// Notify pending shutdown
+void MY_OPERATOR::prepareToShutdown() 
+{
+    streamsx::topology::PyGILLock lock;
+    streamsx::topology::flush_PyErrPyOut();
+}
+
+// Processing for source and threaded operators   
+void MY_OPERATOR::process(uint32_t idx)
+{
+  while(!getPE().getShutdownRequested()) {
+    
+    OPort0Type otuple;
+
+    { // start lock
+      streamsx::topology::PyGILLock lock;
+      PyObject * pyReturnVar = PyObject_CallObject(function_, NULL);
+      if(pyReturnVar == Py_None){
+        Py_DECREF(pyReturnVar);
+        break;
+      } else if(pyReturnVar == 0){
+        streamsx::topology::flush_PyErr_Print();
+        throw;
+      }
+
+      long int size = PyBytes_Size(pyReturnVar);
+      char * bytes = PyBytes_AsString(pyReturnVar);
+      otuple.get___spl_po().setData((const unsigned char *)bytes, size);
+      Py_DECREF(pyReturnVar);
+
+    } // end lock
+
+    submit(otuple, 0);
+  }
+
+}
+
+<%SPL::CodeGen::implementationEpilogue($model);%>

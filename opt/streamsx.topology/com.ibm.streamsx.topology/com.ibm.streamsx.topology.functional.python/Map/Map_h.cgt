@@ -1,0 +1,49 @@
+/* Additional includes go here */
+#include "splpy_funcop.h"
+
+using namespace streamsx::topology;
+
+<%SPL::CodeGen::headerPrologue($model);%>
+
+@include "../pyspltuple.cgt"
+<%
+ my $pyoutstyle = splpy_tuplestyle($model->getOutputPortAt(0));
+ my $oport = $model->getOutputPortAt(0);
+%>
+
+class MY_OPERATOR : public MY_BASE_OPERATOR 
+{
+public:
+  // Constructor
+  MY_OPERATOR();
+
+  // Destructor
+  virtual ~MY_OPERATOR(); 
+
+  // Notify termination
+  void prepareToShutdown(); 
+
+  // Tuple processing for non-mutating ports
+  void process(Tuple const & tuple, uint32_t port);
+
+private:
+<%
+if ($pyoutstyle eq 'dict') {
+%>
+    void fromPythonToPort0(PyObject * pyTuple, <%=$oport->getCppTupleType()%> & otuple);
+<%}%>
+
+    // Members
+    // Control for interaction with Python
+    SplpyFuncOp *funcop_;
+    
+    // Names of input attributes
+    PyObject *pyInNames_;
+
+    // Number of output connections when passing by ref
+    // -1 when cannot pass by ref
+    int32_t occ_;
+}; 
+
+<%SPL::CodeGen::headerEpilogue($model);%>
+

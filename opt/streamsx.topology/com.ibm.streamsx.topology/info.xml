@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<toolkitInfoModel xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.ibm.com/xmlns/prod/streams/spl/toolkitInfo" xsi:schemaLocation="http://www.ibm.com/xmlns/prod/streams/spl/toolkitInfo toolkitInfoModel.xsd">
+  <identity>
+    <name>com.ibm.streamsx.topology</name>
+    <description>
+Toolkit providing mechanisms to build IBM Streams
+applications in other programming languages, with Java, Scala and Python support.
+
+# Java
+*Java Application API* - A library that allows the definition
+and execution of streaming applications implemented in Java.
+Applications use Java code to process tuples and tuples are Java objects.
+
+See the documentation under `doc/javadoc/index.html` for details.
+# Scala
+*Scala Support* - The Java Application API supports applications written in Scala.
+
+See the documentation under `doc/scaladoc/index.html` for details.
+
+# SPL
+*Topic based* [com.ibm.streamsx.topology.topic::Publish|Publish] and
+[com.ibm.streamsx.topology.topic::Subscribe|Subscribe] operators
+provide the mechanism to exchange streams between applications
+regardles of the thier implementation language.
+[compilationunit:com.ibm.streamsx.topology::types.spl|SPL types] are
+provided that allow interchange with applications implemented
+in other languages.
+
+# Python
+
+*Python Application API* - A module that allows the definition
+and execution of streaming applications implemented in Python.
+Applications use Python code to process tuples and tuples are Python objects.
+
+*Python functions as SPL operators* - A Python function can be simply turned into an SPL operator to allow
+tuple processing using Python.
+
+See the documentation under [namespace:com.ibm.streamsx.topology.python|com.ibm.streamsx.topology.python] for details.
+
+    </description>
+    <version>1.8.0.__dev__</version>
+    <!-- Require Java 8 so minimium is 4.0.1.0 -->
+    <requiredProductVersion>4.0.1.0</requiredProductVersion>
+    </identity>
+  <dependencies/>
+  <resources>
+    <messageSet name="TopologySplpyResource">
+      <lang default="true">en_US/TopologySplpyResource.xlf</lang>
+      <lang>de_DE/TopologySplpyResource.xlf</lang>
+      <lang>es_ES/TopologySplpyResource.xlf</lang>
+      <lang>fr_FR/TopologySplpyResource.xlf</lang>
+      <lang>it_IT/TopologySplpyResource.xlf</lang>
+      <lang>ja_JP/TopologySplpyResource.xlf</lang>
+      <lang>ko_KR/TopologySplpyResource.xlf</lang>
+      <lang>pt_BR/TopologySplpyResource.xlf</lang>
+      <lang>ru_RU/TopologySplpyResource.xlf</lang>
+      <lang>zh_CN/TopologySplpyResource.xlf</lang>
+      <lang>zh_TW/TopologySplpyResource.xlf</lang>
+    </messageSet>
+  </resources>
+  <sabFiles>
+    <exclude path="opt/client/**"/>
+    <exclude path="opt/icons/**"/>
+    <exclude path="opt/python/codegen/**"/>
+    <exclude path="opt/python/include/**"/>
+    <exclude path="opt/python/templates/**"/>
+    <exclude path="opt/python/packages/**/__pycache__/**"/>
+  </sabFiles>
+</toolkitInfoModel>

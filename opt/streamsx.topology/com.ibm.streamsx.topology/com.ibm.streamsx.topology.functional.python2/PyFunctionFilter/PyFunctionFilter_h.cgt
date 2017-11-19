@@ -1,0 +1,33 @@
+/* Additional includes go here */
+#include <Python.h>
+
+<%SPL::CodeGen::headerPrologue($model);%>
+
+class MY_OPERATOR : public MY_BASE_OPERATOR 
+{
+public:
+  // Constructor
+  MY_OPERATOR();
+
+  // Destructor
+  virtual ~MY_OPERATOR(); 
+
+  // Notify termination
+  void prepareToShutdown(); 
+
+  // Tuple processing for non-mutating ports
+  void process(Tuple const & tuple, uint32_t port);
+
+private:
+    // Members
+    
+    // Python nested function that depickles the input value
+    // and calls the application function
+    PyObject *function_;
+
+    // Names of input attributes
+    PyObject *pyInNames_;
+}; 
+
+<%SPL::CodeGen::headerEpilogue($model);%>
+

@@ -1,0 +1,83 @@
+/* Additional includes go here */
+
+#include "splpy.h"
+
+<%SPL::CodeGen::implementationPrologue($model);%>
+
+@include "../pyspltuple.cgt"
+
+// Constructor
+MY_OPERATOR::MY_OPERATOR() :
+   function_(NULL),
+   pyInNames_(NULL)
+{
+  std::string tkDir = ProcessingElement::pe().getToolkitDirectory();
+  std::string streamsxDir = tkDir + "/opt/python/packages/streamsx/topology";
+  std::string splpySetup = streamsxDir + "/splpy_setup.py";
+  const char* spl_setup_py = splpySetup.c_str();
+
+  streamsx::topology::Splpy::loadCPython(spl_setup_py);
+  
+    streamsx::topology::PyGILLock lock;
+
+    PyObject *_module_;
+    PyObject *_function_;
+
+    std::string appDirSetup = "import streamsx.topology.runtime\n";
+    appDirSetup += "streamsx.topology.runtime.setupOperator(\"";
+    appDirSetup += <%=$model->getParameterByName("toolkitDir")->getValueAt(0)->getCppExpression()%>;
+    appDirSetup += "\")\n";
+
+    const char* spl_setup_appdir = appDirSetup.c_str();
+    if (PyRun_SimpleString(spl_setup_appdir) != 0) {
+         SPLAPPTRC(L_ERROR, "Python script splpy_setup.py failed!", "python");
+         throw streamsx::topology::pythonException("splpy_setup.py");
+    }
+
+<%
+ # Select the Python wrapper function
+ my $pywrapfunc= $pystyle . '_in';
+%>
+@include "../pywrapfunction.cgt"
+
+<% if ($pystyle eq 'dict') { %>
+     pyInNames_ = streamsx::topology::Splpy::pyAttributeNames(
+               getInputPortAt(0));
+<% } %>
+}
+
+// Destructor
+MY_OPERATOR::~MY_OPERATOR() 
+{
+    streamsx::topology::PyGILLock lock;
+    if (function_)
+      Py_DECREF(function_);
+    if (pyInNames_)
+      Py_DECREF(pyInNames_);
+}
+
+// Notify pending shutdown
+void MY_OPERATOR::prepareToShutdown() 
+{
+    streamsx::topology::PyGILLock lock;
+    streamsx::topology::flush_PyErrPyOut();
+}
+
+// Tuple processing for non-mutating ports
+void MY_OPERATOR::process(Tuple const & tuple, uint32_t port)
+{
+  IPort0Type const &ip = static_cast<IPort0Type const &>(tuple);
+
+<%
+print splpy_inputtuple2value($pystyle);
+%>
+
+<%if ($pystyle eq 'dict') {%>
+@include "../pyspltuple2dict.cgt"
+<%}%>
+  if (streamsx::topology::Splpy::pyTupleFilter(function_, value)) {
+      submit(tuple, 0);
+  }
+}
+
+<%SPL::CodeGen::implementationEpilogue($model);%>

@@ -1,0 +1,134 @@
+/*
+ * # Licensed Materials - Property of IBM
+ * # Copyright IBM Corp. 2015,2016
+ */
+
+#include "splpy.h"
+#include "splpy_pyop.h"
+
+using namespace streamsx::topology;
+
+<%SPL::CodeGen::implementationPrologue($model);%>
+
+<%
+ my $cmnDir = $model->getContext()->getToolkitDirectory()."/opt/.__splpy/common/";
+
+ require "splpy_operator.pm";
+ require $cmnDir."/splpy.pm";
+
+ my $module = splpy_Module();
+ my $functionName = splpy_FunctionName();
+ my $paramStyle = splpy_ParamStyle();
+ my $fixedParam = splpy_FixedParam();
+ my @packages = splpy_Packages();
+ spl_pip_packages($model, \@packages);
+ 
+ my $iport = $model->getInputPortAt(0);
+ my $itupleType = $iport->getSPLTupleType();
+ my @inames = SPL::CodeGen::Type::getAttributeNames($itupleType);
+ my @itypes = SPL::CodeGen::Type::getAttributeTypes($itupleType);
+
+ my $inputAttrs2Py = $iport->getNumberOfAttributes();
+ if ($fixedParam != -1) {
+    $inputAttrs2Py = $fixedParam;
+ }
+
+ if ($fixedParam > $iport->getNumberOfAttributes()) {
+   SPL::CodeGen::exitln('%s requires at least %i attributes in input port but schema is %s',
+           $model->getContext()->getKind(), $fixedParam, $iport->getSPLTupleType());
+ }
+ 
+  my $oport = $model->getOutputPortAt(0);
+  my $otupleType = $oport->getSPLTupleType();
+  my @onames = SPL::CodeGen::Type::getAttributeNames($otupleType);
+  my @otypes = SPL::CodeGen::Type::getAttributeTypes($otupleType);
+ 
+  my $ituple = $iport->getCppTupleName();
+  
+%>
+
+// Constructor
+MY_OPERATOR::MY_OPERATOR() :
+   pyop_(NULL),
+   pyInNames_(NULL),
+   pyOutNames_(NULL)
+{
+   PyObject * callable;
+@include  "../../opt/.__splpy/common/py_constructor.cgt"
+   
+   {
+      SplpyGIL lock;
+      pyOutNames_ = Splpy::pyAttributeNames(getOutputPortAt(0));
+
+     // Now create the wrapper function that converts
+     // other types returned by the user's function
+     // (e.g. dictionaries) to Python tuples as the
+     // decorated operators only handle tuples to
+     // simplify the generated code.
+     Py_INCREF(pyOutNames_); // callFunction steals the reference
+     callable = SplpyGeneral::callFunction(
+             "streamsx.spl.runtime", "_splpy_to_tuples",
+             callable, pyOutNames_);   
+
+<% if ($paramStyle eq 'dictionary') { %>
+      pyInNames_ = Splpy::pyAttributeNames(
+               getInputPortAt(0));
+<% } %>
+   }
+
+   pyop_->setCallable(callable);
+}
+
+// Destructor
+MY_OPERATOR::~MY_OPERATOR() 
+{
+   {
+   SplpyGIL lock;
+   if (pyInNames_)
+      Py_DECREF(pyInNames_);
+   if (pyOutNames_)
+      Py_DECREF(pyOutNames_);
+    }
+
+   delete pyop_;
+}
+
+// Notify pending shutdown
+void MY_OPERATOR::prepareToShutdown() 
+{
+    pyop_->prepareToShutdown();
+}
+
+<%
+  my $no_tuples_action = "";
+%>
+
+// Tuple processing for non-mutating ports
+void MY_OPERATOR::process(Tuple const & tuple, uint32_t port)
+{
+ @include  "../../opt/.__splpy/common/py_splTupleCheckForBlobs.cgt"
+
+   std::vector<OPort0Type> output_tuples;  
+   {
+    // Don't hold the lock across submission
+    SplpyGIL lock;
+
+ @include  "../../opt/.__splpy/common/py_splTupleToFunctionArgs.cgt"
+
+ @include  "../../opt/.__splpy/common/py_functionReturnToTuples.cgt"
+   
+    }
+ for(int i = 0; i < output_tuples.size();i++)
+   submit(output_tuples[i], 0);   
+}
+
+// Create member function that converts Python tuple to SPL tuple
+@include  "../../opt/.__splpy/common/py_pyTupleTosplTuple.cgt"
+
+// Punctuation processing
+void MY_OPERATOR::process(Punctuation const & punct, uint32_t port)
+{
+    forwardWindowPunctuation(punct);
+}
+
+<%SPL::CodeGen::implementationEpilogue($model);%>

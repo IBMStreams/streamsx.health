@@ -1,0 +1,143 @@
+/* Additional includes go here */
+
+#include "splpy.h"
+#include "splpy_tuple.h"
+#include "splpy_funcop.h"
+
+using namespace streamsx::topology;
+
+<%SPL::CodeGen::implementationPrologue($model);%>
+
+@include "../pyspltuple.cgt"
+<%
+ # Select the Python wrapper function
+ my $pywrapfunc= $pystyle . '_in__pickle_iter';
+%>
+
+// Default case is pass by pickled value in which case
+// flat map code is nothing.
+#define SPLPY_OUT_TUPLE_FLAT_MAP_BY_REF(splv, pyv, occ)
+    
+
+// Constructor
+MY_OPERATOR::MY_OPERATOR() :
+   funcop_(NULL),
+   pyInNames_(NULL),
+   occ_(-1)
+{ 
+    const char * wrapfn = "<%=$pywrapfunc%>";
+
+<%
+# If occ parameter is positive then pass-by-ref is possible
+# Generate code to allow pass by ref but only use when
+# not connected to a PE output port.
+
+ my $oc = $model->getParameterByName("outputConnections");
+
+ if ($oc) {
+    my $occ = $oc->getValueAt(0)->getSPLExpression();
+    if ($occ > 0) {
+        my $pybyrefwrapfunc = $pystyle . '_in__object_iter';
+%>
+
+// Macro inserts an if passing by ref check then pass tuple
+// by ref, else use the existing code.
+#undef SPLPY_OUT_TUPLE_FLAT_MAP_BY_REF
+#define SPLPY_OUT_TUPLE_FLAT_MAP_BY_REF(splv, pyv, occ) \
+    if (occ_ > 0) { \
+        pyTupleByRef(splv, pyv, occ_); \
+    } else
+
+    if (!this->getOutputPortAt(0).isConnectedToAPEOutputPort()) {
+       // pass by reference
+       wrapfn = "<%=$pybyrefwrapfunc%>";
+       occ_ = <%=$occ%>;
+    }
+<%
+    } 
+ }
+%>
+
+    funcop_ = new SplpyFuncOp(this, wrapfn);
+
+<% if ($pystyle eq 'dict') { %>
+     SplpyGIL lock;
+ 
+     pyInNames_ = streamsx::topology::Splpy::pyAttributeNames(
+               getInputPortAt(0));
+<% } %>
+}
+
+// Destructor
+MY_OPERATOR::~MY_OPERATOR() 
+{
+<% if ($pystyle eq 'dict') { %>
+    if (pyInNames_) {
+      SplpyGIL lock;
+      Py_DECREF(pyInNames_);
+    }
+<% } %>
+
+  delete funcop_;
+}
+
+// Notify pending shutdown
+void MY_OPERATOR::prepareToShutdown() 
+{
+    funcop_->prepareToShutdown();
+}
+
+// Tuple processing for non-mutating ports
+void MY_OPERATOR::process(Tuple const & tuple, uint32_t port)
+{
+  IPort0Type const &ip = static_cast<IPort0Type const &>(tuple);
+
+<%
+print splpy_inputtuple2value($pystyle);
+%>
+  
+  std::vector<OPort0Type> output_tuples; 
+  
+  {
+<%if ($pystyle eq 'dict') {%>
+@include "../pyspltuple2dict.cgt"
+<%}%>
+
+    SplpyGIL lock;
+
+    PyObject * pyIterator = streamsx::topology::pySplProcessTuple(funcop_->callable(), value);
+
+    if (pyIterator == 0) {
+         throw SplpyGeneral::pythonException(
+               getParameterValues("pyName").at(0)->getValue().toString());
+    }
+    if (SplpyGeneral::isNone(pyIterator)) {
+        Py_DECREF(pyIterator);
+        return;
+    }
+        
+    PyObject * item;
+    while (!getPE().getShutdownRequested()
+          &&  ((item = PyIter_Next(pyIterator)) != NULL) ) {
+
+      // construct spl blob and tuple from pickled return value
+      OPort0Type otuple;
+
+      SPLPY_OUT_TUPLE_FLAT_MAP_BY_REF(otuple.get___spl_po(), item, occ_)
+      {
+          pySplValueFromPyObject(otuple.get___spl_po(), item);
+          Py_DECREF(item); 
+      }
+      output_tuples.push_back(otuple);
+    }
+    Py_DECREF(pyIterator);
+  } // end lock
+  
+  // submit tuples
+  for(int i = 0; i < output_tuples.size() && !getPE().getShutdownRequested(); i++) {
+    submit(output_tuples[i], 0);
+  } 
+  
+}
+
+<%SPL::CodeGen::implementationEpilogue($model);%>

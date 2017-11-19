@@ -1,0 +1,12 @@
+/**
+* @exclude
+*/
+
+namespace com.ibm.streamsx.topology.python;
+
+/**
+* @exclude
+* Avoid SPLDOC error when no SPL artifacts
+* exist in the namespace.
+*/
+type __sply_dummy = int32;

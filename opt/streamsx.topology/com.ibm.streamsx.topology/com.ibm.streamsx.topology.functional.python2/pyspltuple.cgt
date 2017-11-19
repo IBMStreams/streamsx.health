@@ -1,0 +1,24 @@
+<%
+ # Generic setup of a variety of variables to
+ # handle conversion of spl tuples to/from Python
+
+ my $tkdir = $model->getContext()->getToolkitDirectory();
+ my $pydir = $tkdir."/opt/python";
+
+ require $pydir."/codegen/splpy.pm";
+
+ # setup the variables used when processing spltuples
+ my $pyport = $model->getInputPortAt(0);
+ my $pytupleType = $pyport->getSPLTupleType();
+ my @pyanames = SPL::CodeGen::Type::getAttributeNames($pytupleType);
+ my @pyatypes = SPL::CodeGen::Type::getAttributeTypes($pytupleType);
+
+ my $pynumattrs = $pyport->getNumberOfAttributes();
+ 
+ my $pytuple = $pyport->getCppTupleName();
+
+ # determine which input tuple style is being used
+
+ my $pystyle = splpy_tuplestyle($model->getInputPortAt(0));
+%>
+

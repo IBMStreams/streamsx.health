@@ -1,0 +1,37 @@
+<%
+ # setup the function that will be called to process
+ # each tuple. the Perl variable $pywrapfunc must
+ # be set to the name of the setup Python function
+ # that will be called to wrap the user's function.
+
+ my $pyModule =  $model->getParameterByName("pyModule")->getValueAt(0)->getCppExpression() . '.c_str()';
+ my $pyCallableName = $model->getParameterByName("pyName")->getValueAt(0)->getCppExpression() . '.c_str()';
+ my $pyCallable = $model->getParameterByName("pyCallable");
+ $pyCallable = $pyCallable->getValueAt(0)->getCppExpression() . '.c_str()' if $pyCallable;
+%>
+
+    // pointer to the application function or callable class
+    PyObject * appCallable = 
+      streamsx::topology::Splpy::loadFunction(<%=$pyModule%>, <%=$pyCallableName%>);
+
+    // The object to be called is either appCallable for
+    // a function passed into the operator
+    // or a pickled encoded class instance
+    // represented as a string in parameter pyCallable
+    
+    <% if ($pyCallable) { %>
+      // argument is the serialized callable instance
+      Py_DECREF(appCallable);
+      appCallable = Py_BuildValue("s", <%=$pyCallable%>);
+    <%}%>
+
+     PyObject * depickleInput = streamsx::topology::Splpy::loadFunction("streamsx.topology.runtime", "<%=$pywrapfunc%>");
+    PyObject * funcArg = PyTuple_New(1);
+    PyTuple_SetItem(funcArg, 0, appCallable);
+    function_ = PyObject_CallObject(depickleInput, funcArg);
+    Py_DECREF(depickleInput);
+    Py_DECREF(funcArg);
+    if(function_ == 0){
+      streamsx::topology::flush_PyErr_Print();
+      throw;
+    }

@@ -1,0 +1,78 @@
+/*
+# Licensed Materials - Property of IBM
+# Copyright IBM Corp. 2015,2016
+ */
+
+/**
+* @exclude
+*/
+
+namespace com.ibm.streamsx.topology.topic ;
+
+/**
+ * Publish a stream to a topic. Allows other IBM Streams
+ * applications to subscribe to the input stream, including
+ * those written in different languages.
+ * See [namespace:com.ibm.streamsx.topology.topic] for details.
+ * @input In Stream to be published as a topic.
+ * @param topic Topic to publish stream to.
+ * @exclude
+*/
+public composite PublishJava(input In )
+{
+	param
+		expression<rstring> $topic ;
+		expression<rstring> $class ;
+	graph
+		() as PublishTopic = _Publish(In)
+		{
+                   param
+                     exportType: "topic.java";
+                     topic: $topic;
+                     allowFilter: false;
+                     class: $class;
+		}
+}
+
+/**
+ * Subscribe to a topic.
+ * Generates a stream that is subscribed, through
+ * IBM Streams dynamic connections, to all streams
+ * published to the same `topic` and `streamType`.
+ * See [namespace:com.ibm.streamsx.topology.topic] for details.
+ *
+ * @output Topic Subscription to `topic`.
+ * @param topic Topic to subscribe to.
+ * @param streamType Type of output stream `Topic`.
+ * @exclude
+*/
+public composite SubscribeJava(output Topic )
+{
+	param		
+		expression<rstring> $topic ;
+		expression<rstring> $class ;
+		type $streamType ;
+	graph
+         stream<$streamType> TopicImport = Import()
+         {
+           param
+              // Initially match nothing, the initialization
+              // of the no-op Filter sets the expression.
+              subscription : __spl_exportType == "none";
+         }
+
+         // Use a Filter to dynamically set the subscription
+         // expression based upon the UDP state of this invocation.
+         stream<TopicImport> Topic = Filter(TopicImport) {
+             logic state:
+               int32 rc = setSubscribeSubscription(getTopicJavaSubscription($topic, $class));
+         }
+}
+
+/*
+ * @exclude
+*/
+stateful rstring getTopicJavaSubscription(rstring topic, rstring class) {
+     return getTopicSubscription("topic.java", topic) 
+        + " && ( __spl_class == " + makeRStringLiteral(class) + " )";
+}
