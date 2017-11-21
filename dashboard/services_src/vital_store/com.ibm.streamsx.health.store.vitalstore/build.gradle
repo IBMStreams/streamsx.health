@@ -50,4 +50,5 @@ task cleanUp() {
 }
 
 compileJava.dependsOn copyToLib
+build.finalizedBy buildServices
 clean.finalizedBy(cleanUp)

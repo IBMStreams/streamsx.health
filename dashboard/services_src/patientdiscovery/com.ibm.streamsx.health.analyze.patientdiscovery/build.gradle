@@ -11,7 +11,6 @@ repositories {
 
 dependencies {
 	compile fileTree(dir: System.getenv("STREAMS_INSTALL") + '/lib', include: ['*.jar'])
-	//compile files(System.getenv("STREAMS_INSTALL") + '/toolkits/com.ibm.streamsx.topology/lib/com.ibm.streamsx.topology.jar')
     compile fileTree(dir: "$rootDir/opt/streamsx.topology/com.ibm.streamsx.topology/lib", include : ['*.jar'])
     compile files(System.getenv("STREAMS_INSTALL") + '/toolkits/com.ibm.streamsx.datetime/impl/lib/com.ibm.streamsx.datetime.jar')
     compile project(':ingest:common:com.ibm.streamsx.health.ingest')
@@ -25,6 +24,11 @@ test {
     afterTest { desc, result -> 
         println "Executing test ${desc.name} [${desc.className}] with result: ${result.resultType}"
     }
+}
+
+task buildIngestToolkit(type: GradleBuild) {
+    buildFile = '../../../../ingest/common/com.ibm.streamsx.health.ingest/build.gradle'
+    tasks = ['build']
 }
 
 task copyToLib(type: Copy) {
@@ -48,6 +52,6 @@ task cleanUp() {
     }
 }
 
-build.finalizedBy(buildServices)
+build.finalizedBy(buildIngestToolkit, buildServices)
 compileJava.dependsOn copyToLib
 clean.finalizedBy(cleanUp)

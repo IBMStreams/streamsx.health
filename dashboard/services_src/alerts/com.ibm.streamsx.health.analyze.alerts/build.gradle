@@ -66,7 +66,12 @@ task copyDeps() {
     }
 }
 
-task buildServices(dependsOn: ':ingest:common:com.ibm.streamsx.health.ingest:buildToolkit') {
+task buildPCPToolkit(type: GradleBuild) {
+    buildFile = '../../patientcontrolplane/com.ibm.streamsx.health.control.patientcontrolplane/build.gradle'
+    tasks = ['build']
+}
+
+task buildServices(dependsOn: ['build', ':ingest:common:com.ibm.streamsx.health.ingest:buildToolkit', ':dashboard:services_src:patientcontrolplane:com.ibm.streamsx.health.control.patientcontrolplane:buildToolkit']) {
     doLast {
         def serviceToolkitPath = "${project(':ingest:common:com.ibm.streamsx.health.ingest').projectDir}" + ':' + topologyToolkitPath + ':' + jsonToolkitPath + ':' + "${project(':dashboard:services_src:patientcontrolplane:com.ibm.streamsx.health.control.patientcontrolplane').projectDir}"
         compileApp('com.ibm.streamsx.health.analytics.alerts.services', 'PatientAlertsService', serviceToolkitPath) 
@@ -80,5 +85,6 @@ task deleteDeps(type: Delete) {
     delete 'com.ibm.streamsx.health.ingest.types.resolver'
 }
 
-build.finalizedBy buildToolkit, buildServices, copyDeps
+build.dependsOn buildToolkit
+build.finalizedBy buildServices, copyDeps
 clean.dependsOn deleteDeps, cleanToolkit

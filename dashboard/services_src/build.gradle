@@ -1,0 +1,5 @@
+task buildPCPToolkit(type: GradleBuild) {
+    buildFile = '../services_src/patientcontrolplane/com.ibm.streamsx.health.control.patientcontrolplane/build.gradle'
+    tasks = ['build']
+}
+

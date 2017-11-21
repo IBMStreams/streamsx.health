@@ -5,7 +5,7 @@ dependencies {
 }
 
 def build(project, sabDir, targetDir) {
-    project.tasks.buildServices.execute()
+    //project.tasks.buildServices.execute()
     def sabPath = project.getProjectDir().getAbsolutePath() + '/' + sabDir
     println(sabPath)
     delete targetDir
@@ -14,6 +14,11 @@ def build(project, sabDir, targetDir) {
         from fileTree(dir : sabPath, include : ['*.sab'])
         into(targetDir)
     }
+}
+
+task buildPCPToolkit(type: GradleBuild) {
+    buildFile = '../services_src/patientcontrolplane/com.ibm.streamsx.health.control.patientcontrolplane/build.gradle'
+    tasks = ['build']
 }
 
 task buildServices() {
