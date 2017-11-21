@@ -1,0 +1,33 @@
+
+ext.splMakeToolkit = { 
+    exec() {
+        commandLine System.getenv("STREAMS_INSTALL") + '/bin/spl-make-toolkit', '-i', '.' 
+    }   
+}
+
+ext.splCleanToolkit = { 
+    exec() {
+        commandLine System.getenv("STREAMS_INSTALL") + '/bin/spl-make-toolkit', '-i', '.', '-c'
+    }   
+}
+
+ext.compileApp = { namespace, mainComp, toolkitPath ->  
+    exec() {
+        commandLine System.getenv("STREAMS_INSTALL") + '/bin/sc', '-M', namespace + '::' + mainComp, '--output-directory=output/' + namespace + '.' + mainComp, '-a', '-t', toolkitPath
+    }   
+}
+
+ext.cleanApp = { namespace, mainComp ->
+    exec() {
+        commandLine System.getenv("STREAMS_INSTALL") + '/bin/sc', '-C', '-M', namespace + "::" + mainComp
+    }
+    exec() {
+        commandLine 'rm', '-rf', 'output/' + namespace + '.' + mainComp
+    }
+}
+
+ext.spldoc = { toolkit, title ->
+    exec() {
+        commandLine System.getenv("STREAMS_INSTALL") + '/bin/spl-make-doc', '--warn-no-comments', '-i', toolkit, '--output-dir', 'docs/spldoc', '--doc-title', title
+    }
+}

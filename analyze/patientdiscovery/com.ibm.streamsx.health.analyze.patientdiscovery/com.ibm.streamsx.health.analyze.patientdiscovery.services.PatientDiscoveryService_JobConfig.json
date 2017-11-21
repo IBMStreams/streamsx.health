@@ -1,1 +1,0 @@
-{"jobConfigOverlays":[{"deploymentConfig":{"parallelRegionConfig":{"fusionType":"channelIsolation"}}}],"comment":"Job Config Overlays for com.ibm.streamsx.health.analyze.patientdiscovery.services::PatientDiscoveryService - generated Sun Nov 19 17:20:59 EST 2017"}

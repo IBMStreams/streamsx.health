@@ -1,0 +1,17 @@
+namespace com.ibm.streamsx.health.control.patientcontrolplane.sample ;
+
+use com.ibm.streamsx.health.control.patientcontrolplane::* ;
+
+composite PCPSample
+{
+	graph
+		() as PatientControlPlane_1 = PatientControlPlane()
+		{
+			param
+				serviceName : "PCPSample" ;
+				serviceType : "app" ;
+				outputTopics: "APP_RESULT1,APP_RESULT2";
+		}
+
+}
+

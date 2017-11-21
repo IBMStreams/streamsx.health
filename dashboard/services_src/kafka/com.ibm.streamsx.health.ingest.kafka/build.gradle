@@ -1,0 +1,95 @@
+plugins {
+    id "de.undercouch.download" version "3.2.0"
+}
+
+apply plugin: 'java'
+apply plugin: 'de.undercouch.download'
+apply from: "$rootDir/common.gradle"
+
+import de.undercouch.gradle.tasks.download.Download
+
+def STREAMS_INSTALL = System.getenv("STREAMS_INSTALL")
+def jsonToolkitPath = STREAMS_INSTALL + '/toolkits/com.ibm.streamsx.json'
+def topologyToolkitPath = "$rootDir/opt/streamsx.topology/com.ibm.streamsx.topology"
+def healthIngestToolkitPath = "$rootDir/ingest/common/com.ibm.streamsx.health.ingest"
+
+sourceSets {
+    main {
+        java {
+            srcDir 'impl/java/src'
+        }
+    }
+}
+
+repositories { 
+    mavenCentral() 
+}
+
+dependencies {
+    compile fileTree(dir: System.getenv("STREAMS_INSTALL") + '/lib', include: ['*.jar'])
+    compile fileTree(dir: 'opt/downloaded', include: ['*.jar'])
+    compile project(':ingest:common:com.ibm.streamsx.health.ingest')
+}
+
+def downloadKafkaToolkit() {
+    def KAFKA_TAG = '1.1.1'
+
+    delete buildDir.getAbsolutePath() + '/toolkits/'
+    mkdir buildDir.getAbsolutePath() + '/toolkits'
+    download {
+        src 'https://github.com/IBMStreams/streamsx.kafka/releases/download/v' + KAFKA_TAG + '/com.ibm.streamsx.kafka-' + KAFKA_TAG + '.tgz'
+        dest buildDir.getAbsolutePath() + '/toolkits/'
+    }
+
+    copy {
+        def tarPath = buildDir.getAbsolutePath() + '/toolkits/com.ibm.streamsx.kafka-' + KAFKA_TAG + '.tgz'
+        from tarTree(resources.gzip(tarPath))
+        into buildDir.getAbsolutePath() + '/toolkits'
+    }
+}
+
+task getKafkaToolkit() {
+    doLast {
+        downloadKafkaToolkit()
+    }
+}
+
+task buildToolkit {
+    doLast {
+	tasks.copyJarToImpl.execute()
+        splMakeToolkit()
+    }
+}
+
+task buildIngestToolkit(type: GradleBuild) {
+    buildFile = '../../../../ingest/common/com.ibm.streamsx.health.ingest/build.gradle'
+    tasks = ['build']
+}
+
+task buildServices(dependsOn: ['buildIngestToolkit', 'buildToolkit', 'getKafkaToolkit']) {
+    doLast {
+        def serviceToolkitPath = jsonToolkitPath + ':' + topologyToolkitPath + ':' + healthIngestToolkitPath + ':build/toolkits/com.ibm.streamsx.kafka'
+        compileApp('com.ibm.streamsx.health.ingest.kafka.service', 'PublishJsonToKafka', serviceToolkitPath)
+        compileApp('com.ibm.streamsx.health.ingest.kafka.service', 'SubscribeJsonFromKafka', serviceToolkitPath)
+    }
+}
+
+task cleanToolkit {
+    doLast {
+        splCleanToolkit()
+        delete 'output'
+    }   
+}
+
+task copyJarToImpl(type: Copy) {
+    from fileTree(dir : 'build/libs', include : ['*.jar'])
+    into 'impl/lib'
+}
+
+task deleteDeps(type: Delete) {
+    delete fileTree(dir: 'impl/lib', include: ['*.jar'])
+    delete 'impl/java/bin'
+}
+
+build.dependsOn buildToolkit, buildServices
+clean.dependsOn deleteDeps, cleanToolkit

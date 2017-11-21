@@ -1,0 +1,27 @@
+namespace com.ibm.streamsx.health.control.patientcontrolplane ;
+
+public composite PatientControlPlane
+{
+	param
+	    expression<rstring> $connection : ""; 
+		expression<rstring> $serviceName ;
+		expression<rstring> $serviceType ; 
+		expression<rstring> $outputTopics : "" ;
+		expression<rstring> $appConfigName : getSubmissionTimeValue("patientcontrolplane.app.config.name", "patient_control_plane");
+	graph
+		() as BridgeOperator = BridgeOp()
+		{
+			param
+			    connection : $connection ; 
+				serviceName : $serviceName ;
+				serviceType : $serviceType ; 
+				outputTopics : $outputTopics ;
+				appConfigName : $appConfigName ;
+		}
+
+		() as JobControlPlane_2 = JobControlPlane()
+		{
+		}
+
+}
+

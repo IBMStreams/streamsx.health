@@ -1,0 +1,54 @@
+apply plugin: 'java'
+apply from: "$rootDir/common.gradle"
+
+def STREAMS_INSTALL = System.getenv("STREAMS_INSTALL")
+def topologyToolkitPath = "$rootDir/opt/streamsx.topology/com.ibm.streamsx.topology"
+def jsonToolkitPath = STREAMS_INSTALL + '/toolkits/com.ibm.streamsx.json'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile fileTree(dir: System.getenv("STREAMS_INSTALL") + '/lib', include: ['*.jar'])
+    compile fileTree(dir: topologyToolkitPath, include : ['*.jar'])
+    compile project(':ingest:common:com.ibm.streamsx.health.ingest')
+    testCompile 'junit:junit:4.12'
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs = ['impl/java/src']
+        }
+    }
+}
+
+libsDirName = '../lib'
+
+task buildToolkit {
+    doLast {
+        splMakeToolkit()
+    }
+}
+
+task buildServices(dependsOn: ':ingest:common:com.ibm.streamsx.health.ingest:buildToolkit') {
+    doLast {
+        def serviceToolkitPath = "${project(':ingest:common:com.ibm.streamsx.health.ingest').projectDir}" + ':' + topologyToolkitPath + ':' + jsonToolkitPath 
+        compileApp('com.ibm.streamsx.health.aggregator', 'AggregatorService', serviceToolkitPath) 
+    }
+}
+
+task cleanToolkit {
+    doLast {
+        splCleanToolkit()
+    }   
+}
+
+task deleteDeps(type: Delete) {
+    delete 'lib'
+    delete 'output'
+}
+
+build.dependsOn buildToolkit, buildServices
+clean.dependsOn deleteDeps, cleanToolkit

@@ -1,18 +1,28 @@
 apply plugin: 'java'
 
 dependencies {
-    compile project(':analyze:patientdiscovery:com.ibm.streamsx.health.analyze.patientdiscovery')
+    compile project(':dashboard:services_src:patientdiscovery:com.ibm.streamsx.health.analyze.patientdiscovery')
 }
 
-task sab() {
-    doLast {
-        project(':analyze:patientdiscovery:com.ibm.streamsx.health.analyze.patientdiscovery').tasks.sab.execute()
-        mkdir 'services/PatientDiscoveryService'
-        copy {
-            from fileTree(dir : '../../analyze/patientdiscovery/com.ibm.streamsx.health.analyze.patientdiscovery', include: ['*.sab'])
-            into('services/PatientDiscoveryService')
-        }
+def build(project, sabDir, targetDir) {
+    project.tasks.buildServices.execute()
+    def sabPath = project.getProjectDir().getAbsolutePath() + '/' + sabDir
+    println(sabPath)
+    delete targetDir
+    mkdir targetDir
+    copy {
+        from fileTree(dir : sabPath, include : ['*.sab'])
+        into(targetDir)
+    }
+}
 
+task buildServices() {
+    doLast {
+        build(project(':dashboard:services_src:patientdiscovery:com.ibm.streamsx.health.analyze.patientdiscovery'), '', 'services/PatientDiscoveryService')
+        build(project(':dashboard:services_src:aggregator:com.ibm.streamsx.health.aggregator'), 'output/com.ibm.streamsx.health.aggregator.AggregatorService', 'services/AggregatorService')
+        build(project(':dashboard:services_src:alerts:com.ibm.streamsx.health.analyze.alerts'), 'output/com.ibm.streamsx.health.analytics.alerts.services.PatientAlertsService', 'services/PatientAlertsService')
+        build(project(':dashboard:services_src:kafka:com.ibm.streamsx.health.ingest.kafka'), 'output/com.ibm.streamsx.health.ingest.kafka.service.SubscribeJsonFromKafka', 'services/KafkaIngestService')
+        build(project(':dashboard:services_src:vital_store:com.ibm.streamsx.health.store.vitalstore'), '', 'services/VitalStoreService')
     }
 }
 
@@ -27,4 +37,5 @@ task cleanServices() {
     }
 }
 
+build.finalizedBy buildServices
 clean.dependsOn cleanServices

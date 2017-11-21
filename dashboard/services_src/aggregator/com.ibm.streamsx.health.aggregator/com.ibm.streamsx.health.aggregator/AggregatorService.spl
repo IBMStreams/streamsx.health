@@ -1,0 +1,24 @@
+namespace com.ibm.streamsx.health.aggregator ;
+
+use com.ibm.streamsx.health.ingest.connector::IngestSubscribe ;
+use com.ibm.streamsx.health.ingest.connector::IngestPublish ;
+use com.ibm.streamsx.health.ingest.types::* ;
+
+composite AggregatorService
+{
+    graph
+        (stream<Observation> IngestSubscribe_1_out0) as IngestSubscribe_1 =
+            IngestSubscribe()
+        {
+            param
+                topic : getSubmissionTimeValue("inputTopic") ;
+        }
+
+        () as IngestPublish_2 = IngestPublish(IngestSubscribe_1_out0)
+        {
+            param
+                topic : getSubmissionTimeValue("outputTopic") ;
+        }
+
+}
+
