@@ -5,8 +5,11 @@
 4. Checkout feature/dashboard
 5. `cd dashboard`
 6. Edit 'server/properties.json' and enter Streams and Redis data (Kafka section is not being used)
+6a.  `cd opt/streamsx.topology/com.ibm.streamsx.topology`
+6b.  `spl-make-toolkit -i .`
 7. `cd services_src`
 8. `gradle buildPCPToolkit build`
+8a.  If this fails, go into individual directory and buidl separately
 9. `cd ../ui`
 10. Run `npm install`
 11. `cd ../server`
