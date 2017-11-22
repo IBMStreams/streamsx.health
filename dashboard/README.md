@@ -1,3 +1,4 @@
+0. Navigate to 'streamsx.health/opt/streamsx.topology/com.ibm.streamsx.topology' and run `spl-make-toolkit -i .`
 1. Make sure Streams QSE is running
 2. Install and launch Redis on Streams QSE
 3. Clone repository
