@@ -34,24 +34,24 @@ This service expects the `Observation` schema as the input data.  The valueStr a
     {
       "obx" : Observation,
       "annotation" : {
-			conceptid: string,
-			ccsCode: string,
-			end: string,
-		    modifiers: string
-		    sofa: string,
-		    begin: string,
-			section: string,
-			xmi_0x3a_id: string, 
-			dateInMilliseconds: string,
-			modality: string, 
-			normalized: string,
-			icd9Code: string,
-			date: string,
-			hccCode: string,
-			dateSource: string,
-		    icd10Code: string,
-		    ruleId: string,
-			origin: string   
+	conceptid: string,
+	ccsCode: string,
+	end: string,
+	modifiers: string
+	sofa: string,
+	begin: string,
+	section: string,
+	xmi_0x3a_id: string, 
+	dateInMilliseconds: string,
+	modality: string, 
+	normalized: string,
+	icd9Code: string,
+	date: string,
+	hccCode: string,
+	dateSource: string,
+	icd10Code: string,
+	ruleId: string,
+	origin: string   
       }
     }
     ```
