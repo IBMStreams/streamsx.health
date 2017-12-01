@@ -7,65 +7,69 @@ use com.ibm.streamsx.health.ingest.connector::IngestSubscribe ;
 use com.ibm.streamsx.health.ingest.types::Observation ;
 use com.ibm.streamsx.topology.topic::Publish ;
 use com.ibm.streamsx.json::TupleToJSON ;
-type AnnoSpan = tuple<rstring text, int32 begin, int32 end, rstring modality,
-	rstring icd10Code> ;
+use
+	com.ibm.streamsx.health.analyze.nlp.connectors::PublishObervationsWithSymptoms ;
+use com.ibm.streamsx.health.analyze.nlp.connectors::TOPIC_SYMPTOMS ;
+type ObservationWithDiseaseAnnotation = Observation obx,
+	list<SymptomDiseaseParser.SymptomDisease> annotation ;
 
-composite AnnotateDiseaseService
+public composite AnnotateDiseaseService
 {
+	param
+		expression<rstring> $topic : getSubmissionTimeValue("topic",
+			"com/ibm/streamsx/health/simulate/clinicalnotes/observations/v1") ;
+		expression<rstring> $pearFile : getSubmissionTimeValue("pearFile", "symptomDisease.pear");	
+			
+			
 	graph
-		(stream<rstring result, list<AnnoSpan> annotations> UimaText_2_out0) as
-			UimaText_2 = UimaText(Functor_8_out0)
+		(stream<Observation obx, rstring casXml> UimaText_2_out0) as UimaText_2 =
+			UimaText(Functor_7_out0 as inPort0Alias)
 		{
 			param
-				pearFile : "symptomDisease.pear" ;
-				casOut : "result" ;
-				outputAttributes : "annotations" ;
-				inputDoc : "valueString" ;
+				pearFile : $pearFile;
+				casOut : "casXml" ;
+				inputDoc : "document" ;
 		}
 
-		() as Custom_3 = Custom(UimaText_2_out0)
+		(stream<Observation obx, SymptomDiseaseParser.SymptomDisease annotation>
+			SymptomDiseaseParser_6_out0) as SymptomDiseaseParser_6 =
+			SymptomDiseaseParser(UimaText_2_out0 as inPort0Alias)
 		{
-			logic
-				onTuple UimaText_2_out0 :
-				{
-					println(UimaText_2_out0.result) ;
-				}
-
-		}
-
-		(stream<rstring result> Functor_5_out0) as Functor_5 =
-			Functor(UimaText_2_out0)
-		{
-		}
-
-		(stream<SymptomDiseaseParser.SymptomDisease> SymptomDiseaseParser_6_out0) as
-			SymptomDiseaseParser_6 = SymptomDiseaseParser(Functor_5_out0)
-		{
+			param
+				casXml : casXml ;
 		}
 
 		(stream<Observation> IngestSubscribe_7_out0) as IngestSubscribe_7 =
 			IngestSubscribe()
 		{
 			param
-				topic : "com/ibm/streamsx/health/simulate/clinicalnotes/observations/v1" ;
+				topic : $topic ;
 		}
 
-		(stream<rstring patientId, rstring valueString> Functor_8_out0) as
-			Functor_8 = Functor(IngestSubscribe_7_out0)
+		(stream<Observation obx, rstring document> Functor_7_out0) as Functor_7 =
+			Functor(IngestSubscribe_7_out0)
 		{
 			output
-				Functor_8_out0 : patientId = patientId, valueString = reading.valueString ;
+				Functor_7_out0 : obx = IngestSubscribe_7_out0, document =
+					IngestSubscribe_7_out0.reading.valueString ;
 		}
 
-		() as Publish_8 = Publish(TupleToJSON_9_out0)
+		() as PublishObervationsWithSymptoms_9 =
+			PublishObervationsWithSymptoms(Aggregate_6_out0 as inPort0Alias)
 		{
 			param
-				topic : "com/ibm/streamsx/health/analyze/nlp/services/annotateDiseaseService/diseases/v1" ;
+				topic : TOPIC_SYMPTOMS() ;
 		}
 
-		(stream<rstring jsonString> TupleToJSON_9_out0) as TupleToJSON_9 =
-			TupleToJSON(SymptomDiseaseParser_6_out0)
+		(stream<ObservationWithDiseaseAnnotation> Aggregate_6_out0) as Aggregate_6 =
+			Aggregate(SymptomDiseaseParser_6_out0 as inPort0Alias)
 		{
+			window
+				inPort0Alias : tumbling, punct(), partitioned ;
+			param
+				partitionBy : obx.patientId ;
+			output
+				Aggregate_6_out0 : annotation = Collect(annotation) ;
 		}
 
 }

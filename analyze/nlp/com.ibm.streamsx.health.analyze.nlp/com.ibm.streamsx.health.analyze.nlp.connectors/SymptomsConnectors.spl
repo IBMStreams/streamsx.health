@@ -1,0 +1,57 @@
+namespace com.ibm.streamsx.health.analyze.nlp.connectors ;
+
+use com.ibm.streamsx.json::TupleToJSON ;
+use com.ibm.streamsx.topology.topic::Publish ;
+use com.ibm.streamsx.topology.topic::Subscribe ;
+use com.ibm.streamsx.json::JSONToTuple ;
+
+use	com.ibm.streamsx.health.analyze.nlp.services::ObservationWithDiseaseAnnotation ;
+
+
+public rstring TOPIC_SYMPTOMS()
+{
+	return
+		"com/ibm/streamsx/health/analyze/nlp/services/annotateDiseaseService/diseasesAnnotations/v1" ;
+}
+
+public composite PublishObervationsWithSymptoms(input In0 )
+{
+	param
+		expression<rstring> $topic ;
+	graph
+		(stream<rstring jsonString> TupleToJSON_9_out0) as TupleToJSON_9 =
+			TupleToJSON(In0 as Join_6_out0)
+		{
+		}
+
+		() as Publish_8 = Publish(TupleToJSON_9_out0)
+		{
+			param
+				topic : $topic ;
+		}
+
+}
+
+public composite SubscribeObservationsWithSymptoms(output Out0 )
+{
+	param
+		expression<rstring> $topic ;
+	graph
+		(stream<rstring jsonString> Subscribe_3_out0) as Subscribe_3 = Subscribe()
+		{
+			param
+				topic : $topic ;
+				streamType : tuple<rstring jsonString> ;
+		}
+
+		(stream<com.ibm.streamsx.health.analyze.nlp.services::ObservationWithDiseaseAnnotation> Out0) as JSONToTuple_4 =
+			JSONToTuple(Subscribe_3_out0)
+		{
+		}
+
+}
+
+
+
+
+

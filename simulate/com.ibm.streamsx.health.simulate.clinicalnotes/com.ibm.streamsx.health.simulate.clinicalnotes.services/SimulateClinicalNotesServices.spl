@@ -1,0 +1,74 @@
+namespace com.ibm.streamsx.health.simulate.clinicalnotes.services ;
+
+use com.ibm.streamsx.health.ingest.connector::IngestPublish ;
+use com.ibm.streamsx.health.ingest.types::Observation ;
+
+public composite SimulateClinicalNotesService
+{
+	param
+		expression<rstring> $notesDirectory : getSubmissionTimeValue("notesDirectory", "./");
+
+	graph
+		(stream<rstring filename> DirectoryScan_1_out0) as DirectoryScan_1 =
+			DirectoryScan()
+		{
+			param
+				directory : $notesDirectory ;
+				initDelay: 10.0;
+				ignoreDotFiles : true;
+		}
+
+		() as IngestPublish_2 = IngestPublish(Functor_4_out0 as inPort0Alias)
+		{
+			param
+				topic : "com/ibm/streamsx/health/simulate/clinicalnotes/observations/v1" ;
+		}
+
+		(stream<blob content> FileSource_3_out0) as FileSource_3 =
+			FileSource(DirectoryScan_1_out0)
+		{
+			param
+				format : block ;
+				blockSize : 1024u ;
+		}
+
+		(stream<Observation> Functor_4_out0) as Functor_4 = Functor(Aggregate_5_out0
+			as inPort0Alias)
+		{
+			logic
+				state :
+					mutable rstring contentStr = "";
+				onTuple Aggregate_5_out0: {
+					contentStr = "";
+					for (blob c in content)
+					{
+						contentStr += convertFromBlob(c);
+					} 
+				}
+			output
+				Functor_4_out0 : device =
+				{
+					id = "com.ibm.streamsx.health.simulate.clinicalnotes.SendNotes", locationId = "generated"
+				}, patientId = "patient0", readingSource =
+				{
+					id = "generated", sourceType = "generated", deviceId = "com.ibm.streamsx.health.simulate.clinicalnotes.SendNotes"
+				}, reading =
+				{
+					ts = com.ibm.streamsx.datetime::currentTimeMillis(), readingType =
+					{
+						system = "generated", code = "generated"
+					}, value = 0.0, uom = "", valueString = contentStr
+				} ;
+		}
+
+		(stream<list<blob> content> Aggregate_5_out0) as Aggregate_5 =
+			Aggregate(FileSource_3_out0 as inputStream)
+		{
+			window
+				inputStream : tumbling, punct() ;
+			output
+				Aggregate_5_out0: content = Collect(content);
+		}
+
+}
+

@@ -5,9 +5,12 @@
 namespace com.ibm.streamsx.health.analyze.nlp.casparser ;
 
 use spl.XML::* ;
+use com.ibm.streamsx.health.ingest.types::Observation ;
 
 public composite SymptomDiseaseParser(input input0 ; output output0)
 {
+	param
+		attribute $casXml ;
 	type
 		static SymptomDisease = tuple<rstring conceptid, rstring ccsCode,
 			rstring end, rstring modifiers, rstring sofa, rstring begin,
@@ -16,23 +19,38 @@ public composite SymptomDiseaseParser(input input0 ; output output0)
 			rstring hccCode, rstring dateSource, rstring icd10Code, rstring ruleId,
 			rstring origin> ;
 	graph
-		stream<SymptomDisease> output0 = XMLParse(input0)
+		stream<tuple<Observation obx>, SymptomDisease> output0_out0 =
+			XMLParse(input0)
 		{
 			param
 				trigger : "/xmi:XMI/en2:SymptomDiseaseInd" ;
-				parsing : permissive ; // log and ignore errors
-
+				parsing : permissive ;
+				xmlInput : $casXml ;
 			output
-				output0 : conceptid = XPath("@conceptid"), ccsCode = XPath("@ccsCode"),
-					end = XPath("@end"), modifiers = XPath("@modifiers"), sofa =
-					XPath("@sofa"), begin = XPath("@begin"), section = XPath("@section"),
-					xmi_0x3a_id = XPath("@xmi:id"), dateInMilliseconds =
+				output0_out0 : obx = AsIs(obx), conceptid = XPath("@conceptid"), ccsCode =
+					XPath("@ccsCode"), end = XPath("@end"), modifiers = XPath("@modifiers"),
+					sofa = XPath("@sofa"), begin = XPath("@begin"), section =
+					XPath("@section"), xmi_0x3a_id = XPath("@xmi:id"), dateInMilliseconds =
 					XPath("@dateInMilliseconds"), modality = XPath("@modality"), normalized =
 					XPath("@normalized"), icd9Code = XPath("@icd9Code"), date =
 					XPath("@date"), hccCode = XPath("@hccCode"), dateSource =
 					XPath("@dateSource"), icd10Code = XPath("@icd10Code"), ruleId =
-					XPath("@ruleId"), origin = XPath("@origin") ; // *trigger: /xmi:XMI/en2:SymptomDiseaseInd
+					XPath("@ruleId"), origin = XPath("@origin") ;
+		}
 
+		(stream<Observation obx, SymptomDisease annotation> output0) as Functor_2 =
+			Functor(output0_out0 as i1)
+		{		
+			output output0:
+				annotation = {conceptid = i1.conceptid, ccsCode =
+					i1.ccsCode, end = i1.end, modifiers = i1.modifiers,
+					sofa = i1.sofa, begin = i1.begin, section =
+					i1.section, xmi_0x3a_id = i1.xmi_0x3a_id, dateInMilliseconds =
+					i1.dateInMilliseconds, modality = i1.modality, normalized =
+					i1.normalized, icd9Code = i1.icd9Code, date =
+					i1.date, hccCode = i1.hccCode, dateSource =
+					i1.dateSource, icd10Code = i1.icd10Code, ruleId =
+					i1.ruleId, origin = i1.origin};
 		}
 
 }
