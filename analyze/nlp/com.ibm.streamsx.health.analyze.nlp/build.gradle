@@ -99,10 +99,15 @@ clean.doLast{
 	tasks.rmRelease.execute()
 }
 
-task execute(type: JavaExec) {
+task executeSymptomService(type: JavaExec) {
     main='com.ibm.streamsx.health.analyze.nlp.services.AnnotateDiseaseService'
     classpath = configurations.runtime + files("$buildDir/libs/com.ibm.streamsx.health.analyze.nlp.jar")
 }
+
+task execute<< {
+	tasks.executeSymptomService.execute()
+}
+
 
 compileJava.dependsOn getNlpToolkit
 
