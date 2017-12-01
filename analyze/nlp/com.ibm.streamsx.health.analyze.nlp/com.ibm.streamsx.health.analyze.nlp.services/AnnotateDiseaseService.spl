@@ -1,0 +1,76 @@
+namespace com.ibm.streamsx.health.analyze.nlp.services ;
+
+use com.ibm.streamsx.nlp::UimaText ;
+use com.ibm.streamsx.health.analyze.nlp.casparser::SymptomDiseaseParser ;
+use com.ibm.streamsx.topology.topic::Subscribe ;
+use com.ibm.streamsx.health.ingest.connector::IngestSubscribe ;
+use com.ibm.streamsx.health.ingest.types::Observation ;
+use com.ibm.streamsx.topology.topic::Publish ;
+use com.ibm.streamsx.json::TupleToJSON ;
+use
+	com.ibm.streamsx.health.analyze.nlp.connectors::PublishObervationsWithSymptoms ;
+use com.ibm.streamsx.health.analyze.nlp.connectors::TOPIC_SYMPTOMS ;
+type ObservationWithDiseaseAnnotation = Observation obx,
+	list<SymptomDiseaseParser.SymptomDisease> annotation ;
+
+public composite AnnotateDiseaseService
+{
+	param
+		expression<rstring> $topic : getSubmissionTimeValue("topic",
+			"com/ibm/streamsx/health/simulate/clinicalnotes/observations/v1") ;
+		expression<rstring> $pearFile : getSubmissionTimeValue("pearFile", "symptomDisease.pear");	
+			
+			
+	graph
+		(stream<Observation obx, rstring casXml> UimaText_2_out0) as UimaText_2 =
+			UimaText(Functor_7_out0 as inPort0Alias)
+		{
+			param
+				pearFile : $pearFile;
+				casOut : "casXml" ;
+				inputDoc : "document" ;
+		}
+
+		(stream<Observation obx, SymptomDiseaseParser.SymptomDisease annotation>
+			SymptomDiseaseParser_6_out0) as SymptomDiseaseParser_6 =
+			SymptomDiseaseParser(UimaText_2_out0 as inPort0Alias)
+		{
+			param
+				casXml : casXml ;
+		}
+
+		(stream<Observation> IngestSubscribe_7_out0) as IngestSubscribe_7 =
+			IngestSubscribe()
+		{
+			param
+				topic : $topic ;
+		}
+
+		(stream<Observation obx, rstring document> Functor_7_out0) as Functor_7 =
+			Functor(IngestSubscribe_7_out0)
+		{
+			output
+				Functor_7_out0 : obx = IngestSubscribe_7_out0, document =
+					IngestSubscribe_7_out0.reading.valueString ;
+		}
+
+		() as PublishObervationsWithSymptoms_9 =
+			PublishObervationsWithSymptoms(Aggregate_6_out0 as inPort0Alias)
+		{
+			param
+				topic : TOPIC_SYMPTOMS() ;
+		}
+
+		(stream<ObservationWithDiseaseAnnotation> Aggregate_6_out0) as Aggregate_6 =
+			Aggregate(SymptomDiseaseParser_6_out0 as inPort0Alias)
+		{
+			window
+				inPort0Alias : tumbling, punct(), partitioned ;
+			param
+				partitionBy : obx.patientId ;
+			output
+				Aggregate_6_out0 : annotation = Collect(annotation) ;
+		}
+
+}
+

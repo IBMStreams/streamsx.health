@@ -1,0 +1,43 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply from: "$rootProject.projectDir/common.gradle"
+
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src']
+        }
+        resources {
+            srcDirs = ['etc']
+        }
+    }
+}
+
+ext {
+	STREAMS_INSTALL = System.getenv('STREAMS_INSTALL')
+}
+
+
+repositories {
+    mavenCentral()
+    
+   flatDir {
+       dirs STREAMS_INSTALL+'/lib',STREAMS_INSTALL+'/ext/lib',STREAMS_INSTALL+'/toolkits/com.ibm.streamsx.topology/lib'
+   }
+}
+
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+dependencies {
+	// compile any project that this service may need
+	compile project(':ingest:common:com.ibm.streamsx.health.ingest')
+	
+	// Streams dependencies
+	compile name: 'com.ibm.streams.operator'
+	compile name: 'com.ibm.streams.operator.samples'
+	compile name: 'com.ibm.streamsx.topology'
+	compile name: 'JSON4J'
+	compile name: 'commons-math-2.2'	
+}
