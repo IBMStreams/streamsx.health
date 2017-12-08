@@ -35,7 +35,7 @@ task copyToLib(type: Copy) {
 task buildServices(type: JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
 
-    main = 'com.ibm.streamsx.health.store.vitalstore.service.LocationStoreService'
+    main = 'com.ibm.streamsx.health.store.locationstore.service.LocationStoreService'
 
     // arguments to pass to the application
 }
@@ -44,8 +44,8 @@ task buildServices(type: JavaExec) {
 task cleanUp() {
     doLast {
         delete 'bin'
-        delete 'com.ibm.streamsx.health.store.vitalstore.service.LocationStoreService.sab'
-        delete 'com.ibm.streamsx.health.store.vitalstore.service.VitalStoreService_JobConfig.json'
+        delete 'com.ibm.streamsx.health.store.locationstore.service.LocationStoreService.sab'
+        delete 'com.ibm.streamsx.health.store.locationstore.service.LocationStoreService.json'
     }
 }
 

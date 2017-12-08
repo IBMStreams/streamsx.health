@@ -1,0 +1,1 @@
+{"jobConfigOverlays":[{"deploymentConfig":{"parallelRegionConfig":{"fusionType":"channelIsolation"}}}],"comment":"Job Config Overlays for com.ibm.streamsx.health.store.locationstore.service::LocationStoreService - generated Fri Dec 08 14:13:53 EST 2017"}
