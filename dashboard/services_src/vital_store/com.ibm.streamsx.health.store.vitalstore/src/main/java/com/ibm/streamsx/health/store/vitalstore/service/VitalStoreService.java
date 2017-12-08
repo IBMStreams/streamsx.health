@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.google.gson.JsonObject;
 import com.ibm.streamsx.health.ingest.types.connector.JsonToModelConverter;
 import com.ibm.streamsx.health.ingest.types.model.Observation;
 import com.ibm.streamsx.topology.TStream;
@@ -42,6 +43,7 @@ public class VitalStoreService {
 		topo.addClassDependency(Scheduler.class);
 		topo.addClassDependency(AddressResolverGroup.class);
 		topo.addClassDependency(MessageToByteEncoder.class);
+		topo.addClassDependency(JsonObject.class);
 		
 		topicSupplier = topo.createSubmissionParameter("topic", String.class);
 		appConfigNameSupplier = topo.createSubmissionParameter("app.config.name", String.class);

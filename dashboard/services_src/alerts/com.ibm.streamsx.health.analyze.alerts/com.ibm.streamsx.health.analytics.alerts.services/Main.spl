@@ -12,37 +12,65 @@ type Alert = Observation, tuple<rstring alert> ;
 
 composite PatientAlertsService
 {
-    graph
-        (stream<Alert> VitalAlert_2_out0) as VitalAlert_2 =
-            VitalAlert(IngestSubscribe_4_out0 as Beacon_1_out0)
-        {
-            logic
-                onTuple Beacon_1_out0 :
-                {
-                    println(Beacon_1_out0) ;
-                }
-//            param
-//                vmArg : "-agentlib:jdwp=transport=dt_socket,suspend=n,server=y,address=localhost:7777" ;
+	graph
+		(stream<Alert> VitalAlert_2_out0) as VitalAlert_2 =
+			VitalAlert(IngestSubscribe_4_out0 as Beacon_1_out0)
+		{
+			logic
+				onTuple Beacon_1_out0 :
+				{
+					println(Beacon_1_out0) ;
+				}
+				//            param
+				//                vmArg : "-agentlib:jdwp=transport=dt_socket,suspend=n,server=y,address=localhost:7777" ;
 
-        }
+		}
 
-        () as PatientControlPlane_4 = PatientControlPlane()
-        {
-            param
-                serviceName : "PatientAlertsService" ;
-                serviceType : "app" ;
-        }
+		() as VitalAlertSink_4 = VitalAlertSink(VitalAlert_2_out0)
+		{
+		}
 
-        () as VitalAlertSink_4 = VitalAlertSink(VitalAlert_2_out0)
-        {
-        }
-
-        (stream<Observation> IngestSubscribe_4_out0) as IngestSubscribe_4 =
-            IngestSubscribe()
-        {
-            param
-                topic : getSubmissionTimeValue("topic") ;
-        }
+		(stream<Observation> IngestSubscribe_4_out0) as IngestSubscribe_4 =
+			IngestSubscribe()
+		{
+			param
+				topic : getSubmissionTimeValue("topic") ;
+		}
 
 }
+
+composite PatientAlertsServiceWithPCP
+{
+	graph
+		(stream<Alert> VitalAlert_2_out0) as VitalAlert_2 =
+			VitalAlert(IngestSubscribe_4_out0 as Beacon_1_out0)
+		{
+			logic
+				onTuple Beacon_1_out0 :
+				{
+					println(Beacon_1_out0) ;
+				}
+
+		}
+
+		() as PatientControlPlane_4 = PatientControlPlane()
+		{
+			param
+				serviceName : "PatientAlertsService" ;
+				serviceType : "app" ;
+		}
+
+		() as VitalAlertSink_4 = VitalAlertSink(VitalAlert_2_out0)
+		{
+		}
+
+		(stream<Observation> IngestSubscribe_4_out0) as IngestSubscribe_4 =
+			IngestSubscribe()
+		{
+			param
+				topic : getSubmissionTimeValue("topic") ;
+		}
+
+}
+
 

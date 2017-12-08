@@ -1,11 +1,11 @@
 package com.ibm.streamsx.health.analyze.patientdiscovery.services;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.google.gson.JsonObject;
 import com.ibm.streamsx.health.ingest.types.connector.JsonToModelConverter;
 import com.ibm.streamsx.health.ingest.types.model.Observation;
 import com.ibm.streamsx.topology.TStream;
@@ -15,7 +15,6 @@ import com.ibm.streamsx.topology.context.StreamsContext.Type;
 import com.ibm.streamsx.topology.context.StreamsContextFactory;
 import com.ibm.streamsx.topology.function.Supplier;
 import com.ibm.streamsx.topology.json.JSONSchemas;
-import com.ibm.streamsx.topology.spl.SPL;
 import com.ibm.streamsx.topology.spl.SPLStreams;
 import com.lambdaworks.redis.RedisClient;
 
@@ -43,6 +42,7 @@ public class PatientDiscoveryService {
 		topo.addClassDependency(Scheduler.class);
 		topo.addClassDependency(AddressResolverGroup.class);
 		topo.addClassDependency(MessageToByteEncoder.class);
+		topo.addClassDependency(JsonObject.class);
 		
 		topicSupplier = topo.createSubmissionParameter("topic", String.class);
 		appConfigNameSupplier = topo.createSubmissionParameter("app.config.name", String.class);

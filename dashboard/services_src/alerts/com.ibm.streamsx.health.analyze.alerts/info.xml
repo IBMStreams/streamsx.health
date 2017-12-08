@@ -16,5 +16,7 @@
       <common:version>[1.1.0,2.0.0)</common:version>
     </info:toolkit>
   </info:dependencies>
-  <info:sabFiles/>
+  <info:sabFiles>
+    <info:include path="opt/**"/>
+  </info:sabFiles>
 </info:toolkitInfoModel>

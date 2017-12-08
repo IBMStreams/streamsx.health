@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src/main/java"/>
-	<classpathentry kind="src" path="src/main/resources"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8/"/>
 	<classpathentry kind="src" path="/com.ibm.streamsx.health.ingest"/>
-	<classpathentry kind="src" path="/com.ibm.streamsx.health.control.patientcontrolplane"/>
 	<classpathentry kind="lib" path="/home/streamsadmin/.gradle/caches/modules-2/files-2.1/biz.paluch.redis/lettuce/4.3.3.Final/aba4ca4340416ec0cd6454044a535f2ffab6c0b3/lettuce-4.3.3.Final.jar" sourcepath="/home/streamsadmin/.gradle/caches/modules-2/files-2.1/biz.paluch.redis/lettuce/4.3.3.Final/e64465d18c575982d862fa9aea7e857d0e716eac/lettuce-4.3.3.Final-sources.jar"/>
 	<classpathentry kind="lib" path="/home/streamsadmin/.gradle/caches/modules-2/files-2.1/commons-cli/commons-cli/1.3.1/1303efbc4b181e5a58bf2e967dc156a3132b97c0/commons-cli-1.3.1.jar" sourcepath="/home/streamsadmin/.gradle/caches/modules-2/files-2.1/commons-cli/commons-cli/1.3.1/12ec02d8cb9fbb33bd05506109a4fc8bcc3578/commons-cli-1.3.1-sources.jar"/>
 	<classpathentry kind="lib" path="/home/streamsadmin/.gradle/caches/modules-2/files-2.1/com.google.guava/guava/21.0/3a3d111be1be1b745edfa7d91678a12d7ed38709/guava-21.0.jar" sourcepath="/home/streamsadmin/.gradle/caches/modules-2/files-2.1/com.google.guava/guava/21.0/b9ed26b8c23fe7cd3e6b463b34e54e5c6d9536d5/guava-21.0-sources.jar"/>
@@ -18,29 +16,7 @@
 	<classpathentry kind="lib" path="/home/streamsadmin/.gradle/caches/modules-2/files-2.1/io.netty/netty-buffer/4.1.13.Final/e3f583ea8a2618a7563b1ee2aa696c23edcc3d8/netty-buffer-4.1.13.Final.jar" sourcepath="/home/streamsadmin/.gradle/caches/modules-2/files-2.1/io.netty/netty-buffer/4.1.13.Final/a1de22ab2631cde0108186167e0e25f4e16654e8/netty-buffer-4.1.13.Final-sources.jar"/>
 	<classpathentry kind="lib" path="/home/streamsadmin/.gradle/caches/modules-2/files-2.1/io.netty/netty-resolver/4.1.13.Final/d33ce420bd22c8a53246296ceb6e1ff08d31f8e1/netty-resolver-4.1.13.Final.jar" sourcepath="/home/streamsadmin/.gradle/caches/modules-2/files-2.1/io.netty/netty-resolver/4.1.13.Final/213ee3726e285002f3dcd66f4380ea591a38f0db/netty-resolver-4.1.13.Final-sources.jar"/>
 	<classpathentry kind="lib" path="/home/streamsadmin/.gradle/caches/modules-2/files-2.1/io.netty/netty-codec/4.1.13.Final/370eeb6e9d92495a2a3be096ab6102755af76730/netty-codec-4.1.13.Final.jar" sourcepath="/home/streamsadmin/.gradle/caches/modules-2/files-2.1/io.netty/netty-codec/4.1.13.Final/b274cc10660e973842df85cd3fd9366e10bb7d6/netty-codec-4.1.13.Final-sources.jar"/>
-	<classpathentry kind="lib" path="/opt/ibm/InfoSphere_Streams/4.2.1.2/lib/streams.sws.tools.jar"/>
-	<classpathentry kind="lib" path="/opt/ibm/InfoSphere_Streams/4.2.1.2/lib/streams.sws.dsmutils.jar"/>
-	<classpathentry kind="lib" path="/opt/ibm/InfoSphere_Streams/4.2.1.2/lib/com.ibm.streams.install.dependency.jar"/>
-	<classpathentry kind="lib" path="/opt/ibm/InfoSphere_Streams/4.2.1.2/lib/streams.sws.base.jar"/>
-	<classpathentry kind="lib" path="/opt/ibm/InfoSphere_Streams/4.2.1.2/lib/com.ibm.streams.resourcemgr.utils.jar"/>
-	<classpathentry kind="lib" path="/opt/ibm/InfoSphere_Streams/4.2.1.2/lib/com.ibm.streams.devicemgr.utils.jar"/>
-	<classpathentry kind="lib" path="/opt/ibm/InfoSphere_Streams/4.2.1.2/lib/streams.sws.util.jar"/>
-	<classpathentry kind="lib" path="/opt/ibm/InfoSphere_Streams/4.2.1.2/lib/com.ibm.streams.security.authc.jar"/>
-	<classpathentry kind="lib" path="/opt/ibm/InfoSphere_Streams/4.2.1.2/lib/streams.sws.internal.jar"/>
-	<classpathentry kind="lib" path="/opt/ibm/InfoSphere_Streams/4.2.1.2/lib/com.ibm.streams.devicemgr.jar"/>
-	<classpathentry kind="lib" path="/opt/ibm/InfoSphere_Streams/4.2.1.2/lib/streams.sws.bi.jar"/>
-	<classpathentry kind="lib" path="/opt/ibm/InfoSphere_Streams/4.2.1.2/lib/com.ibm.streams.operator.jar"/>
-	<classpathentry kind="lib" path="/opt/ibm/InfoSphere_Streams/4.2.1.2/lib/streams.sws.client.jar"/>
-	<classpathentry kind="lib" path="/opt/ibm/InfoSphere_Streams/4.2.1.2/lib/com.ibm.streams.management.mx.jar"/>
-	<classpathentry kind="lib" path="/opt/ibm/InfoSphere_Streams/4.2.1.2/lib/streams.domainmgr.server.jar"/>
-	<classpathentry kind="lib" path="/opt/ibm/InfoSphere_Streams/4.2.1.2/lib/com.ibm.streams.management.jmxmp.jar"/>
-	<classpathentry kind="lib" path="/opt/ibm/InfoSphere_Streams/4.2.1.2/lib/com.ibm.streams.resourcemgr.symphony.jar"/>
-	<classpathentry kind="lib" path="/opt/ibm/InfoSphere_Streams/4.2.1.2/lib/com.ibm.streams.operator.samples.jar"/>
-	<classpathentry kind="lib" path="/opt/ibm/InfoSphere_Streams/4.2.1.2/lib/streams.sws.annotation.jar"/>
-	<classpathentry kind="lib" path="/opt/ibm/InfoSphere_Streams/4.2.1.2/lib/streams.domainmgr.base.jar"/>
-	<classpathentry kind="lib" path="/opt/ibm/InfoSphere_Streams/4.2.1.2/lib/com.ibm.streams.resourcemgr.jar"/>
-	<classpathentry kind="lib" path="/opt/ibm/InfoSphere_Streams/4.2.1.2/lib/com.ibm.streams.resourcemgr.yarn.jar"/>
-	<classpathentry kind="lib" path="/home/streamsadmin/git/streamsx.health.app/opt/streamsx.topology/com.ibm.streamsx.topology/lib/com.ibm.streamsx.topology.jar"/>
-	<classpathentry kind="lib" path="/opt/ibm/InfoSphere_Streams/4.2.1.2/toolkits/com.ibm.streamsx.datetime/impl/lib/com.ibm.streamsx.datetime.jar"/>
+	<classpathentry kind="con" path="com.ibm.streams.java/com.ibm.streams.operator"/>
+	<classpathentry kind="lib" path="/home/streamsadmin/hostdir/james/streamsx.health/opt/streamsx.topology/com.ibm.streamsx.topology/lib/com.ibm.streamsx.topology.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
