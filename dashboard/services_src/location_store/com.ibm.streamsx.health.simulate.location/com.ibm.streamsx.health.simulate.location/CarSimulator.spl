@@ -1,0 +1,52 @@
+namespace com.ibm.streamsx.health.simulate.location ;
+
+use com.ibm.streamsx.mapviewer.gen::* ;
+use com.ibm.streamsx.topology.topic::Publish ;
+use com.ibm.streamsx.json::TupleToJSON ;
+use com.ibm.streamsx.json::Json ;
+use com.ibm.streamsx.datetime::* ;
+
+composite CarSimulator
+{
+	type
+		VehiclePosition = rstring id, // vehicle ID
+		int64 ts, // observation time
+		float64 latitude, // in degrees
+		float64 longitude, // in degrees
+		float64 speed, // speed in km/h
+		float64 heading ; // direction of travel, degrees east from north
+
+	graph
+		(stream<VehiclePosition> cars) = Custom()
+		{
+			logic
+				onProcess :
+				{
+					while(! isShutdown())
+					{
+					// Randomly generate entities in Hong Kong
+						float64 latitude = randomLatitude(22.248429, 22.282425) ;
+						float64 longitude = randomLongitude(114.137821, 114.236355) ;
+						rstring id = "patient-" + randomId(0, 10) ;
+						VehiclePosition location = { id = id, ts = (int64)currentTimeMillis(), latitude
+							= latitude, longitude = longitude, speed = 0.0, heading = 0.0 } ;
+						submit(location, cars);
+						block(0.1);
+					
+					}
+
+				}
+
+		}
+
+		() as Publish_2 = Publish(TupleToJSON_3_out0 as inPort0Alias)
+		{
+			param
+				topic : "streamsx/health/simulate/location/v1" ;
+		}
+
+		(stream<Json> TupleToJSON_3_out0) as TupleToJSON_3 = TupleToJSON(cars)
+		{
+		}
+
+}

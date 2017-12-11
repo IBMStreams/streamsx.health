@@ -1,0 +1,79 @@
+/* Copyright (C) 2015, International Business Machines Corporation  */
+/* All Rights Reserved                                	            */
+
+namespace com.ibm.streamsx.health.simulate.location;
+
+/** Generate a random latitude value. 
+ * @param min must be greater than or equal to -90.0
+ * @param max must be less than or equal to 90.0
+ */
+public stateful float64 randomLatitude(float64 min, float64 max)
+{
+	float64 minLatitude = min ;
+	float64 range = max-min ;
+	float64 randomNum = random() ;
+	return minLatitude +(randomNum * range) ;
+}
+
+/** Generate a random longitude value. 
+ * @param min must be greater than or equal to -180.0
+ * @param max must be less than or equal to 180.0
+ */
+public stateful float64 randomLongitude(float64 min, float64 max)
+{
+	float64 minLongitude = min ;
+	float64 range = max-min ;
+	float64 randomNum = random() ;
+	return minLongitude +(randomNum * range) ;
+}
+
+/** Generate a random entity id 
+ * @param minId minimum value of the id to generatel
+ * @param numEntities possible number of entities
+ */
+public stateful rstring randomId(int32 minId, int32 numEntities)
+{
+	float64 randomNum = random() ;
+	int32 range = numEntities ;
+	
+	rstring id = (rstring)((int32)((float64)minId + (randomNum * (float64)range))) ;
+	return id;
+}
+
+/** Generate a random polygon, in the shape of a rectangle
+ * 
+ */
+public stateful rstring randomPolygon()
+{
+	float64 pt1Lat = randomLatitude(-90.0, 90.0) ;
+	float64 pt1Long = randomLongitude(-180.0, 180.0) ;
+	
+	float64 widthRange = pt1Lat + 90f ;
+	float64 widthRandomNum = random() ;
+	float64 width = widthRange * widthRandomNum ;
+	
+	float64 heightRange = 180.0 - pt1Long ;
+	float64 heightRandomNum = random() ;
+	float64 height = heightRange * heightRandomNum ;
+	
+	float64 pt2Lat = pt1Lat - width ;
+	float64 pt2Long = pt1Long ;
+	
+	float64 pt3Lat = pt1Lat - width ;
+	float64 pt3Long = pt1Long + height ;
+	
+	float64 pt4Lat = pt1Lat ;
+	float64 pt4Long = pt1Long + height ;
+	
+	mutable rstring polyInput =(rstring) pt1Lat + "," ;
+	polyInput +=(rstring) pt1Long + "," ;
+	polyInput +=(rstring) pt2Lat + "," ;
+	polyInput +=(rstring) pt2Long + "," ;
+	polyInput +=(rstring) pt3Lat + "," ;
+	polyInput +=(rstring) pt3Long + "," ;
+	polyInput +=(rstring) pt4Lat + "," ;
+	polyInput +=(rstring) pt4Long ;
+	
+	rstring polygonWkt = com.ibm.streams.geospatial.ext::polygon(polyInput) ;
+	return polygonWkt ;
+}
