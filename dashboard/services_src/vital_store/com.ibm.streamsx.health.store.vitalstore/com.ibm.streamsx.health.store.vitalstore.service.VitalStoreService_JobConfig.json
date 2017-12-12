@@ -1,1 +1,1 @@
-{"jobConfigOverlays":[{"deploymentConfig":{"parallelRegionConfig":{"fusionType":"channelIsolation"}}}],"comment":"Job Config Overlays for com.ibm.streamsx.health.store.vitalstore.service::VitalStoreService - generated Thu Dec 07 09:26:05 EST 2017"}
+{"jobConfigOverlays":[{"deploymentConfig":{"parallelRegionConfig":{"fusionType":"channelIsolation"}}}],"comment":"Job Config Overlays for com.ibm.streamsx.health.store.vitalstore.service::VitalStoreService - generated Tue Dec 12 14:12:49 EST 2017"}

@@ -9,7 +9,7 @@
 <entry key="com.ibm.streams.studio.splproject:NAME">BuildConfig</entry>
 <entry key="com.ibm.streams.studio.splproject:GCC_OPTS"/>
 <entry key="com.ibm.streams.studio.splproject:SC_OPTS"/>
-<entry key="com.ibm.streams.studio.splproject:ACTIVE">T</entry>
+<entry key="com.ibm.streams.studio.splproject:ACTIVE">F</entry>
 <entry key="com.ibm.streams.studio.splproject:LD_OPTS"/>
 <entry key="com.ibm.streams.studio.splproject:PRE_BUILD_CMD"/>
 <entry key="com.ibm.streams.studio.splproject:DATA_DIR"/>

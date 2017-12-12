@@ -15,6 +15,7 @@ public class Location implements Serializable{
 	private double longitude;	// in degrees
 	private double speed;		// speed in km/hr
 	private double heading;		// direction of travel, degrees east from north
+	private String driverId;	// driver Id
 		
 	
 	public String getId() {
@@ -60,5 +61,12 @@ public class Location implements Serializable{
 		return this;
 	}
 
+	public void setDriverId(String driverId) {
+		this.driverId = driverId;
+	}
+	
+	public String getDriverId() {
+		return driverId;
+	}
 
 }

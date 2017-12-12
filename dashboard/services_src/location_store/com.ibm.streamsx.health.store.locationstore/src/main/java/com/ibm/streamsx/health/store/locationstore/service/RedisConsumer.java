@@ -7,9 +7,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.ibm.streamsx.health.ingest.types.model.Observation;
-import com.ibm.streamsx.health.ingest.types.resolver.ObservationTypeResolver;
 import com.ibm.streamsx.topology.function.Consumer;
 import com.ibm.streamsx.topology.function.FunctionContainer;
 import com.ibm.streamsx.topology.function.FunctionContext;

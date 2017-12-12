@@ -28,11 +28,11 @@ composite CarSimulator
 						float64 latitude = randomLatitude(22.248429, 22.282425) ;
 						float64 longitude = randomLongitude(114.137821, 114.236355) ;
 						rstring id = "patient-" + randomId(0, 10) ;
-						VehiclePosition location = { id = id, ts = (int64)currentTimeMillis(), latitude
-							= latitude, longitude = longitude, speed = 0.0, heading = 0.0 } ;
-						submit(location, cars);
-						block(0.1);
-					
+						VehiclePosition location = { id = id, ts =(int64) currentTimeMillis(),
+							latitude = latitude, longitude = longitude, speed = 0.0, heading = 0.0
+							} ;
+						submit(location, cars) ;
+						block(0.1) ;
 					}
 
 				}
