@@ -8,23 +8,19 @@ use com.ibm.streamsx.datetime::* ;
 composite NextBusSimulator
 {
 	type
-	
 		RawVehiclePosition = rstring id, // vehicle ID
 		rstring time, // observation time
 		float64 latitude, // in degrees
 		float64 longitude, // in degrees
 		float64 speed, // speed in km/h
 		float64 heading ; // direction of travel, degrees east from north
-	
 		VehiclePosition = rstring id, // vehicle ID
 		int64 ts, // observation time
 		float64 latitude, // in degrees
 		float64 longitude, // in degrees
 		float64 speed, // speed in km/h
 		float64 heading ; // direction of travel, degrees east from north
-		
-		VehiclePositionWithDriver = VehiclePosition, tuple<rstring driverId>;
-
+		VehiclePositionWithDriver = VehiclePosition, tuple<rstring driverId> ;
 	graph
 		() as Publish_2 = Publish(TupleToJSON_3_out0 as inPort0Alias)
 		{
@@ -37,10 +33,9 @@ composite NextBusSimulator
 		{
 		}
 
-		(stream<RawVehiclePosition> FileSource_4_out0) as FileSource_4 = FileSource()
-		{
-			param
-				file : "NEXT.BUS.out" ;
+		(stream<RawVehiclePosition> FileSource_4_out0) as FileSource_4 =
+			FileSource(Beacon_6_out0)
+		{			
 		}
 
 		(stream<RawVehiclePosition> Throttle_5_out0) as Throttle_5 =
@@ -50,40 +45,46 @@ composite NextBusSimulator
 				rate : 200.0 ;
 		}
 
-		(stream<VehiclePositionWithDriver> Custom_5_out0) as Custom_5 = Custom(Throttle_5_out0)
+		(stream<VehiclePositionWithDriver> Custom_5_out0) as Custom_5 =
+			Custom(Throttle_5_out0)
 		{
 			logic
-				state: {
-					mutable int32 cnt = 0;
-					mutable map<rstring, rstring> carToDriver= {};
-				}
-			onTuple Throttle_5_out0: {
-			
-				mutable VehiclePositionWithDriver outTuple = {};
-				assignFrom(outTuple, Throttle_5_out0);
-				
-				outTuple.ts = currentTimeMillis();
-				
-				
-				mutable rstring driverId = "";
-				
-				if (has(carToDriver, id))
+				state :
 				{
-					driverId = carToDriver[id];
+					mutable int32 cnt = 0 ;
+					mutable map<rstring, rstring> carToDriver = { } ;
 				}
-				else {
-					driverId = "Driver-"+ (rstring)cnt;
-					cnt++;
-					carToDriver[id] = driverId;
+
+				onTuple Throttle_5_out0 :
+				{
+					mutable VehiclePositionWithDriver outTuple = { } ;
+					assignFrom(outTuple, Throttle_5_out0) ;
+					outTuple.ts = currentTimeMillis() ;
+					mutable rstring driverId = "" ;
+					if(has(carToDriver, id))
+					{
+						driverId = carToDriver [ id ] ;
+					}
+
+					else
+					{
+						driverId = "Driver-" +(rstring) cnt ;
+						cnt ++ ;
+						carToDriver [ id ] = driverId ;
+					}
+
+					outTuple.driverId = driverId ;
+					submit(outTuple, 0u) ;
 				}
-				
-				outTuple.driverId = driverId;
-				
-				submit(outTuple, 0u);
-			
-			}
-			
-			
+
+		}
+
+		(stream<rstring filename> Beacon_6_out0) as Beacon_6 = Beacon()
+		{
+			param
+				period : (float64)(60 * 60 * 2 );
+			output
+				Beacon_6_out0: filename = "NEXT.BUS.out";
 		}
 
 }
