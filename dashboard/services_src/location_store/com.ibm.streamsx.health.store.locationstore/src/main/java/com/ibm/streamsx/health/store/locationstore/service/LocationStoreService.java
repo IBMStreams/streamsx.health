@@ -57,7 +57,7 @@ public class LocationStoreService {
 	public void build() {
 		TStream<Location> obsStream = SPLStreams.subscribe(topo, topicSupplier, JSONSchemas.JSON)
 			.transform(new JsonToModelConverter<Location>(Location.class));
-		obsStream.sink(new RedisConsumer(appConfigNameSupplier, expireSupplier));
+		obsStream.sink(new RedisConsumer(appConfigNameSupplier));
 	}
 
     public void run(Type contextType, Map<String, Object> submissionParams) throws Exception {

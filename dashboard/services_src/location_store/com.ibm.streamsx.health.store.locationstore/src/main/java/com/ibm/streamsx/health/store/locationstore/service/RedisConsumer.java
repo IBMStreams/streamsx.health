@@ -1,9 +1,7 @@
 package com.ibm.streamsx.health.store.locationstore.service;
 
 import java.io.ObjectStreamException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import com.google.gson.Gson;
@@ -12,37 +10,30 @@ import com.ibm.streamsx.topology.function.FunctionContainer;
 import com.ibm.streamsx.topology.function.FunctionContext;
 import com.ibm.streamsx.topology.function.Initializable;
 import com.ibm.streamsx.topology.function.Supplier;
-import com.lambdaworks.redis.Range;
 import com.lambdaworks.redis.RedisClient;
 import com.lambdaworks.redis.api.sync.RedisCommands;
 
 public class RedisConsumer implements Consumer<Location>, Initializable {
 	private static final long serialVersionUID = 1L;
 
-	private static final String KEY_PREFIX = "com.ibm.streamsx.health:data:";
+	private static final String KEY = "com.ibm.streamsx.health:vehicles";
 	private static final String APP_CONFIG_CONNECTION_PROPERTY = "connection";
-	private static final String DATA_TYPE = "location";
 	
 	private transient RedisClient client;
 	private transient RedisCommands<String, String> sync;
 	private transient Gson gson;
+	private Map<String /* patientId */, String /* readingSource */> patientMap;
 	private Supplier<String> appConfigNameSupplier;
-	private Supplier<Long> expireTimeSupplier;
-	private Map<String, List<String>> dataTypes;
-	
-	private long expireTimeMilliseconds;
 
 	private FunctionContext functionContext;
 	
-	public RedisConsumer(Supplier<String> appConfigNameSupplier, Supplier<Long> expireTimeSupplier) {
+	public RedisConsumer(Supplier<String> appConfigNameSupplier) {
 		this.appConfigNameSupplier = appConfigNameSupplier;
-		this.expireTimeSupplier = expireTimeSupplier;
-		dataTypes = new HashMap<String, List<String>>();
+		this.patientMap = new HashMap<String, String>();
 	}
 	
 	public Object readResolve() throws ObjectStreamException {
 		gson = new Gson();
-		this.expireTimeMilliseconds = this.expireTimeSupplier.get() * 1000l;
 		
 		return this;
 	}
@@ -70,36 +61,20 @@ public class RedisConsumer implements Consumer<Location>, Initializable {
 	
 	@Override
 	public void accept(Location location) {
-		String key = KEY_PREFIX + location.getId() + ":" + DATA_TYPE;		
+		String id = location.getId();
+		
+		String locationStr = gson.toJson(location);
 
-		try {
-			// run commands atomically
-			//  - remove old entries
-			//  - add the new observation
-			System.out.println("Deleting: key=" + key + ", from=" + 0 + ", to=" + (location.getTs() - this.expireTimeMilliseconds));
-			RedisCommands<String, String> redis = getRedis();
-			redis.zremrangebyscore(key, Range.create(0, location.getTs() - this.expireTimeMilliseconds));
-			redis.zadd(key, location.getTs(), gson.toJson(location));
+		if(!patientMap.containsKey(id) || !patientMap.get(id).equals(locationStr)) {
+			patientMap.put(id, locationStr);
 			
-			updateAvailableDataTypes(location);
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new RuntimeException(e);
-		}
-	}
-	
-	private void updateAvailableDataTypes(Location location) throws Exception {
-		String patientId = location.getId();
-		String key = KEY_PREFIX + patientId + ":data_type_index";
-		String dataType = DATA_TYPE;
-		
-		if(!dataTypes.containsKey(patientId)) {
-			dataTypes.put(patientId, new ArrayList<>());
-		}
-		
-		if(!dataTypes.get(patientId).contains(dataType)) {
-			dataTypes.get(patientId).add(dataType);
-			getRedis().sadd(key, dataType);
+			try {
+				RedisCommands<String, String> redis = getRedis();
+				redis.hmset(KEY, patientMap);
+			} catch (Exception e) {
+				e.printStackTrace();
+				throw new RuntimeException(e);
+			}	
 		}
 	}
 }
