@@ -11,5 +11,6 @@ public interface ICommonServicesConstants {
 	String KEY_DEBUG = "debug";
 	String KEY_STREAMS_CONTEXT = "streamscontext";
 	String KEY_VMARGS = "vmargs";
+	String KEY_DATADIR = "dataDir";
 
 }
