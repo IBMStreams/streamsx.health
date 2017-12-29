@@ -143,8 +143,12 @@ public abstract class AbstractService implements Serializable {
 			if (isDebug())
 				subProperties.put(ContextProperties.TRACING_LEVEL, TraceLevel.DEBUG);
 			
-			subProperties.put(JobProperties.DATA_DIRECTORY, "/home/streamsadmin/hostdir/data");
-
+			String dataDir = (String)getProperties().get(ICommonServicesConstants.KEY_DATADIR);
+			
+			if (dataDir != null && !dataDir.isEmpty())
+			{
+				subProperties.put(JobProperties.DATA_DIRECTORY, dataDir);
+			}
 			
 			addSubmssionTimeParams(subProperties);
 	
