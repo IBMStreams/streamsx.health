@@ -9,5 +9,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="var" path="STREAMS_JAVA_FUNCTIONAL_API"/>
+	<classpathentry kind="lib" path="/opt/ibm/InfoSphere_Streams/4.2.1.1/ext/lib/gson-2.3.1.jar"/>
 	<classpathentry kind="output" path="impl/java/bin"/>
 </classpath>

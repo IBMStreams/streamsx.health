@@ -69,6 +69,18 @@ This service expects an `Observation` tuple as the input:
 }
 ```
 
+  * **Published Topics:** "analyze/rpeak/cep/rrMinusOne"
+  * **Output JSON Schema:** 
+
+```
+{
+  "patientId" : string,
+  "ts" : numeric (epoch),
+  "rr" : numeric,
+  "rrMinusOne": numeric
+}
+```
+
 # Build
 
 Run the following command to build this service: 
