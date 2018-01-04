@@ -38,13 +38,17 @@ task cleanUp() {
 	}
 }
 
-task execute(type: JavaExec) {
+task executeBeacon(type: JavaExec) {
   main = 'com.ibm.streamsx.health.simulate.beacon.services.HealthDataBeaconService'
   classpath = configurations.runtime + files("$buildDir/libs/com.ibm.streamsx.health.simulate.beacon.jar")
   args = [
     '-n', beaconProps['numPatients'],
     '-p', beaconProps['patientIDPrefix']
   ]
+}
+
+task execute<< {
+	tasks.executeBeacon.execute()
 }
 
 compileJava.dependsOn getDeps

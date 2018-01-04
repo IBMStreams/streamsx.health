@@ -87,9 +87,11 @@ clean.doLast{
 	tasks.rmRelease.execute()
 }
 
-task execute(type: JavaExec) {
+task executeRPeakDetectCep(type: JavaExec) {
     main='com.ibm.streamsx.health.analyze.rpeak.cep.service.RPeakDetectCepService'
     classpath = configurations.runtime + files("$buildDir/libs/com.ibm.streamsx.health.analyze.rpeak.cep.jar")
 }
 
-
+task execute<< {
+	tasks.executeRPeakDetectCep.execute()
+}

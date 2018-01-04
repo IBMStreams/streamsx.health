@@ -15,3 +15,8 @@ ext.compileApp = { namespace, mainComp, toolkitPath ->
         commandLine System.getenv("STREAMS_INSTALL") + '/bin/sc', '-M', namespace + '::' + mainComp, '--output-directory=output/' + namespace + '.' + mainComp, '-a', '-t', toolkitPath
     }
 }
+
+task executeDemo<< {
+	tasks.executeRPeakDetectCep.execute()
+	tasks.executeBeacon.execute()
+}
