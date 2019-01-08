@@ -1,6 +1,6 @@
 ## Overview 
 
-This is a quick walk through of bringing up the Docker
+This is a quick walk through of bringing up Docker
 with Juypter notebook. The Jupter notebook is used 
 to compose and submit the Streams topology application. 
 
@@ -14,7 +14,8 @@ to your home directory. In the case of my home  directory ('/Users/siegenth'), t
 
 ![File Sharing](images/fileSharing.jpg)
 
-For changes to take place, docker must reboot. 
+For changes to take place, docker must be reboot. 
+
 
 ## Build and Run
 
@@ -33,15 +34,19 @@ Run Juypter in the container using the built image.
 ```
 Juypter notebook is accessable from your browser using [link](http://localhost:8888)
 
-## Walkthrough of 'Build VCAP Service Credential in env' * TODO *
-Run this page that creates an env_file with the 
-credentials to access the Streams service.
+## Walkthrough of 'buildVCAPenv' * IN process *
+Walk through this file to creates an 'env_file'. 
+The env_file, has the credentials used to submit to a Streams service running
+in the Cloud. 
 
-The code is here but the images explaination is not. 
+You only need to execute this once, 'Successfully'.
 
-May need to stop/start juypter container.
+
+May need to stop/start Juypter container.
 
 ### Walkthrough of 'HealthcareDemo-Docker'.
+This uses the 'env_file' above.
+
 #### 1) Open the notebook
 #### 2) Menu 'Cell' | 'Run All'
 
