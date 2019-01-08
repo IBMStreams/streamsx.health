@@ -27,31 +27,27 @@ Build the image.
 ./juypterBuild.sh
 
 ```
-
 Run Juypter in the container using the built image.
 ```bash
 ./juypterStart.sh
 ```
 Juypter notebook is accessable from your browser using [link](http://localhost:8888)
 
-## Walkthrough of 'buildVCAPenv' * IN process *
-Walk through this file to creates an 'env_file'. 
-The env_file, has the credentials used to submit to a Streams service running
+## Walkthrough of 'HealthcareDemoSetup-Docker' 
+This file to creates an 'env_file'. The env_file, has the credentials used to submit to a Streams service running
 in the Cloud. 
 
-You only need to execute this once, 'Successfully'.
 
-
-May need to stop/start Juypter container.
+You will need to stop/start Juypter container after completing this walkthrough. 
 
 ### Walkthrough of 'HealthcareDemo-Docker'.
-This uses the 'env_file' above.
+This uses the 'env_file' created abover above.
 
 #### 1) Open the notebook
 #### 2) Menu 'Cell' | 'Run All'
 
 
-## Stopping container
+## Stopping Juypter container
 control-c followed by contol-c
 
 
