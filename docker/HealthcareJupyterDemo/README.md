@@ -23,7 +23,7 @@ This sample is built using the [BioSPPy](http://biosppy.readthedocs.io/en/stable
 
 The following diagram outlines the architecture of the demo.  
 
-![Demo Architecture](images/architecture_diagram.jpg)
+http
 
 ## VM Image Setup
 
