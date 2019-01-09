@@ -1,12 +1,16 @@
 ## Overview 
 
-This is a quick walk through of bringing up Docker
-with Juypter notebook. The Jupter notebook is used 
-to compose and submit the Streams topology application. 
+This is a walkthrough to bring up a Docker image with a Juypter notebook, within
+the notebook an application is composed and submitted to a Streams.
+instance in the Cloud. The Juypter notebook, *HealthcareDemo-Docker*,  composes and submits the Streams 
+topology application. This is based upon the code found in &LT;gitBase&GT;/samples/HealthCareJuypterDemo
+refer to this path for details, *HealthcareDemoSetup-Docker* notebook sets up the environment for the walkthrough. 
+
+
 
 ## Configure
 In order not to lose the Juypter notebook files when the container is
-delete, we'll bind mount ..docker/HealthcareJupyterDemo/notebook on the host
+deleted, we'll bind mount ..docker/HealthcareJupyterDemo/notebook on the host
 machine to the container. This is done through docker configutation tool. 
 
 Assuming the project cloned into your home directory, set the Docker preferences | File Sharing 
@@ -33,18 +37,18 @@ Run Juypter in the container using the built image.
 ```
 Juypter notebook is accessable from your browser using [link](http://localhost:8888)
 
-## Walkthrough of 'HealthcareDemoSetup-Docker' 
-This file to creates an 'env_file'. The env_file, has the credentials used to submit to a Streams service running
+### Walkthrough of 'HealthcareDemoSetup-Docker' 
+This file to creates an 'env_file'. The env_file has the credentials used to submit to a Streams service running
 in the Cloud. 
 
 
-You will need to stop/start Juypter container after completing this walkthrough. 
+You will need to stop/start the Juypter container after completing this walkthrough. 
 
 ### Walkthrough of 'HealthcareDemo-Docker'.
-This uses the 'env_file' created abover above.
+This uses the 'env_file' created above.
 
-#### 1) Open the notebook
-#### 2) Menu 'Cell' | 'Run All'
+1) Open the notebook
+2) Menu 'Cell' | 'Run All'
 
 
 ## Stopping Juypter container
