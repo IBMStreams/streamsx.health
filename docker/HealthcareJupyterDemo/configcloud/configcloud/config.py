@@ -1,0 +1,2 @@
+uiText = None
+serviceName = None

@@ -6,6 +6,25 @@ instance in the Cloud. The Juypter notebook, *HealthcareDemo-Docker*,  composes 
 topology application. This is based upon the code found in &LT;gitBase&GT;/samples/HealthCareJuypterDemo
 refer to this path for details, *HealthcareDemoSetup-Docker* notebook sets up the environment for the walkthrough. 
 
+The following diagram illustrates the running application. 
+![File Sharing](images/withDocker.png)
+
+- A Docker image with Python, Java and Streams modules installed. In addition is has Juypter server running, which we'll 
+interact with via notesbooks.
+- The docker image is built. 
+- The container is run, the Juypter server is brought up.
+- The Juypter server is accessed from your local computer (laptop).
+- The 'heathcarerDemotSetup-Docker' notebook walks through the creation and configuration of the Streams service.
+- The 'healthcareDemo-Docker' notebooks submit the simulator and application from the Docker container.
+- The the data is rendered on your local computer. 
+
+I currently store to COS, the EventStore is still in process. 
+- The data processed in the Cloud on Streams is stored in a EventStore. 
+- WatsonStudio can access the Stored data and do Analysis to generate insights on the realtime data.
+
+
+
+
 
 
 ## Configure

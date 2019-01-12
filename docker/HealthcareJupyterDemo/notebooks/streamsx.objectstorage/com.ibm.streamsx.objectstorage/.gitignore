@@ -1,0 +1,10 @@
+/.apt_generated/
+/output/
+/.toolkitList
+/toolkit.xml
+/doc/spldoc
+/bin/
+/opt/downloaded/
+/com.ibm.streamsx.objectstorage.s3/S3ObjectStorage*/
+/com.ibm.streamsx.objectstorage.s3/native.function/
+/com.ibm.streamsx.objectstorage/ObjectStorage*/

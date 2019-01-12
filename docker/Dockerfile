@@ -14,16 +14,14 @@ ENV PATH /anaconda3/bin:${PATH}
 
 WORKDIR /app
 ADD HealthcareJupyterDemo/package package
+ADD HealthcareJupyterDemo/configcloud configcloud
 
 RUN pip install --upgrade pip && \
 pip install streamsx && \
 pip install streamsx.messagehub && \
 pip install redis && \
-pip install -e package
-
-#ENV PYTHONPATH "/app/bluewater:/app/containerSimulator:/app/shared:/app/shared/creds"
-
-#docker run -i -t -p 8888:8888 streamhealth bash -c "jupyter notebook --notebook-dir=/app/HealthcareJupyterDemo/notebooks --ip='*' --port=8888 --no-browser"
+pip install -e package && \
+pip install -e configcloud
 
 
 

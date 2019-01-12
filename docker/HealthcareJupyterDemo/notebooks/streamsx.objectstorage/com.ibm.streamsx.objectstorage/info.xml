@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<info:toolkitInfoModel xmlns:common="http://www.ibm.com/xmlns/prod/streams/spl/common" xmlns:info="http://www.ibm.com/xmlns/prod/streams/spl/toolkitInfo">
+  <info:identity>
+    <info:name>com.ibm.streamsx.objectstorage</info:name>
+    <info:description>
+The Object Storage toolkit is an open source IBM Streams toolkit that helps you integrate IBM Streams with IBM Cloud Object Storage.
+
+The operators provide the ability for IBM Streams applications to write objects to object storage and read objects from object storage.
+
+The operators support IBM Cloud Object Storage and S3 compatible object storages.
+
+The Object Storage toolkit operators must be configured to connect to S3 compatible object storages. This configuration information needs to be specified with operator parameters.
+
+The toolkit contains two namespaces:
+
+* com.ibm.streamsx.objectstorage
+* com.ibm.streamsx.objectstorage.s3
+
+Operators in the `com.ibm.streamsx.objectstorage` use generic parameters approach rather the operators in the `com.ibm.streamsx.objectstorage.s3` namespace use S3-compliant authentication and connection parameters.
+For example, `ObjectStorageSink` uses `objectStorageURI` parameter which consists of protocol and bucket name (s3a://&lt;BUCKET_NAME&gt;/), rather `S3ObjectStorageSink` operator uses S3-compliant parameter names such as protocol and bucket as a separate parameters making it more intuitive for the users familiar with S3 COS terms.
+Note, that other operator parameter groups (except of authentication and connection) are exactly the same for both operators.
+
++ Developing and running applications that use the ObjectStorage Toolkit
+
+To create applications that use the ObjectStorage Toolkit, you must configure either Streams Studio
+or the SPL compiler to be aware of the location of the toolkit. 
+
+# Before you begin
+
+* Install IBM Streams. Configure the product environment variables by entering the following command: 
+      &lt;source product-installation-root-directory>/&lt;your version>/bin/streamsprofile.sh
+
+
+# About this task
+
+After the location of the toolkit is communicated to the compiler, the SPL artifacts that are specified in the toolkit
+can be used by an application. The application can include a use directive to bring the necessary namespaces into scope.
+Alternatively, you can fully qualify the operators that are provided by toolkit with their namespaces as prefixes.
+
+# Procedure
+
+1. Review the list of restrictions for the IBM Streams specialized toolkits in the product documentation.
+2. Configure the SPL compiler to find the toolkit root directory. Use one of the following methods:
+  * Set the **STREAMS_SPLPATH** environment variable to the root directory of a toolkit or multiple toolkits (with : as a separator).
+    For example:
+        export STREAMS_SPLPATH=$STREAMS_INSTALL/toolkits/com.ibm.streamsx.objectstorage
+  * Specify the **-t** or **--spl-path** command parameter when you run the **sc** command. For example:
+        sc -t $STREAMS_INSTALL/toolkits/com.ibm.streamsx.objectstorage -M MyMain
+    where MyMain is the name of the SPL main composite.
+    **Note**: These command parameters override the **STREAMS_SPLPATH** environment variable.
+  * Add the toolkit location in Streams Studio.
+3. Develop your application. To avoid the need to fully qualify the operators, add a use directive in your application. 
+  * For example, you can add the following clause in your SPL source file:
+        use com.ibm.streamsx.objectstorage::*;
+    You can also specify a use clause for individual operators by replacing the asterisk (\*) with the operator name. For example: 
+        use com.ibm.streamsx.objectstorage::ObjectStorageSink; 
+4. Build your application. You can use the **sc** command or Streams Studio.  
+5. Start the IBM Streams instance. 
+6. Run the application. You can submit the application as a job by using the **streamtool submitjob** command or by using Streams Studio. 
+
+</info:description>
+    <info:version>1.3.0</info:version>
+    <info:requiredProductVersion>4.2.0.0</info:requiredProductVersion>
+  </info:identity>
+  <info:dependencies/>
+</info:toolkitInfoModel>
