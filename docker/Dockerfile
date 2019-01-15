@@ -19,6 +19,7 @@ ADD HealthcareJupyterDemo/configcloud configcloud
 RUN pip install --upgrade pip && \
 pip install streamsx && \
 pip install streamsx.messagehub && \
+pip install streamsx.objectstorage && \
 pip install redis && \
 pip install -e package && \
 pip install -e configcloud
