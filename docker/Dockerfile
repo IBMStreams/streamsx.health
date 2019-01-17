@@ -24,6 +24,9 @@ pip install redis && \
 pip install -e package && \
 pip install -e configcloud
 
+#RUN pip install jupyterlab
+
+
 
 
 
