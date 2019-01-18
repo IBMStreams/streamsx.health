@@ -82,8 +82,9 @@ CredentialDict = None
 
 
 def validate_cred(str):
+
     try:
-        credDict = json.loads(str)
+        credDict = json.loads(str + " ")
     except:
         print("Invalid formatted credentional - should be in a json format")
         return (None)
@@ -94,7 +95,7 @@ def validate_cred(str):
     if len(validSet.difference(credSet)) is 0:
         return credDict
     else:
-        print("Credential missing keys:", validSet.difference(credSet))
+        print("Credentialaπ missing keys:", validSet.difference(credSet))
         return None
 
 
