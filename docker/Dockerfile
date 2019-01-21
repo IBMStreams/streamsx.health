@@ -20,6 +20,7 @@ RUN pip install --upgrade pip && \
 pip install streamsx && \
 pip install streamsx.messagehub && \
 pip install streamsx.objectstorage && \
+pip install --upgrade streamsx.objectstorage==0.6.0 && \
 pip install redis && \
 pip install -e package && \
 pip install -e configcloud

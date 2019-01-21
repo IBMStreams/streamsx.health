@@ -102,7 +102,7 @@ def validate_cred(str):
 def vcap_submit(sender):
 
     str = config.uiText.value
-    credentialDict = validate_cred(str)
-    if credentialDict is not None:
+    config.credentialDict = validate_cred(str)
+    if config.credentialDict is not None:
         if config.serviceName is not None:
-            vsDict = update_env(config.serviceName, credentialDict)
+            vsDict = update_env(config.serviceName, config.credentialDict)
