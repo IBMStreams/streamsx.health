@@ -9,6 +9,6 @@ def submit_sab(sabFile):
         print("Submit", sabFile)
         sub = instances[0].submit_job(sabFile)
     else:
-        print("File does not exist -hmmm", sabFile)
+        print("ERR: File does not exist -hmmm", sabFile)
 
     print("Status of submitted '", sabFile, "':", sub.status)

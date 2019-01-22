@@ -1,9 +1,12 @@
 import configparser
+import configcloud.config as config
 from itertools import chain
 import os
+vcapName = config.vcapName
+srvcName = config.srvcName
 
-vcapName = 'VCAP_SERVICES'
-srvcName = 'STREAMING_ANALYTICS_SERVICE_NAME'
+#vcapName = 'VCAP_SERVICES'
+#srvcName = 'STREAMING_ANALYTICS_SERVICE_NAME'
 
 
 def environment_check_load(env_file="env_file"):
@@ -12,7 +15,7 @@ def environment_check_load(env_file="env_file"):
     rebooted the environment values will not have been set.
     In that case I read the env_file and populate the environment.
     """
-    if os.environ.get(vcapName, None) is not None:
+    if os.environ.get(vcapName, None) is not None :
         print("Environment configured.")
         return (True)
     else:
