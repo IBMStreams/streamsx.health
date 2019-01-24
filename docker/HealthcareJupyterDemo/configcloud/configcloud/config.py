@@ -1,3 +1,9 @@
+"""
+
+  Configuration variables that are common between files.
+
+"""
+
 uiText = None
 serviceName = None
 credentialDict = None

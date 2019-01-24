@@ -5,6 +5,10 @@ import configcloud.config as config
 
 def update_env(serviceName, credentialDict):
     """
+    :param serviceName:
+    :param credentialDict:
+    :return: vcap dictionary
+
     Update the environment variables and docker environment
     variables file (env_file).
     """
