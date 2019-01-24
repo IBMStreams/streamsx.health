@@ -1,35 +1,33 @@
-## Overview 
+## Docker HealthacareDemo
 
-This is a walkthrough to bring up a Docker image with a Jupyter notebook, within
-the notebook an application is composed and submitted to a Streams.
-instance in the Cloud. The Jupyter notebook, *HealthcareDemo-Docker*,  composes and submits the Streams 
-topology application. This is based upon the code found in &LT;gitBase&GT;/samples/HealthCareJupyterDemo
-refer to this path for details, *HealthcareDemoSetup-Docker* notebook sets up the environment for the walkthrough. 
+This is a walkthrough of submiting an application to a Streams instance running on the Cloud. This is derived from 
+the example in [samples/HealthcareJupterDemo]("../../samples/HealthcareJupyterDemo"). The 'samples' version
+requires an instance of Streams on the local machine. This version does not, the Streams is composed within 
+the Docker image then built and run on the Cloud.
+
 
 The following diagram illustrates the running application. 
 ![File Sharing](images/withDocker.png)
 
-- A Docker image with Python, Java and Streams modules installed. In addition is has Jupyter server running, which we'll 
-interact with via notesbooks.
-- The docker image is built. 
-- The container is run, the Jupyter server is brought up.
+- A Docker image with Python with Jupyter, Java and Streams modules is built. 
+- The container is run with the Jupyter server.
 - The Jupyter server is accessed from your local computer (laptop).
-- The 'heathcarerDemotSetup-Docker' notebook walks through the creation and configuration of the Streams service.
-- The 'healthcareDemo-Docker' notebooks submit the simulator and application from the Docker container.
-- The the data is rendered on your local computer. 
+- The 'HeathcarerSetup' notebook walks through the creation of the Streams instance in the Cloud.
+- The 'HealthcareDemo' notebook builts ans submits a simulator and application from the Docker container to the Cloud
+- The the data is rendered in the notebook. 
 
 Currently store to COS, the EventStore is still in process. 
 - The data processed in the Cloud on Streams is stored in a EventStore. 
 - WatsonStudio can access the Stored data and do Analysis to generate insights on the realtime data.
 
+## Prequisites 
 
+* Git installed on your local system. 
+* Docker installed on your local system.
 
-
-
-
-## Configure
+## Configure Docker
 In order not to lose the Jupyter notebook files when the container is
-deleted, we'll bind mount ..docker/HealthcareJupyterDemo/notebook on the host
+deleted, you bind mount ..docker/HealthcareJupyterDemo/notebook on the host
 machine to the container. This is done through docker configutation tool. 
 
 Assuming the project cloned into your home directory, set the Docker preferences | File Sharing 
@@ -37,41 +35,45 @@ to your home directory. In the case of my home  directory ('/Users/siegenth'), t
 
 ![File Sharing](images/fileSharing.jpg)
 
-For changes to take place, docker must be rebooted. 
+For this change to take place, Docker must be rebooted. 
 
 
-## Build and Run
+## Build and Start
 
-Within the docker directory invoke the scripts
+After downloading or cloning the image from github, enter the docker directory.
 
+```bash
+cd docker
+```
 
-Build the image. 
+Build the Docker image. 
 ```bash
 ./jupyterBuild.sh
 
 ```
-Run Jupyter in the container using the built image.
+Start Jupyter in the container using the built Docker image.
 ```bash
 ./jupyterStart.sh
 ```
-Jupyter notebook is accessable from your browser using [link](http://localhost:8888)
-
-### Walkthrough of 'HealthcareDemoSetup-Docker' 
-This file to creates an 'env_file'. The env_file has the credentials used to submit to a Streams service running
-in the Cloud. 
+Open the Jupyter notebook using: [http://localhost:8888](http://localhost:8888)
 
 
-You will need to stop/start the Jupyter container after completing this walkthrough. 
+### Overview of next steps
 
-### Walkthrough of 'HealthcareDemo-Docker'.
-This uses the 'env_file' created above.
+* In order to run a Streams instance on the Cloud you must create a Streams resource and move it's credentials to your
+Docker image, select [HealthcareSetup.ipynb](http://localhost:8888/HealthcareSetup.ipynb) to walk through this process. 
+It is only necessary to run this notebook once, the configuration is written to a file for subsequent runs.
+* [HealthcareDemo.ipynb](http://localhost:8888/HealthcareDemo.ipynb) walks through the demo application, it composes and 
+submits the application to your Streams instance running in the Cloud.   
 
-1) Open the notebook
-2) Menu 'Cell' | 'Run All'
+### Shutdown active applications
+
+Run all the cells in  [HealthcareShutdown.ipynb](http://localhost:8888/HealthcareShutdown.ipynb)
 
 
 ## Stopping Jupyter container
-control-c followed by contol-c
+control-c followed by contol-c in the Docker window.
+
 
 
 
