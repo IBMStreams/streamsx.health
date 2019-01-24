@@ -1,7 +1,7 @@
 ## Docker HealthacareDemo
 
 This is a walkthrough of submiting an application to a Streams instance running on the Cloud. This is derived from 
-the example in [samples/HealthcareJupterDemo]("../samples/HealthcareJupyterDemo"). The 'samples' version
+the example in [samples/HealthcareJupterDemo](../samples/HealthcareJupyterDemo). The 'samples' version
 requires an instance of Streams on the local machine. This version does not, the Streams is composed within 
 the Docker image then built and run on the Cloud.
 
