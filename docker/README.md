@@ -7,7 +7,7 @@ the Docker image then built and run on the Cloud.
 
 
 The following diagram illustrates the running application. 
-![File Sharing](images/withDocker.png)
+![File Sharing](HealthcareJupyterDemo/notebooks/images/dockerSQL.png)
 
 - A Docker image with Python with Jupyter, Java and Streams modules is built. 
 - The container is run with the Jupyter server.
