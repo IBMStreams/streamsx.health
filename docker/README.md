@@ -2,7 +2,7 @@
 
 This is a walkthrough of submiting an application to a Streams instance running on the Cloud. This is derived from 
 the example in [samples/HealthcareJupterDemo](../samples/HealthcareJupyterDemo). The 'samples' version
-requires an instance of Streams on the local machine. This version does not, the Streams is composed within 
+requires an instance of Streams on the local machine. This version does not, the Streams application is composed within 
 the Docker image then built and run on the Cloud.
 
 
@@ -16,8 +16,8 @@ The following diagram illustrates the running application.
 - The 'HealthcareDemo' notebook builts ans submits a simulator and application from the Docker container to the Cloud
 - The the data is rendered in the notebook. 
 
-Currently store to COS, the EventStore is still in process. 
-- The data processed in the Cloud on Streams is stored in a EventStore. 
+Currently store to Cloud Object Store (COS), the EventStore is still in process. 
+- The data processed in the Cloud on Streams is stored in a COS. 
 - WatsonStudio can access the Stored data and do Analysis to generate insights on the realtime data.
 
 ## Prequisites 
@@ -55,7 +55,8 @@ Start Jupyter in the container using the built Docker image.
 ```bash
 ./jupyterStart.sh
 ```
-Open the Jupyter notebook using: [http://localhost:8888](http://localhost:8888)
+Open the Jupyter notebook using: [http://localhost:8888](http://localhost:8888), which will bring you to a directory of notebooks. 
+The ROADMAP notebook describes the notebooks and the order that they should be processed.
 
 
 ### Overview of next steps
