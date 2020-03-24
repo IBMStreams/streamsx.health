@@ -36,7 +36,7 @@ def preprocess_MA_powerline(tup):
 def preprocess_MA_filtfilt(tup):
     # 2. Moving averaging of samples in 28 ms interval for electromyogram
     # noise suppression a filter with first zero at about 35 Hz.
-    tup['__algo_vars']['b'] = np.ones(tup['sampling_rate'] / 35.) / 35.
+    tup['__algo_vars']['b'] =  np.ones(int(tup['sampling_rate'] // 35.)) // 35.
     tup['__algo_vars']['X'] = ss.filtfilt(tup['__algo_vars']['b'], tup['__algo_vars']['a'], tup['__algo_vars']['X'])
 
     return tup
