@@ -71,7 +71,7 @@ def preprocess_setYArray(tup):
     return tup
 
 def complex_lead_lfilter(tup):
-    tup['__algo_vars']['b'] = np.ones(tup['sampling_rate'] / 25.) / 25.
+    tup['__algo_vars']['b'] = np.ones(int(tup['sampling_rate'] // 25.)) / 25.
     tup['__algo_vars']['Y'] = ss.lfilter(tup['__algo_vars']['b'], tup['__algo_vars']['a'], tup['__algo_vars']['Y'])
 
     return tup
