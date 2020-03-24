@@ -13,15 +13,15 @@ Expects a list of signal values as an input
 """
 
 def streaming_rpeak(signalStream, sampling_rate, data_label):
-    return signalStream.transform(_SignalStreamFunctor(sampling_rate=sampling_rate, data_label=data_label)) \
-                       .transform(ecg_streaming.preprocess_MA_powerline) \
-                       .transform(ecg_streaming.preprocess_MA_filtfilt) \
-                       .transform(ecg_streaming.preprocess_MA_lowpass) \
-                       .transform(ecg_streaming.preprocess_MA_highpass) \
-                       .transform(ecg_streaming.preprocess_setYArray) \
-                       .transform(ecg_streaming.complex_lead_lfilter) \
-                       .transform(ecg_streaming.complex_lead_algo) \
-                       .transform(DataPostProcessing(data_label))
+    return signalStream.map(_SignalStreamFunctor(sampling_rate=sampling_rate, data_label=data_label)) \
+                       .map(ecg_streaming.preprocess_MA_powerline) \
+                       .map(ecg_streaming.preprocess_MA_filtfilt) \
+                       .map(ecg_streaming.preprocess_MA_lowpass) \
+                       .map(ecg_streaming.preprocess_MA_highpass) \
+                       .map(ecg_streaming.preprocess_setYArray) \
+                       .map(ecg_streaming.complex_lead_lfilter) \
+                       .map(ecg_streaming.complex_lead_algo) \
+                       .map(DataPostProcessing(data_label))
 
 class DataPostProcessing:
     def __init__(self, data_label):
