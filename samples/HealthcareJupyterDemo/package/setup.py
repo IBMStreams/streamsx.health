@@ -2,7 +2,7 @@ from setuptools import setup
 setup(
   name = 'healthdemo',
   packages = ['healthdemo'],
-  version = '1.0',
+  version = '1.0.1',
   description = 'Utilities for running healthcare demo',
   author = 'IBM Streams @ github.com',
   author_email = 'kendrick@ca.ibm.com',
