@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <title>Streams HealthCare Visualization Demo</title>
   <meta charset="utf-8">
@@ -8,608 +9,670 @@
   <link rel="stylesheet" href="assets/css/bokeh-0.12.0.min.css">
   <link rel="stylesheet" href="assets/css/bokeh-widgets-0.12.0.min.css">
   <link rel="stylesheet" href="assets/css/custom.css">
-  
+
   <script src="assets/js/jquery-3.1.1.min.js"></script>
   <script src="assets/js/bootstrap.min.js"></script>
   <script src="assets/js/numeral.min.js"></script>
   <script src="assets/js/bokeh-0.12.0.min.js"></script>
   <script src="assets/js/bokeh-widgets-0.12.0.min.js"></script>
   <style>
-    /* Remove the navbar's default margin-bottom and rounded borders */ 
+    /* Remove the navbar's default margin-bottom and rounded borders */
     .navbar {
       margin-bottom: 0;
       border-radius: 0;
     }
-    
+
     /* Set height of the grid so .sidenav can be 100% (adjust as needed) */
-    .row.content {height: 450px}
-    
+    .row.content {
+      height: 450px
+    }
+
     /* Set gray background color and 100% height */
     .sidenav {
       padding-top: 20px;
       background-color: #f1f1f1;
       height: 100%;
     }
-    
+
     /* Set black background color, white text and some padding */
     footer {
       background-color: #555;
       color: white;
       padding: 15px;
     }
-    
+
     /* On small screens, set height to 'auto' for sidenav and grid */
     @media screen and (max-width: 767px) {
       .sidenav {
         height: auto;
         padding: 15px;
       }
-      .row.content {height:auto;} 
+
+      .row.content {
+        height: auto;
+      }
     }
   </style>
 </head>
+
 <body>
 
-<nav class="navbar navbar-inverse">
-  <div class="container-fluid">
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>                        
-      </button>
-      <a class="navbar-brand" href="#">Streams HealthCare Visualization Demo</a>
-    </div>
+  <nav class="navbar navbar-inverse">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="#">Streams HealthCare Visualization Demo</a>
+      </div>
       <ul class="nav navbar-nav navbar-right">
         <li><button id="simulate" style="margin-top:10px">Simulate Alert</button></li>
       </ul>
-  </div>
-</nav>
-  
-<div class="container-fluid text-center fill">    
-  <div class="row fill">
-    <div class="col-lg-1 sidenav text-left fill">
-      <p><a href="#" id="checkAll">All</a> | <a href="#" id="checkNone">None</a>
-      <br />
-      <br />
-      <h5>State</h5>
-      <p><input type="checkbox" name="state[]" value="healthy" checked="checked" id="healthyFilter"> Healthy</p>
-      <p><input type="checkbox" name="state[]" value="alert" checked="checked" id="alertFilter"> Alert</p>
-      <h5>Doctor</h5>
-      <p><input type="checkbox" name="doctor[]" value="john" checked="checked" id="johnFilter"> John</p>
-      <p><input type="checkbox" name="doctor[]" value="jane" checked="checked" id="janeFilter"> Jane</p>
-      <p><input type="checkbox" name="doctor[]" value="jack" checked="checked" id="jackFilter"> Jack</p>
-      <p><input type="checkbox" name="doctor[]" value="jasmine" checked="checked" id="jasmineFilter"> Jasmine</p>
-      <br />
-      <h5>Ward</h5>
-      <p><input type="checkbox" name="ward[]" value="emergency" checked="checked" id="emergencyFilter"> Emergency</p>
-      <p><input type="checkbox" name="ward[]" value="icu" checked="checked" id="icuFilter"> ICU</p>
-      <p><input type="checkbox" name="ward[]" value="cardiology" checked="checked" id="cardiologyFilter"> Cardiology</p>
-      <p><input type="checkbox" name="ward[]" value="oncology" checked="checked" id="oncologyFilter"> Oncology</p>
-      <br />
-      <h5>Floor</h5>
-      <p><input type="checkbox" name="floor[]" value="1" checked="checked" id="1Filter"> 1</p>
-      <p><input type="checkbox" name="floor[]" value="2" checked="checked" id="2Filter"> 2</p>
-      <p><input type="checkbox" name="floor[]" value="3" checked="checked" id="3Filter"> 3</p>
-      <p><input type="checkbox" name="floor[]" value="4" checked="checked" id="4Filter"> 4</p>
-      <br />
-      <h5>Isolation</h5>
-      <p><input type="checkbox" name="isolation[]" value="isolated" checked="checked" id="isolatedFilter"> Isolated</p>
-      <p><input type="checkbox" name="isolation[]" value="unisolated" checked="checked" id="isolatedFilter"> Unisolated</p>
     </div>
-    <div class="col-lg-11 text-left" style="margin-top: 10px">
-     <div class="container-fluid">
-		<div id="patients" class="row fill"> </div>
-     </div>
-    </div>
-  </div>
-</div>
+  </nav>
 
-<div class="modal fade" id="patientModal" tabindex="-1" role="dialog" aria-labelledby="patientModalLabel">
-  <div class="modal-dialog modal-lg" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <div class="row">
-         <div class="col-sm-2" id="photo"><img src="assets/images/male_profile.png" class="profilePic"></div>
-         <div class="col-sm-10" id="patient-info">
-          <span class="h2" id="patientName"></span>, <span class="h2" id="patientAge"></span><br />
-          <span class="h4" id="patientId"></span><br />
-          <span class="h5" style="color:#888888" id="patientTags"></span>
-         </div>
-        </div>
+  <div class="container-fluid text-center fill">
+    <div class="row fill">
+      <div class="col-lg-1 sidenav text-left fill">
+        <p><a href="#" id="checkAll">All</a> | <a href="#" id="checkNone">None</a>
+          <br />
+          <br />
+          <h5>State</h5>
+          <p><input type="checkbox" name="state[]" value="healthy" checked="checked" id="healthyFilter"> Healthy</p>
+          <p><input type="checkbox" name="state[]" value="alert" checked="checked" id="alertFilter"> Alert</p>
+          <br />
+          <h5>Doctor</h5>
+          <p><input type="checkbox" name="doctor[]" value="john" checked="checked" id="johnFilter"> John</p>
+          <p><input type="checkbox" name="doctor[]" value="jane" checked="checked" id="janeFilter"> Jane</p>
+          <p><input type="checkbox" name="doctor[]" value="jack" checked="checked" id="jackFilter"> Jack</p>
+          <p><input type="checkbox" name="doctor[]" value="jasmine" checked="checked" id="jasmineFilter"> Jasmine</p>
+          <br />
+          <h5>Ward</h5>
+          <p><input type="checkbox" name="ward[]" value="emergency" checked="checked" id="emergencyFilter"> Emergency
+          </p>
+          <p><input type="checkbox" name="ward[]" value="icu" checked="checked" id="icuFilter"> ICU</p>
+          <p><input type="checkbox" name="ward[]" value="cardiology" checked="checked" id="cardiologyFilter"> Cardiology
+          </p>
+          <p><input type="checkbox" name="ward[]" value="oncology" checked="checked" id="oncologyFilter"> Oncology</p>
+          <br />
+          <h5>Floor</h5>
+          <p><input type="checkbox" name="floor[]" value="1" checked="checked" id="1Filter"> 1</p>
+          <p><input type="checkbox" name="floor[]" value="2" checked="checked" id="2Filter"> 2</p>
+          <p><input type="checkbox" name="floor[]" value="3" checked="checked" id="3Filter"> 3</p>
+          <p><input type="checkbox" name="floor[]" value="4" checked="checked" id="4Filter"> 4</p>
+          <br />
+          <h5>Isolation</h5>
+          <p><input type="checkbox" name="isolation[]" value="isolated" checked="checked" id="isolatedFilter"> Isolated
+          </p>
+          <p><input type="checkbox" name="isolation[]" value="unisolated" checked="checked" id="isolatedFilter">
+            Unisolated</p>
       </div>
-      <div class="modal-body">
-       <div class="container-fluid">
-        <div class="row">
-         <div class="col-sm-6">
-          <!-- waveforms -->
-          <div class="row">
-           <div class="col-sm-12">
-            <div id="ecgWaveform"></div>
-           </div>
-          </div>
-<!--           <div class="row">
-           <div class="col-sm-12">
-            <div id="respWaveform"></div>
-           </div>
-          </div> -->
-         </div>
-         <div class="col-sm-6">
-          <div class="row">
-           <div class="col-sm-6">
-            <div class="col-sm-12 vitalBox heartrate" id="hrVital">
-             <div class="vitalName">HR</div> 
-             <div class="vitalValue" id="hrVitalValue">-1</div> 
-             <div class="vitalUOM">bpm</div>
-            </div>
-           </div>
-           <div class="col-sm-6">
-            <div class="col-sm-12 vitalBox abp" id="abpVital">
-             <div class="vitalName">ABP</div> 
-             <div class="vitalValue" id="abpVitalValue">-1</div> 
-             <div class="vitalUOM">mmHg</div>
-            </div>
-           </div>
-          </div>
-          <div class="row">
-           <div class="col-sm-6">
-            <div class="col-sm-12 vitalBox temperature" id="tempVital">
-             <div class="vitalName">Temp</div> 
-             <div class="vitalValue" id="tempVitalValue">-1</div> 
-             <div class="vitalUOM">&deg;F</div>
-            </div>
-           </div>
-           <div class="col-sm-6">
-            <div class="col-sm-12 vitalBox spo2" id="spo2Vital">
-             <div class="vitalName">SpO2</div> 
-             <div class="vitalValue" id="spo2VitalValue">-1</div> 
-             <div class="vitalUOM">%</div>
-            </div>
-           </div>
-          </div>
-         </div>
+      <div class="col-lg-11 text-left" style="margin-top: 10px">
+        <div class="container-fluid">
+          <div id="patients" class="row fill"> </div>
         </div>
-        <div class="row alertMessagesBox">
-         <div class="alertMessagesTitle">Alerts</div>
-         <div class="alertMessages" id="alertMessages"></div>
-        </div>
-       </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
       </div>
     </div>
   </div>
-</div>
 
-<script type="text/javascript">
+  <div class="modal fade" id="patientModal" tabindex="-1" role="dialog" aria-labelledby="patientModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+              aria-hidden="true">&times;</span></button>
+          <div class="row">
+            <div class="col-sm-2" id="photo"><img src="assets/images/male_profile.png" class="profilePic"></div>
+            <div class="col-sm-10" id="patient-info">
+              <span class="h2" id="patientName"></span>, <span class="h2" id="patientAge"></span><br />
+              <span class="h4" id="patientId"></span><br />
+              <span class="h5" style="color:#888888" id="patientTags"></span>
+            </div>
+          </div>
+        </div>
+        <div class="modal-body">
+          <div class="container-fluid">
+            <div class="row">
+              <div class="col-sm-6">
+                <div class="row">
+                  <div class="col-sm-12">
+                    <div id="ecgWaveform"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-sm-6">
+                <div class="row">
+                  <div class="col-sm-6">
+                    <div class="col-sm-12 vitalBox heartrate" id="hrVital">
+                      <div class="vitalName">HR</div>
+                      <div class="vitalValue" id="hrVitalValue">-1</div>
+                      <div class="vitalUOM">bpm</div>
+                    </div>
+                  </div>
+                  <div class="col-sm-6">
+                    <div class="col-sm-12 vitalBox abp" id="abpVital">
+                      <div class="vitalName">ABP</div>
+                      <div class="vitalValue" id="abpVitalValue">-1</div>
+                      <div class="vitalUOM">mmHg</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-sm-6">
+                    <div class="col-sm-12 vitalBox temperature" id="tempVital">
+                      <div class="vitalName">Temp</div>
+                      <div class="vitalValue" id="tempVitalValue">-1</div>
+                      <div class="vitalUOM">&deg;F</div>
+                    </div>
+                  </div>
+                  <div class="col-sm-6">
+                    <div class="col-sm-12 vitalBox spo2" id="spo2Vital">
+                      <div class="vitalName">SpO2</div>
+                      <div class="vitalValue" id="spo2VitalValue">-1</div>
+                      <div class="vitalUOM">%</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row alertMessagesBox">
+              <div class="alertMessagesTitle">Alerts</div>
+              <div class="alertMessages" id="alertMessages"></div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
- var HR_CODE = "8867-4";
- var TEMP_CODE = "8310-5";
- var SPO2_CODE = "2710-2";
- var BPSYS_CODE = "8480-6";
- var BPDIA_CODE = "8462-4";
- var ECGLEADI_CODE = "X100-8";
- var RESP_CODE = "9279-1";
- 
- var ageTags = ["child", "youth", "adult", "senior"];
- var doctorTags = ["jane", "jack", "john", "jasmine"];
- var wardTags = ["emergency", "icu", "cardiology", "oncology"];
- var floorTags = ["1", "2", "3", "4"];
- var isolationTags = ["isolated", "unisolated"];
- 
- var patientMap = {};
- var patientTags = {};
- var tagGenerated = false;
-   
- /* generate random tags */
- 
- function generateTags(patientMap) {
-	 
-	 if (!tagGenerated){
-		 var sortedPatientIds = Object.keys(patientMap).sort();
-		 
-		 for(var i = 0; i < sortedPatientIds.length; i++) {
-		  var patientId = sortedPatientIds[i];
-		  var tags = [];
-		  
-		  tags.push(ageTags[Math.floor(Math.random()*ageTags.length)]); // select age tag
-          tags.push(doctorTags[Math.floor(Math.random()*doctorTags.length)]); // select doctor tag
-      	  tags.push(wardTags[Math.floor(Math.random()*wardTags.length)]); // select ward tag
-      	  tags.push(floorTags[Math.floor(Math.random()*floorTags.length)]); // select floor tag
-      	  tags.push(isolationTags[Math.floor(Math.random()*isolationTags.length)]); // select isolation tag
-		  
-		  patientTags[patientId] = tags;
-		 }
-		 displayPatients();
- 	 }
-	 tagGenerated = true;
- }
- 
- /* filter functions */
- function stateFilter(patientId) {
-  var values = [];
-  $.each($("input[name='state[]']:checked"), function() { values.push($(this).val()); });
-  return (values.includes('healthy') && patientMap[patientId].alert !== true) 
-   || (values.includes('alert') && patientMap[patientId].alert === true);
- }
- function activityFilter(patientId) {
-  var values = [];
-  $.each($("input[name='activity[]']:checked"), function() { values.push($(this).val()); });
-  return patientTags[patientId].filter(function(n) { return values.includes(n); }).length > 0;
- }
- function ageFilter(patientId) {
-  var values = [];
-  $.each($("input[name='demographic[]']:checked"), function() { values.push($(this).val()); });
-  return patientTags[patientId].filter(function(n) { return values.includes(n); }).length > 0;
- }
- function careFilter(patientId) {
-  var values = [];
-  $.each($("input[name='care[]']:checked"), function() { values.push($(this).val()); });
-  return patientTags[patientId].filter(function(n) { return values.includes(n); }).length > 0;
- }
- function doctorFilter(patientId) {
-  var values = [];
-  $.each($("input[name='doctor[]']:checked"), function() { values.push($(this).val()); });
-  return patientTags[patientId].filter(function(n) { return values.includes(n); }).length > 0;
- }
- function wardFilter(patientId) {
-  var values = [];
-  $.each($("input[name='ward[]']:checked"), function() { values.push($(this).val()); });
-  return patientTags[patientId].filter(function(n) { return values.includes(n); }).length > 0;
- }
- function floorFilter(patientId) {
-  var values = [];
-  $.each($("input[name='floor[]']:checked"), function() { values.push($(this).val()); });
-  return patientTags[patientId].filter(function(n) { return values.includes(n); }).length > 0;
- }
- function isolationFilter(patientId) {
-  var values = [];
-  $.each($("input[name='floor[]']:checked"), function() { values.push($(this).val()); });
-  return patientTags[patientId].filter(function(n) { return values.includes(n); }).length > 0;
- }
- 
- function getJobId(pathname) {
-  var components = pathname.split('/');
-  for (let i = 0; i < components.length; i++) {
-      if (components[i] === "jobs") {
-        return components[i+1];
+  <script type="text/javascript">
+
+    var HR_CODE = "8867-4";
+    var TEMP_CODE = "8310-5";
+    var SPO2_CODE = "2710-2";
+    var BPSYS_CODE = "8480-6";
+    var BPDIA_CODE = "8462-4";
+    var ECGLEADI_CODE = "X100-8";
+    var RESP_CODE = "9279-1";
+
+    var ageTags = ["child", "youth", "adult", "senior"];
+    var doctorTags = ["jane", "jack", "john", "jasmine"];
+    var wardTags = ["emergency", "icu", "cardiology", "oncology"];
+    var floorTags = ["1", "2", "3", "4"];
+    var isolationTags = ["isolated", "unisolated"];
+
+    var patientMap = {};
+    var patientTags = {};
+    var tagGenerated = false;
+    var currentPatientAlerts = {};
+
+    /* generate random tags */
+
+    function generateTags(patientMap) {
+
+      if (!tagGenerated) {
+        var sortedPatientIds = Object.keys(patientMap).sort();
+
+        for (var i = 0; i < sortedPatientIds.length; i++) {
+          var patientId = sortedPatientIds[i];
+          var tags = [];
+
+          tags.push(ageTags[Math.floor(Math.random() * ageTags.length)]); // select age tag
+          tags.push(doctorTags[Math.floor(Math.random() * doctorTags.length)]); // select doctor tag
+          tags.push(wardTags[Math.floor(Math.random() * wardTags.length)]); // select ward tag
+          tags.push(floorTags[Math.floor(Math.random() * floorTags.length)]); // select floor tag
+          tags.push(isolationTags[Math.floor(Math.random() * isolationTags.length)]); // select isolation tag
+
+          patientTags[patientId] = tags;
+        }
+        displayPatients(Object.keys(patientMap))
       }
-  }
- }
- 
- function doStatusUpdate() {
-     var jobId = getJobId(window.location.pathname);
-     $.get("/streams/jobs/" + jobId + "/health/Status/ports/input/0/tuples", function(data, status) {
-      if(data.length == 0)
-       return;
-      
-      patientMap = data[0].patientMap;
-      generateTags(patientMap);
-      setTimeout(doStatusUpdate, 100);
-     });
- }
-   doStatusUpdate();
- 
- function displayPatients() {
-  var sorted_keys = Object.keys(patientMap).sort();
+      tagGenerated = true;
+    }
 
-  sorted_keys = sorted_keys
-      .filter(stateFilter)
-      .filter(doctorFilter)
-      .filter(wardFilter)
-      .filter(floorFilter)
-      .filter(isolationFilter)
-  
-  patients.innerHTML = "";
-  for(var i = 0; i < sorted_keys.length; i++) {
-      var key = sorted_keys[i];
-      var status = patientMap[key];
-      var statusClass = "normal";
-      if(status.alert === true)
-       statusClass = "alrt";      
-      
-      var html = "";
-      html += '<div class="patient-card ' + statusClass + '">'
-      html += '<div class="row fill alert-icon-row">'
-      html += '<div class="col-lg-12" style="height:10px">'
-      var decorations = {};
-      if(status.alert === true) {
-    	  var msgs = status.messages;
-    	  
-		  var alerts = [];
-    	  // add alert types to alerts array
-		  for(var j = 0; j < msgs.length; j++) {
-    		  var alertType = msgs[j].split(":");
-    		  if($.inArray(alertType[0], alerts) == -1) {
-    			  alerts.push(alertType[0]);
-    		  }
-    	  }
-    	  
-    	  // add icons for first 5 alerts
-    	  var MAX_ALERTS = 6;
-    	  for(var j = 0; j < alerts.length; j++) {
-    		if(j+1 === MAX_ALERTS) {
-    			html += '<span style="font-size: xtra-small; valign : bottom">...</span>';
-    			break;
-    		}
-    		
-			var type = alerts[j];
-    		  switch(type) {
-    		  case "ABPsys,ABPdias":
-    			  html += '<img src="assets/images/abpalert.svg" title="ABP alert" class="small-icon" />';
-    			  break;
-    		  case "Temperature":
-    			  html += '<img src="assets/images/tempalert.svg" title="Temperature alert" class="small-icon" />';
-    			  break;
-    		  case "SpO2":
-    			  html += '<img src="assets/images/spo2alert.svg" title="SpO2 alert" class="small-icon" />';
-    			  break;
-    		  case "HR":
-    			  html += '<img src="assets/images/hralert.svg" title="HR alert" class="small-icon" />';
-    			  break;
-    		  }
-    	  }
+    /* filter functions */
+    function stateFilter(patientId) {
+      var values = [];
+      $.each($("input[name='state[]']:checked"), function () { values.push($(this).val()); });
+      return (values.includes('healthy') && patientMap[patientId].alert !== true)
+        || (values.includes('alert') && patientMap[patientId].alert === true);
+    }
+    function activityFilter(patientId) {
+      var values = [];
+      $.each($("input[name='activity[]']:checked"), function () { values.push($(this).val()); });
+      return patientTags[patientId].filter(function (n) { return values.includes(n); }).length > 0;
+    }
+    function ageFilter(patientId) {
+      var values = [];
+      $.each($("input[name='demographic[]']:checked"), function () { values.push($(this).val()); });
+      return patientTags[patientId].filter(function (n) { return values.includes(n); }).length > 0;
+    }
+    function careFilter(patientId) {
+      var values = [];
+      $.each($("input[name='care[]']:checked"), function () { values.push($(this).val()); });
+      return patientTags[patientId].filter(function (n) { return values.includes(n); }).length > 0;
+    }
+    function doctorFilter(patientId) {
+      var values = [];
+      $.each($("input[name='doctor[]']:checked"), function () { values.push($(this).val()); });
+      return patientTags[patientId].filter(function (n) { return values.includes(n); }).length > 0;
+    }
+    function wardFilter(patientId) {
+      var values = [];
+      $.each($("input[name='ward[]']:checked"), function () { values.push($(this).val()); });
+      return patientTags[patientId].filter(function (n) { return values.includes(n); }).length > 0;
+    }
+    function floorFilter(patientId) {
+      var values = [];
+      $.each($("input[name='floor[]']:checked"), function () { values.push($(this).val()); });
+      return patientTags[patientId].filter(function (n) { return values.includes(n); }).length > 0;
+    }
+    function isolationFilter(patientId) {
+      var values = [];
+      $.each($("input[name='floor[]']:checked"), function () { values.push($(this).val()); });
+      return patientTags[patientId].filter(function (n) { return values.includes(n); }).length > 0;
+    }
+
+    function getJobId(pathname) {
+      var components = pathname.split('/');
+      for (let i = 0; i < components.length; i++) {
+        if (components[i] === "jobs") {
+          return components[i + 1];
+        }
       }
-/*       html += '<img src="assets/images/red_heart.svg" class="small-icon" />' */
-      html += '</div>'
-      html += '<div class="row fill bed-icon-row">'
-      html += '<div class="col-lg-12">'
-      html += '<img src="assets/images/bed.svg" class="icon" data-toggle="modal", data-target="#patientModal" data-patient="' + status.patientId + '"/>'
-      html += '</div>'
-      html += '</div>'
-      html += '<div class="row fill patient-id-row">'
-      html += '<div class="col-lg-12">'
-      html += '<span>' + status.patientId + '</span>'
-      html += '</div>'
-      html += '</div>'
-      html += '</div>'
-      
-      patients.innerHTML += html
-      //patients.innerHTML += '<img src="' + img + '" title="' + status.patientId + '" class="heart" data-toggle="modal", data-target="#patientModal" data-patient="' + status.patientId + '">';
-  }
-  setTimeout(displayPatients, 1000);
- }
+    }
 
- 
-</script>
-<script type="text/javascript">
+    function patientEquals(a, b) {
+      // a is guaranteed to be not null
+      if (!b) {
+        return false;
+      }
 
-var graphs = {};
+      var aMsgs = a.messages;
+      var bMsgs = b.messages;
+      if (a.length != b.length) {
+        return false;
+      }
 
-function getWaveformGraph(patientId, waveformName, elemId) {
-	if(!(waveformName in graphs)) {
-		plt = Bokeh.Plotting;	
-		
-		var plotWidth = 400;
-		var plotHeight = 200;
-		
-		var xdata = [];
-		var ydata = [];
-		
-		// create a data source
-		var source = new Bokeh.ColumnDataSource({
-		    data: { x: xdata, y: ydata}
-		});
-		
-		var fig = plt.figure({title: waveformName, tools : "pan", plot_width : plotWidth, plot_height : plotHeight, toolbar_location : undefined});
-		fig.y_range = new Bokeh.Range1d({ start: -1, end: 2 });
-		fig.outline_line_width = 1;
-		fig.outline_line_color = "black";
-		fig.ygrid.grid_line_color = "red";
-		fig.ygrid.grid_line_alpha = 0.3;
-		fig.xgrid.grid_line_color = "red";
-		fig.xgrid.grid_line_alpha = 0.3;
+      // the arrays should have the same order
+      for (var i = 0; i < a.length; ++i) {
+        if (a[i] !== b[i]) return false;
+      }
+      return true;
+    }
+
+    function doStatusUpdate() {
+      var jobId = getJobId(window.location.pathname);
+      $.get("/streams/jobs/" + jobId + "/health/Status/ports/input/0/tuples", function (data, status) {
+        if (data.length == 0)
+          return;
+
+        // get new patient data
+        patientMap = data[0].patientMap;
+        // find patients with alerts
+        var newPatientAlerts = Object.keys(patientMap).reduce(function (acc, key) {
+          if (patientMap[key][alert]) {
+            acc[key] = patientMap[key];
+          }
+          return acc;
+        })
+        // compare with the previous iteration of patients with alerts
+        // compute what needs to be updated
+        var needToUpdate = [];
+        var currentKeys = Object.keys(currentPatientAlerts);
+        var newKeys = Object.keys(newPatientAlerts);
+        // loop over the previous iteration of patients with alerts
+        // case 1:
+        //   the new iteration has the same patient with the same alerts
+        //   then no need to update, also delete that patient from the new iteration
+        // case 2:
+        //   the new iteration has the same patient with different alerts
+        //   then need to update that patient, also delete that patient from the new iteration
+        // case 3"
+        //   the new iteration does not have the same patient
+        //   then need to update that patient, also delete that patient from the new iteration
+        // at the end
+        for (key in currentKeys) {
+          var currentPatient = currentPatientAlerts[key];
+          var newPatient = newPatientAlerts[key];
+          if (patientEquals(currentPatient, newPatient)) {
+            newKeys.splice(newKeys.indexOf(key), 1);
+          } else {
+            needToUpdate.push(key);
+            newKeys.splice(newKeys.indexOf(key), 1);
+          }
+        }
+        needToUpdate.concat(newKeys);
+        currentPatientAlerts = newPatientAlerts;
+
+        generateTags(patientMap);
+        displayPatients(needToUpdate);
+        setTimeout(doStatusUpdate, 300);
+      });
+    }
+    doStatusUpdate();
+
+    function displayPatients(patientsArray) {
+      patientsArray.sort()
+      patientsArray = patientsArray
+        .filter(stateFilter)
+        .filter(doctorFilter)
+        .filter(wardFilter)
+        .filter(floorFilter)
+        .filter(isolationFilter)
+
+      for (var i = 0; i < patientsArray.length; i++) {
+        var key = patientsArray[i];
+        var status = patientMap[key];
+        var statusClass = "normal";
+        if (status.alert === true)
+          statusClass = "alrt";
+
+        var html = "";
+        html += '<div id="' + status.patientId + '" class="patient-card ' + statusClass + '">'
+        html += '<div class="row fill alert-icon-row">'
+        html += '<div class="col-lg-12" style="height:10px">'
+        var decorations = {};
+        if (status.alert === true) {
+          var msgs = status.messages;
+
+          var alerts = [];
+          // add alert types to alerts array
+          for (var j = 0; j < msgs.length; j++) {
+            var alertType = msgs[j].split(":");
+            if ($.inArray(alertType[0], alerts) == -1) {
+              alerts.push(alertType[0]);
+            }
+          }
+
+          // add icons for first 5 alerts
+          var MAX_ALERTS = 6;
+          for (var j = 0; j < alerts.length; j++) {
+            if (j + 1 === MAX_ALERTS) {
+              html += '<span style="font-size: xtra-small; valign : bottom">...</span>';
+              break;
+            }
+
+            var type = alerts[j];
+            switch (type) {
+              case "ABPsys,ABPdias":
+                html += '<img src="assets/images/abpalert.svg" title="ABP alert" class="small-icon" />';
+                break;
+              case "Temperature":
+                html += '<img src="assets/images/tempalert.svg" title="Temperature alert" class="small-icon" />';
+                break;
+              case "SpO2":
+                html += '<img src="assets/images/spo2alert.svg" title="SpO2 alert" class="small-icon" />';
+                break;
+              case "HR":
+                html += '<img src="assets/images/hralert.svg" title="HR alert" class="small-icon" />';
+                break;
+            }
+          }
+        }
+
+        html += '</div>'
+        html += '<div class="row fill bed-icon-row">'
+        html += '<div class="col-lg-12">'
+        html += '<img src="assets/images/bed.svg" class="icon" data-toggle="modal", data-target="#patientModal" data-patient="' + status.patientId + '"/>'
+        html += '</div>'
+        html += '</div>'
+        html += '<div class="row fill patient-id-row">'
+        html += '<div class="col-lg-12">'
+        html += '<span>' + status.patientId + '</span>'
+        html += '</div>'
+        html += '</div>'
+        html += '</div>'
+
+        if ($("#" + status.patientId).length) {
+          $("#" + status.patientId).html(html);
+        } else {
+          patients.innerHTML += html;
+        }
+      }
+    }
+
+
+  </script>
+  <script type="text/javascript">
+
+    var graphs = {};
+
+    function getWaveformGraph(patientId, waveformName, elemId) {
+      if (!(waveformName in graphs)) {
+        plt = Bokeh.Plotting;
+
+        var plotWidth = 400;
+        var plotHeight = 200;
+
+        var xdata = [];
+        var ydata = [];
+
+        // create a data source
+        var source = new Bokeh.ColumnDataSource({
+          data: { x: xdata, y: ydata }
+        });
+
+        var fig = plt.figure({ title: waveformName, tools: "pan", plot_width: plotWidth, plot_height: plotHeight, toolbar_location: undefined });
+        fig.y_range = new Bokeh.Range1d({ start: -1, end: 2 });
+        fig.outline_line_width = 1;
+        fig.outline_line_color = "black";
+        fig.ygrid.grid_line_color = "red";
+        fig.ygrid.grid_line_alpha = 0.3;
+        fig.xgrid.grid_line_color = "red";
+        fig.xgrid.grid_line_alpha = 0.3;
         fig.ygrid.minor_grid_line_color = 'red';
         fig.ygrid.minor_grid_line_alpha = 0.1;
         fig.xgrid.minor_grid_line_color = 'red';
         fig.xgrid.minor_grid_line_alpha = 0.1;
         fig.xaxis.major_label_text_font_size = '0pt';
-		
-		var line = fig.line({x : xdata, y : ydata, line_width : 1, line_color : 'black'});
-	
-		graphs[waveformName] = {plot : plt, figure : fig, line : line, dataQueue : []};
-	}
-	
-	// retrieve data regularly into queue
-	var dataQueue = graphs[waveformName].dataQueue;
-	dataQueue = []
-	var line = graphs[waveformName].line;
-	line.data_source.data = {x : [], y : []};
-	
-	var lastWindow = -1;
-  var ts = 0;
-  var jobId = getJobId(window.location.pathname);
-	var dataGetTimer = setInterval(function() {
-		$.get('/streams/jobs/' + jobId + '/health/WaveformData/ports/input/0/tuples?partition=' + patientId  + '&partition=' + waveformName, function(data, status) {
-			for(var idx in data) {
-				if(data[idx].windowCount === lastWindow)
-					return;
-				
-				lastWindow = data[idx].windowCount;
-				
-				var obs = data[idx].observations;
-				for(var obsIdx in obs) {
-					var value = obs[obsIdx].reading.value;
-					dataQueue.push({x : ts++, y : value});	
-				}
-			}
-		});
-	}, 1000);
-	timers.push(dataGetTimer);
-	
-	var updateGraphTimer = setInterval(function() {
-		var newData = dataQueue.shift();
-		line.data_source.stream(newData, 200);
-	}, 10);
-	timers.push(updateGraphTimer);
-	
-	return graphs[waveformName];
-}
-</script>
-<script type="text/javascript">
-var manipulationEnabled = false;
 
-$('#simulate').click(function() {
-	manipulationEnabled = !manipulationEnabled;
+        var line = fig.line({ x: xdata, y: ydata, line_width: 1, line_color: 'black' });
 
-	var patientNums = [1, 4, 9, 12, 32, 44, 48, 55, 60, 70, 71, 72, 90, 98];
-	var sortedPatientIds = Object.keys(patientMap).sort();
-  var jobId = getJobId(window.location.pathname);
-  
-	for(var idx in patientNums) {		
-		if (patientNums[idx] < sortedPatientIds.length)
-		{
-			var p = {patientId : sortedPatientIds[patientNums[idx]], isManipulationEnabled : manipulationEnabled};
-			$.post('/streams/jobs/' + jobId + '/health/Simulate/ports/output/0/inject', {jsonString : JSON.stringify(p)});
-		}
-		else
-		{
-			break;
-		}
-	}
-});
+        graphs[waveformName] = { plot: plt, figure: fig, line: line, dataQueue: [] };
+      }
 
-var timers = [];
+      // retrieve data regularly into queue
+      var dataQueue = graphs[waveformName].dataQueue;
+      dataQueue = []
+      var line = graphs[waveformName].line;
+      line.data_source.data = { x: [], y: [] };
 
-function updateVital(patientId, vitalType, elem) {
-  var jobId = getJobId(window.location.pathname);
-  $.get('/streams/jobs/' + jobId + '/health/VitalsData/ports/input/0/tuples?partition=' + patientId + '&partition=' + vitalType, function(data, status) {
-	if(data.length == 0)
-		return;
-	
-	var obs = data[0];
-	var myNumeral = numeral(obs.reading.value);
-	elem.html(myNumeral.format('0'));
-  });	
-}
+      var lastWindow = -1;
+      var ts = 0;
+      var jobId = getJobId(window.location.pathname);
+      var dataGetTimer = setInterval(function () {
+        $.get('/streams/jobs/' + jobId + '/health/WaveformData/ports/input/0/tuples?partition=' + patientId + '&partition=' + waveformName, function (data, status) {
+          for (var idx in data) {
+            if (data[idx].windowCount === lastWindow)
+              return;
 
-function updateABP(patientId) {
-    var jobId = getJobId(window.location.pathname);
-	  $.get('/streams/jobs/' + jobId + '/health/VitalsData/ports/input/0/tuples?partition=' + patientId + '&partition=' + BPSYS_CODE, function(data, status) {
-		if(data.length == 0)
-			return;
-		
-		var obs = data[0];
-		var abpSysNumeral = numeral(obs.reading.value);
-		
-		$.get('/streams/jobs/' + jobId + '/health/VitalsData/ports/input/0/tuples?partition=' + patientId + '&partition=' + BPDIA_CODE, function(data, status) {
-			if(data.length == 0)
-				return;
-			
-			obs = data[0];
-			var abpDiasNumeral = numeral(obs.reading.value);
-			$('#abpVitalValue').html(abpSysNumeral.format('0') + '/' + abpDiasNumeral.format('0'));
-		});
-	  });	
-}
+            lastWindow = data[idx].windowCount;
 
-var doc = new Bokeh.Document();
-var div = document.getElementById("ecgWaveform");
-Bokeh.embed.add_document_standalone(doc, div);
+            var obs = data[idx].observations;
+            for (var obsIdx in obs) {
+              var value = obs[obsIdx].reading.value;
+              dataQueue.push({ x: ts++, y: value });
+            }
+          }
+        });
+      }, 1000);
+      timers.push(dataGetTimer);
 
-$('#patientModal').on('show.bs.modal', function (event) {
-	  var img = $(event.relatedTarget) // img that triggered the modal
-	  var patientId = img.data('patient') // Extract info from data-* attributes
-	
-	  var modal = $(this)
-	  modal.find('#patientId').text(patientId);
-	  modal.find('#patientName').text("John Smith");
-	  modal.find('#patientAge').text(function() {
-		  var tags = patientTags[patientId];
-		  if(tags.includes("child"))
-			  return "2";
-		  else if(tags.includes("youth"))
-			  return "15";
-		  else if(tags.includes("adult"))
-			  return "33";
-		  else if(tags.includes("senior"))
-			  return "82";
-	  });
-	  
-	  var tagStr = "[";
-	  for(var i = 0; i < patientTags[patientId].length; i++) {
-		  tagStr += patientTags[patientId][i];
-		  if(i+1 != patientTags[patientId].length)
-			  tagStr += ", ";
-	  }
-	  tagStr += "]";
-	  modal.find('#patientTags').text(tagStr);
-	  //modal.find('.modal-title').text(patientId);
-	  	  
-	  // retrieve HR data
-	  var vitalIntervalTime = 1000;
-	  timers.push(setInterval(function() {updateVital(patientId, HR_CODE, $('#hrVitalValue'))}, vitalIntervalTime));
-	  timers.push(setInterval(function() {updateABP(patientId)}, vitalIntervalTime));
-	  timers.push(setInterval(function() {updateVital(patientId, TEMP_CODE, $('#tempVitalValue'))}, vitalIntervalTime));
-	  timers.push(setInterval(function() {updateVital(patientId, SPO2_CODE, $('#spo2VitalValue'))}, vitalIntervalTime));
-	  
-	 var statusTimer = setInterval(function() {
-    	  // retrive alert messages
-    	  var messages = patientMap[patientId].messages;
-    	  var msgHTML = '<ul>';
-    	  for(var idx in messages) {
-    		  msgHTML += '<li>' + messages[idx].split(":")[1] + '</li>';
-    	  }
-    	  msgHTML += '</ul>';
-    	  $('#alertMessages').html(msgHTML);
-    	  
-    	  // reset all border colors
-    	  $(".vitalBox").removeClass("vitalBoxAlerted");
-    	  
-    	  for(var idx in messages) {
-    		  var readingType = messages[idx].split(":")[0];
-    		  switch(readingType) {
-    		  case "HR":
-    			  $("#hrVital").addClass("vitalBoxAlerted");
-    			  break;
-    		  case "ABPsys,ABPdias":
-    			  $("#abpVital").addClass("vitalBoxAlerted");
-    			  break;
-    		  case "Temperature":
-    			  $("#tempVital").addClass("vitalBoxAlerted");
-    			  break;
-    		  case "SpO2":
-    			  $("#spo2Vital").addClass("vitalBoxAlerted");
-    			  break;
-    		  }
-    	  }
+      var updateGraphTimer = setInterval(function () {
+        var newData = dataQueue.shift();
+        line.data_source.stream(newData, 200);
+      }, 10);
+      timers.push(updateGraphTimer);
 
-    	  $(".vitalBox").updateStyles;
-	  }, vitalIntervalTime);
-	 timers.push(statusTimer);
-	 	
-	// display waveforms
-	var ecgGraph = getWaveformGraph(patientId, ECGLEADI_CODE, "ecgWaveform");
-//     var respGraph = getWaveformGraph(patientId, RESP_CODE, "respWaveform");
+      return graphs[waveformName];
+    }
+  </script>
+  <script type="text/javascript">
+    var manipulationEnabled = false;
 
-    doc.add_root(ecgGraph.figure);
-})
-	
-$('#patientModal').on('hide.bs.modal', function(event) {
-	for(var idx in timers) {
-		clearInterval(timers[idx]);
-	}
-	timers = [];
-})
+    $('#simulate').click(function () {
+      manipulationEnabled = !manipulationEnabled;
 
-$('#checkAll').click(function() {
-  $.each($("input[name='state[]']"), function() { $(this).prop('checked', true); });
-  $.each($("input[name='doctor[]']"), function() { $(this).prop('checked', true); });
-  $.each($("input[name='ward[]']"), function() { $(this).prop('checked', true); });
-  $.each($("input[name='floor[]']"), function() { $(this).prop('checked', true); });
-  $.each($("input[name='isolation[]']"), function() { $(this).prop('checked', true); });
-});
+      var patientNums = [1, 4, 9, 12, 32, 44, 48, 55, 60, 70, 71, 72, 90, 98];
+      var sortedPatientIds = Object.keys(patientMap).sort();
+      var jobId = getJobId(window.location.pathname);
 
-$('#checkNone').click(function() {
-  $.each($("input[name='state[]']"), function() { $(this).prop('checked', false); });
-  $.each($("input[name='doctor[]']"), function() { $(this).prop('checked', false); });
-  $.each($("input[name='ward[]']"), function() { $(this).prop('checked', false); });
-  $.each($("input[name='floor[]']"), function() { $(this).prop('checked', false); });
-  $.each($("input[name='isolation[]']"), function() { $(this).prop('checked', false); });
-});
-</script>
+      for (var idx in patientNums) {
+        if (patientNums[idx] < sortedPatientIds.length) {
+          var p = { patientId: sortedPatientIds[patientNums[idx]], isManipulationEnabled: manipulationEnabled };
+          $.post('/streams/jobs/' + jobId + '/health/Simulate/ports/output/0/inject', { jsonString: JSON.stringify(p) });
+        }
+        else {
+          break;
+        }
+      }
+    });
+
+    var timers = [];
+
+    function updateVital(patientId, vitalType, elem) {
+      var jobId = getJobId(window.location.pathname);
+      $.get('/streams/jobs/' + jobId + '/health/VitalsData/ports/input/0/tuples?partition=' + patientId + '&partition=' + vitalType, function (data, status) {
+        if (data.length == 0)
+          return;
+
+        var obs = data[0];
+        var myNumeral = numeral(obs.reading.value);
+        elem.html(myNumeral.format('0'));
+      });
+    }
+
+    function updateABP(patientId) {
+      var jobId = getJobId(window.location.pathname);
+      $.get('/streams/jobs/' + jobId + '/health/VitalsData/ports/input/0/tuples?partition=' + patientId + '&partition=' + BPSYS_CODE, function (data, status) {
+        if (data.length == 0)
+          return;
+
+        var obs = data[0];
+        var abpSysNumeral = numeral(obs.reading.value);
+
+        $.get('/streams/jobs/' + jobId + '/health/VitalsData/ports/input/0/tuples?partition=' + patientId + '&partition=' + BPDIA_CODE, function (data, status) {
+          if (data.length == 0)
+            return;
+
+          obs = data[0];
+          var abpDiasNumeral = numeral(obs.reading.value);
+          $('#abpVitalValue').html(abpSysNumeral.format('0') + '/' + abpDiasNumeral.format('0'));
+        });
+      });
+    }
+
+    var doc = new Bokeh.Document();
+    var div = document.getElementById("ecgWaveform");
+    Bokeh.embed.add_document_standalone(doc, div);
+
+    $('#patientModal').on('show.bs.modal', function (event) {
+      var img = $(event.relatedTarget) // img that triggered the modal
+      var patientId = img.data('patient') // Extract info from data-* attributes
+
+      var modal = $(this)
+      modal.find('#patientId').text(patientId);
+      modal.find('#patientName').text("John Smith");
+      modal.find('#patientAge').text(function () {
+        var tags = patientTags[patientId];
+        if (tags.includes("child"))
+          return "2";
+        else if (tags.includes("youth"))
+          return "15";
+        else if (tags.includes("adult"))
+          return "33";
+        else if (tags.includes("senior"))
+          return "82";
+      });
+
+      var tagStr = "[";
+      for (var i = 0; i < patientTags[patientId].length; i++) {
+        tagStr += patientTags[patientId][i];
+        if (i + 1 != patientTags[patientId].length)
+          tagStr += ", ";
+      }
+      tagStr += "]";
+      modal.find('#patientTags').text(tagStr);
+      //modal.find('.modal-title').text(patientId);
+
+      // retrieve HR data
+      var vitalIntervalTime = 1000;
+      timers.push(setInterval(function () { updateVital(patientId, HR_CODE, $('#hrVitalValue')) }, vitalIntervalTime));
+      timers.push(setInterval(function () { updateABP(patientId) }, vitalIntervalTime));
+      timers.push(setInterval(function () { updateVital(patientId, TEMP_CODE, $('#tempVitalValue')) }, vitalIntervalTime));
+      timers.push(setInterval(function () { updateVital(patientId, SPO2_CODE, $('#spo2VitalValue')) }, vitalIntervalTime));
+
+      var statusTimer = setInterval(function () {
+        // retrive alert messages
+        var messages = patientMap[patientId].messages;
+        var msgHTML = '<ul>';
+        for (var idx in messages) {
+          msgHTML += '<li>' + messages[idx].split(":")[1] + '</li>';
+        }
+        msgHTML += '</ul>';
+        $('#alertMessages').html(msgHTML);
+
+        // reset all border colors
+        $(".vitalBox").removeClass("vitalBoxAlerted");
+
+        for (var idx in messages) {
+          var readingType = messages[idx].split(":")[0];
+          switch (readingType) {
+            case "HR":
+              $("#hrVital").addClass("vitalBoxAlerted");
+              break;
+            case "ABPsys,ABPdias":
+              $("#abpVital").addClass("vitalBoxAlerted");
+              break;
+            case "Temperature":
+              $("#tempVital").addClass("vitalBoxAlerted");
+              break;
+            case "SpO2":
+              $("#spo2Vital").addClass("vitalBoxAlerted");
+              break;
+          }
+        }
+
+        $(".vitalBox").updateStyles;
+      }, vitalIntervalTime);
+      timers.push(statusTimer);
+
+      // display waveforms
+      var ecgGraph = getWaveformGraph(patientId, ECGLEADI_CODE, "ecgWaveform");
+
+      doc.add_root(ecgGraph.figure);
+    })
+
+    $('#patientModal').on('hide.bs.modal', function (event) {
+      for (var idx in timers) {
+        clearInterval(timers[idx]);
+      }
+      timers = [];
+    })
+
+    $('#checkAll').click(function () {
+      $.each($("input[name='state[]']"), function () { $(this).prop('checked', true); });
+      $.each($("input[name='doctor[]']"), function () { $(this).prop('checked', true); });
+      $.each($("input[name='ward[]']"), function () { $(this).prop('checked', true); });
+      $.each($("input[name='floor[]']"), function () { $(this).prop('checked', true); });
+      $.each($("input[name='isolation[]']"), function () { $(this).prop('checked', true); });
+    });
+
+    $('#checkNone').click(function () {
+      $.each($("input[name='state[]']"), function () { $(this).prop('checked', false); });
+      $.each($("input[name='doctor[]']"), function () { $(this).prop('checked', false); });
+      $.each($("input[name='ward[]']"), function () { $(this).prop('checked', false); });
+      $.each($("input[name='floor[]']"), function () { $(this).prop('checked', false); });
+      $.each($("input[name='isolation[]']"), function () { $(this).prop('checked', false); });
+    });
+  </script>
 
 </body>
+
 </html>
