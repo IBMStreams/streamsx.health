@@ -230,7 +230,7 @@
 
           patientTags[patientId] = tags;
         }
-        displayPatients(Object.keys(patientMap))
+        displayPatients()
       }
       tagGenerated = true;
     }
@@ -295,13 +295,13 @@
 
       var aMsgs = a.messages;
       var bMsgs = b.messages;
-      if (a.length != b.length) {
+      if (aMsgs.length != bMsgs.length) {
         return false;
       }
 
       // the arrays should have the same order
-      for (var i = 0; i < a.length; ++i) {
-        if (a[i] !== b[i]) return false;
+      for (var i = 0; i < aMsgs.length; ++i) {
+        if (aMsgs[i] !== bMsgs[i]) return false;
       }
       return true;
     }
@@ -316,11 +316,11 @@
         patientMap = data[0].patientMap;
         // find patients with alerts
         var newPatientAlerts = Object.keys(patientMap).reduce(function (acc, key) {
-          if (patientMap[key][alert]) {
+          if (patientMap[key]["alert"]) {
             acc[key] = patientMap[key];
           }
           return acc;
-        })
+        }, {});
         // compare with the previous iteration of patients with alerts
         // compute what needs to be updated
         var needToUpdate = [];
@@ -337,7 +337,8 @@
         //   the new iteration does not have the same patient
         //   then need to update that patient, also delete that patient from the new iteration
         // at the end
-        for (key in currentKeys) {
+        for (var i = 0; i < currentKeys.length; i++) {
+          var key = currentKeys[i];
           var currentPatient = currentPatientAlerts[key];
           var newPatient = newPatientAlerts[key];
           if (patientEquals(currentPatient, newPatient)) {
@@ -347,7 +348,7 @@
             newKeys.splice(newKeys.indexOf(key), 1);
           }
         }
-        needToUpdate.concat(newKeys);
+        needToUpdate = needToUpdate.concat(newKeys);
         currentPatientAlerts = newPatientAlerts;
 
         generateTags(patientMap);
@@ -358,20 +359,36 @@
     doStatusUpdate();
 
     function displayPatients(patientsArray) {
+      if (patientsArray == undefined) {
+        patientsArray = Object.keys(patientMap);
+      }
+
       patientsArray.sort()
-      patientsArray = patientsArray
+      var showPatientsArray = patientsArray
         .filter(stateFilter)
         .filter(doctorFilter)
         .filter(wardFilter)
         .filter(floorFilter)
-        .filter(isolationFilter)
+        .filter(isolationFilter);
 
-      for (var i = 0; i < patientsArray.length; i++) {
-        var key = patientsArray[i];
+      // hide patients that have been filtered out
+      var hidePatientsArray = patientsArray.filter(function(item) {
+        return showPatientsArray.indexOf(item) < 0;
+      });
+      for (var i = 0; i < hidePatientsArray.length; i++) {
+        var key = hidePatientsArray[i];
+        $("#" + key).hide();
+      }
+
+      for (var i = 0; i < showPatientsArray.length; i++) {
+        var key = showPatientsArray[i];
         var status = patientMap[key];
         var statusClass = "normal";
-        if (status.alert === true)
-          statusClass = "alrt";
+        if (status.alert === true && status.messages.length === 1) {
+          statusClass = "single-alrt";
+        } else if (status.alert === true) {
+          statusClass = "multi-alrt";
+        }
 
         var html = "";
         html += '<div id="' + status.patientId + '" class="patient-card ' + statusClass + '">'
@@ -417,6 +434,7 @@
         }
 
         html += '</div>'
+        html += '</div>'
         html += '<div class="row fill bed-icon-row">'
         html += '<div class="col-lg-12">'
         html += '<img src="assets/images/bed.svg" class="icon" data-toggle="modal", data-target="#patientModal" data-patient="' + status.patientId + '"/>'
@@ -430,11 +448,12 @@
         html += '</div>'
 
         if ($("#" + status.patientId).length) {
-          $("#" + status.patientId).html(html);
+          $("#" + status.patientId).replaceWith(html);
         } else {
           patients.innerHTML += html;
         }
       }
+      console.timeEnd("add html");
     }
 
 
@@ -662,6 +681,7 @@
       $.each($("input[name='ward[]']"), function () { $(this).prop('checked', true); });
       $.each($("input[name='floor[]']"), function () { $(this).prop('checked', true); });
       $.each($("input[name='isolation[]']"), function () { $(this).prop('checked', true); });
+      displayPatients();
     });
 
     $('#checkNone').click(function () {
@@ -670,6 +690,13 @@
       $.each($("input[name='ward[]']"), function () { $(this).prop('checked', false); });
       $.each($("input[name='floor[]']"), function () { $(this).prop('checked', false); });
       $.each($("input[name='isolation[]']"), function () { $(this).prop('checked', false); });
+      displayPatients();
+    });
+
+    $(":checkbox").each(function (ind, cb) {
+      $(cb).click(function() {
+        displayPatients();
+      });
     });
   </script>
 

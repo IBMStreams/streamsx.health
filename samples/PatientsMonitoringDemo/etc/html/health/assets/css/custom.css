@@ -132,9 +132,17 @@
  border-color: green;
 }
 
-.patient-card.alrt {
+.patient-card.single-alrt {
  border-color: orange;
 }
+
+.patient-card.multi-alrt {
+ border-color: red;
+ animation: blink 1s;
+ animation-iteration-count: infinite;
+}
+
+@keyframes blink { 50% { border-color:white; } }
 
 .alert-icon-row {
  margin-top: 5px;
