@@ -453,7 +453,6 @@
           patients.innerHTML += html;
         }
       }
-      console.timeEnd("add html");
     }
 
 
@@ -526,7 +525,7 @@
       var updateGraphTimer = setInterval(function () {
         var newData = dataQueue.shift();
         line.data_source.stream(newData, 200);
-      }, 10);
+      }, 40);
       timers.push(updateGraphTimer);
 
       return graphs[waveformName];
