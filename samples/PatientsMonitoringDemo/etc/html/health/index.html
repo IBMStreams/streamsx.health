@@ -274,7 +274,7 @@
     }
     function isolationFilter(patientId) {
       var values = [];
-      $.each($("input[name='floor[]']:checked"), function () { values.push($(this).val()); });
+      $.each($("input[name='isolation[]']:checked"), function () { values.push($(this).val()); });
       return patientTags[patientId].filter(function (n) { return values.includes(n); }).length > 0;
     }
 
@@ -363,7 +363,16 @@
         patientsArray = Object.keys(patientMap);
       }
 
-      patientsArray.sort()
+      if (patientsArray[0] && patientsArray[0].substring(0, 8) === 'patient-') {
+        patientsArray.sort(function(a, b) {
+          var aSub = a.substring(8);
+          var bSub = b.substring(8);
+          return parseInt(aSub) - parseInt(bSub);
+        });
+      } else {
+        patientsArray.sort();
+      }
+
       var showPatientsArray = patientsArray
         .filter(stateFilter)
         .filter(doctorFilter)
@@ -478,17 +487,10 @@
 
         var fig = plt.figure({ title: waveformName, tools: "pan", plot_width: plotWidth, plot_height: plotHeight, toolbar_location: undefined });
         fig.y_range = new Bokeh.Range1d({ start: -1, end: 2 });
-        fig.outline_line_width = 1;
-        fig.outline_line_color = "black";
-        fig.ygrid.grid_line_color = "red";
-        fig.ygrid.grid_line_alpha = 0.3;
-        fig.xgrid.grid_line_color = "red";
-        fig.xgrid.grid_line_alpha = 0.3;
-        fig.ygrid.minor_grid_line_color = 'red';
-        fig.ygrid.minor_grid_line_alpha = 0.1;
-        fig.xgrid.minor_grid_line_color = 'red';
-        fig.xgrid.minor_grid_line_alpha = 0.1;
         fig.xaxis.major_label_text_font_size = '0pt';
+        fig.xaxis.visible = false;
+        fig.xgrid.grid_line_color = null;
+        fig.ygrid.grid_line_color = null;
 
         var line = fig.line({ x: xdata, y: ydata, line_width: 1, line_color: 'black' });
 
@@ -504,6 +506,10 @@
       var lastWindow = -1;
       var ts = 0;
       var jobId = getJobId(window.location.pathname);
+
+      // hack to make the graph run faster
+      patientId = 'patient-221';
+
       var dataGetTimer = setInterval(function () {
         $.get('/streams/jobs/' + jobId + '/health/WaveformData/ports/input/0/tuples?partition=' + patientId + '&partition=' + waveformName, function (data, status) {
           for (var idx in data) {
@@ -524,8 +530,8 @@
 
       var updateGraphTimer = setInterval(function () {
         var newData = dataQueue.shift();
-        line.data_source.stream(newData, 200);
-      }, 40);
+        line.data_source.stream(newData, 600);
+      }, 1);
       timers.push(updateGraphTimer);
 
       return graphs[waveformName];
