@@ -10,6 +10,50 @@ Our goal is to make it easy to create real-time healthcare analytics application
 
 Follow the [**Getting Started Guide**](https://developer.ibm.com/streamsdev/2017/06/07/getting-started-streams-healthcare-analytics-platform/) to learn about how to leverage the services from the Streams Healthcare Analytics Platform
 
+### Streams QSE ###
+This is necessary if you are running on a system not supported by Streams.
+1. Install [Streams QSE](http://ibmstreams.github.io/streamsx.documentation/docs/4.3/qse-intro/).
+
+### Endpoint-monitor ###
+Original repository: https://github.com/IBMStreams/endpoint-monitor
+Some of the UI functionalities are provided through HTTP operators, and they won't work without setting up an endpoint-monitor.
+1. SSH into a System-S engineering node.
+2. Clone / pull from the [streams.helm-charts](https://github.ibm.com/IBM-Streams/streams.helm-charts) repository, and add the `bin` directory to your PATH.
+3. Log onto an Openshift cluster using `oc login`, switch to the namespace you want to use using `oc project`.
+4. Set up a [streams user secret](https://github.com/kenguo573/endpoint-monitor#1-define-streams-user) if one does not exist.
+5. Deploy the app using the following:
+
+        oc new-app \
+         -f https://raw.githubusercontent.com/kenguo573/endpoint-monitor/master/openshift/templates/streams-endpoints.json \
+         -p NAME=<name of the app> \
+         -p STREAMS_INSTANCE_NAME=<name of the instance that test sabs will be submitted to> \
+         -p JOB_GROUP=<name of the job group that test sabs will be submitted to (do not use `default`)> \
+         -p STREAMS_USER_SECRET=streams-user
+      You can check the status using `oc get pods | grep <app name>` to see the build and deploy pods.
+6. Once the deploy pods have finished running, you should see the service pods.
+
+        -bash-4.2$ oc get pods | grep test-proxy
+        test-proxy-1-9rgmw                                2/2       Running     0          5m
+        test-proxy-endpoint-monitor-1-build               0/1       Completed   0          6m
+        test-proxy-nginx-1-build                          0/1       Completed   0          6m
+7. Run `oc get svc <app-name>`, and take note of the second port number.
+
+        -bash-4.2$ oc get svc test-proxy
+        NAME         TYPE       CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE
+        test-proxy   NodePort   172.30.64.165   <none>        8443:31031/TCP   5m
+8. On your browser, go to https://syss161.pok.stglabs.ibm.com:port-number (31031 in my case). If you see the `IBM Streams endpoint-monitor` page then continue to the next step.
+
+### Health toolkit ###
+1. You will need the [streamsx.inetserver](https://github.com/IBMStreams/streamsx.inetserver) toolkit which is not included in the Streams QSE docker image. Download the latest release and place the toolkit inside the STREAMS_SPLPATH directory.
+2. Clone this repository into the Streams QSE docker container.
+3. Run `gradlew build` in the project root directory.
+
+### Building and launching a demo ###
+1. On a terminal inside the docker container, go into the /samples/PatientsMonitorDemo directory.
+2. Run `../../gradlew execute`.
+3. SABs as well as their configuration files will be produced in the demo directory. Submit these to the Streams instance provided when setting up the endpoint-monitor. Submit the UIService job to the job group provided earlier.
+4. Wait a few moments, then go to https://syss161.pok.stglabs.ibm.com:port-number/streams/jobs/job-number/health/ to see the UI.
+
 ## Streams Healthcare Demos
 
 ### Python Jupyter Notebook Demo
