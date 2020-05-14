@@ -9,7 +9,7 @@
   <info:dependencies>
     <info:toolkit>
       <common:name>com.ibm.streamsx.inet</common:name>
-      <common:version>[2.7.0,3.0.0)</common:version>
+      <common:version>[3.0.0,4.0.0)</common:version>
     </info:toolkit>
     <info:toolkit>
       <common:name>com.ibm.streamsx.messaging</common:name>
@@ -30,6 +30,10 @@
     <info:toolkit>
       <common:name>com.ibm.streamsx.health.sample.patientmonitoring.rules</common:name>
       <common:version>[1.0.0,2.0.0)</common:version>
+    </info:toolkit>
+    <info:toolkit>
+      <common:name>com.ibm.streamsx.inetserver</common:name>
+      <common:version>[4.3.2,5.0.0)</common:version>
     </info:toolkit>
   </info:dependencies>
   <info:sabFiles>
