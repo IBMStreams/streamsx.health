@@ -16,6 +16,7 @@ This is necessary if you are running on a system not supported by Streams.
 
 ### Endpoint-monitor ###
 Original repository: https://github.com/IBMStreams/endpoint-monitor
+Updated repository: https://github.com/kenguo573/endpoint-monitor
 Some of the UI functionalities are provided through HTTP operators, and they won't work without setting up an endpoint-monitor.
 1. SSH into a System-S engineering node.
 2. Clone / pull from the [streams.helm-charts](https://github.ibm.com/IBM-Streams/streams.helm-charts) repository, and add the `bin` directory to your PATH.
