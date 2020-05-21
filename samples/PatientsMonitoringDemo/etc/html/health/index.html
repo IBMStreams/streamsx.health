@@ -80,7 +80,7 @@
           <br />
           <br />
           <h5>State</h5>
-          <p><input type="checkbox" name="state[]" value="healthy" checked="checked" id="healthyFilter"> Healthy</p>
+          <p><input type="checkbox" name="state[]" value="stable" checked="checked" id="stableFilter"> Stable</p>
           <p><input type="checkbox" name="state[]" value="alert" checked="checked" id="alertFilter"> Alert</p>
           <br />
           <h5>Doctor</h5>
@@ -89,25 +89,19 @@
           <p><input type="checkbox" name="doctor[]" value="jack" checked="checked" id="jackFilter"> Jack</p>
           <p><input type="checkbox" name="doctor[]" value="jasmine" checked="checked" id="jasmineFilter"> Jasmine</p>
           <br />
-          <h5>Ward</h5>
-          <p><input type="checkbox" name="ward[]" value="emergency" checked="checked" id="emergencyFilter"> Emergency
-          </p>
-          <p><input type="checkbox" name="ward[]" value="icu" checked="checked" id="icuFilter"> ICU</p>
-          <p><input type="checkbox" name="ward[]" value="cardiology" checked="checked" id="cardiologyFilter"> Cardiology
-          </p>
-          <p><input type="checkbox" name="ward[]" value="oncology" checked="checked" id="oncologyFilter"> Oncology</p>
-          <br />
-          <h5>Floor</h5>
-          <p><input type="checkbox" name="floor[]" value="1" checked="checked" id="1Filter"> 1</p>
-          <p><input type="checkbox" name="floor[]" value="2" checked="checked" id="2Filter"> 2</p>
-          <p><input type="checkbox" name="floor[]" value="3" checked="checked" id="3Filter"> 3</p>
-          <p><input type="checkbox" name="floor[]" value="4" checked="checked" id="4Filter"> 4</p>
+          <h5>Unit</h5>
+          <p><input type="checkbox" name="unit[]" value="er" checked="checked" id="erFilter"> ER</p>
+          <p><input type="checkbox" name="unit[]" value="icu" checked="checked" id="icuFilter"> ICU</p>
+          <p><input type="checkbox" name="unit[]" value="neonatalICU" checked="checked" id="neonatalICUFilter"> Neonatal ICU</p>
+          <p><input type="checkbox" name="unit[]" value="pediatricICU" checked="checked" id="pediatricICUFilter"> Pediatric ICU</p>
+          <p><input type="checkbox" name="unit[]" value="neuroICU" checked="checked" id="neuroICUFilter"> Neuro ICU</p>
+          <p><input type="checkbox" name="unit[]" value="sdu" checked="checked" id="sduFilter"> SDU</p>
+          <p><input type="checkbox" name="unit[]" value="cardiology" checked="checked" id="cardiologyFilter"> Cardiology</p>
+          <p><input type="checkbox" name="unit[]" value="oncology" checked="checked" id="oncologyFilter"> Oncology</p>
           <br />
           <h5>Isolation</h5>
-          <p><input type="checkbox" name="isolation[]" value="isolated" checked="checked" id="isolatedFilter"> Isolated
-          </p>
-          <p><input type="checkbox" name="isolation[]" value="unisolated" checked="checked" id="isolatedFilter">
-            Unisolated</p>
+          <p><input type="checkbox" name="isolation[]" value="isolated" checked="checked" id="isolatedFilter"> Isolated</p>
+          <p><input type="checkbox" name="isolation[]" value="unisolated" checked="checked" id="isolatedFilter">Unisolated</p>
       </div>
       <div class="col-lg-11 text-left" style="margin-top: 10px">
         <div class="container-fluid">
@@ -202,8 +196,7 @@
 
     var ageTags = ["child", "youth", "adult", "senior"];
     var doctorTags = ["jane", "jack", "john", "jasmine"];
-    var wardTags = ["emergency", "icu", "cardiology", "oncology"];
-    var floorTags = ["1", "2", "3", "4"];
+    var unitTags = ["er", "icu", "neonatalICU", "pediatricICU", "neuroICU", "sdu", "cardiology", "oncology"];
     var isolationTags = ["isolated", "unisolated"];
 
     var patientMap = {};
@@ -224,8 +217,7 @@
 
           tags.push(ageTags[Math.floor(Math.random() * ageTags.length)]); // select age tag
           tags.push(doctorTags[Math.floor(Math.random() * doctorTags.length)]); // select doctor tag
-          tags.push(wardTags[Math.floor(Math.random() * wardTags.length)]); // select ward tag
-          tags.push(floorTags[Math.floor(Math.random() * floorTags.length)]); // select floor tag
+          tags.push(unitTags[Math.floor(Math.random() * unitTags.length)]); // select unit tag
           tags.push(isolationTags[Math.floor(Math.random() * isolationTags.length)]); // select isolation tag
 
           patientTags[patientId] = tags;
@@ -239,7 +231,7 @@
     function stateFilter(patientId) {
       var values = [];
       $.each($("input[name='state[]']:checked"), function () { values.push($(this).val()); });
-      return (values.includes('healthy') && patientMap[patientId].alert !== true)
+      return (values.includes('stable') && patientMap[patientId].alert !== true)
         || (values.includes('alert') && patientMap[patientId].alert === true);
     }
     function activityFilter(patientId) {
@@ -262,14 +254,9 @@
       $.each($("input[name='doctor[]']:checked"), function () { values.push($(this).val()); });
       return patientTags[patientId].filter(function (n) { return values.includes(n); }).length > 0;
     }
-    function wardFilter(patientId) {
+    function unitFilter(patientId) {
       var values = [];
-      $.each($("input[name='ward[]']:checked"), function () { values.push($(this).val()); });
-      return patientTags[patientId].filter(function (n) { return values.includes(n); }).length > 0;
-    }
-    function floorFilter(patientId) {
-      var values = [];
-      $.each($("input[name='floor[]']:checked"), function () { values.push($(this).val()); });
+      $.each($("input[name='unit[]']:checked"), function () { values.push($(this).val()); });
       return patientTags[patientId].filter(function (n) { return values.includes(n); }).length > 0;
     }
     function isolationFilter(patientId) {
@@ -376,8 +363,7 @@
       var showPatientsArray = patientsArray
         .filter(stateFilter)
         .filter(doctorFilter)
-        .filter(wardFilter)
-        .filter(floorFilter)
+        .filter(unitFilter)
         .filter(isolationFilter);
 
       // hide patients that have been filtered out
@@ -680,8 +666,7 @@
     $('#checkAll').click(function () {
       $.each($("input[name='state[]']"), function () { $(this).prop('checked', true); });
       $.each($("input[name='doctor[]']"), function () { $(this).prop('checked', true); });
-      $.each($("input[name='ward[]']"), function () { $(this).prop('checked', true); });
-      $.each($("input[name='floor[]']"), function () { $(this).prop('checked', true); });
+      $.each($("input[name='unit[]']"), function () { $(this).prop('checked', true); });
       $.each($("input[name='isolation[]']"), function () { $(this).prop('checked', true); });
       displayPatients();
     });
@@ -689,8 +674,7 @@
     $('#checkNone').click(function () {
       $.each($("input[name='state[]']"), function () { $(this).prop('checked', false); });
       $.each($("input[name='doctor[]']"), function () { $(this).prop('checked', false); });
-      $.each($("input[name='ward[]']"), function () { $(this).prop('checked', false); });
-      $.each($("input[name='floor[]']"), function () { $(this).prop('checked', false); });
+      $.each($("input[name='unit[]']"), function () { $(this).prop('checked', false); });
       $.each($("input[name='isolation[]']"), function () { $(this).prop('checked', false); });
       displayPatients();
     });
