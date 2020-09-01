@@ -1,7 +1,9 @@
 # Healthcare Python Streaming Application Demo
 This application demonstrates how users can develop Python Streaming Applications from a Jupyter Notebook. The Jupyter Notebook ultimately submits two Streams applications to a local Streams cluster. The first application is a pre-compiled SPL application that simulates patient waveform and vital data, as well as publishes the data to a topic. The second application is a Python Topology application written using the Streams Python API. This application subscribes to the topic containing the patient data, performs analysis on the waveforms and sends all of the data, including the results of the analysis, to the Streams view server.
 
-Submitting the Python application from the Notebook allows for connecting to the Streams view server in order to retrieve the data. Once the data has been retrieved, it can be analyzed, manipulated or visualized like any other data accessed from a notebook. In the case of this demo, waveform graphs and numerical widgets are being used to display the healthcare data of the patient. 
+Submitting the Python application from the Notebook allows for connecting to the Streams view server in order to retrieve the data. Once the data has been retrieved, it can be analyzed, manipulated or visualized like any other data accessed from a notebook. In the case of this demo, waveform graphs and numerical widgets are being used to display the healthcare data of the patient, as show below.
+
+![Demo visualization](images/notebook-viz-large.gif)
 
 This sample is built using the [BioSPPy](http://biosppy.readthedocs.io/en/stable/) Signal Processing Libraries.
 
@@ -9,12 +11,14 @@ The following diagram outlines the architecture of the demo.
 
 ![Demo Architecture](images/architecture_diagram.jpg)
 
-## VM Image Setup
+## Run the sample notebook 
+The sample is [in the notebooks folder](notebooks/HealthcareDemo-Distributed.ipynb).
 
-  1. Download Anaconda 3.5 and install. Allow Anaconda to update your .bashrc. You will also need to update the version of the Bokeh library installed
+
+## Instructions to run from a Jupyter Notebook in the Streams Quick Start Edition
+
+  1. Download [Anaconda 3.6 and install](https://docs.anaconda.com/anaconda/install/linux/). Allow Anaconda to update your `.bashrc` file. You will also need to update the version of the Bokeh library installed
       ```
-      wget https://repo.continuum.io/archive/Anaconda3-4.1.1-Linux-x86_64.sh
-      bash Anaconda3-4.1.1-Linux-x86_64.sh
       conda install bokeh
       ```
 
