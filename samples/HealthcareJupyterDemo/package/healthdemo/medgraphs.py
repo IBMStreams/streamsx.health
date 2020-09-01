@@ -95,8 +95,8 @@ class PoincareGraph:
         self.poincare.yaxis.axis_label = "RR(n+1)"
 
         self.poincare_graph = self.poincare.circle(self.pc_xdata, self.pc_ydata, size=5, color="navy", alpha=0.5)
-        self.poincare.x_range = Range1d(start=0.5, end=1.0)
-        self.poincare.y_range = Range1d(start=0.5, end=1.0)
+        self.poincare.x_range = Range1d(start=0, end=1.5)
+        self.poincare.y_range = Range1d(start=0, end=1.5)
 
     def get_figure(self):
         return self.poincare
