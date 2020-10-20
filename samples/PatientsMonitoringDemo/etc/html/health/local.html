@@ -266,15 +266,6 @@
       return patientTags[patientId].filter(function (n) { return values.includes(n); }).length > 0;
     }
 
-    function getJobId(pathname) {
-      var components = pathname.split('/');
-      for (let i = 0; i < components.length; i++) {
-        if (components[i] === "jobs") {
-          return components[i + 1];
-        }
-      }
-    }
-
     function patientEquals(a, b) {
       // a is guaranteed to be not null
       if (!b) {
@@ -295,8 +286,7 @@
     }
 
     function doStatusUpdate() {
-      var jobId = getJobId(window.location.pathname);
-      $.get("/streams/jobs/" + jobId + "/health/Status/ports/input/0/tuples", function (data, status) {
+      $.get("/health/Status/ports/input/0/tuples", function(data, status) {
         if (data.length == 0)
           return;
 
@@ -492,10 +482,9 @@
 
       var lastWindow = -1;
       var ts = 0;
-      var jobId = getJobId(window.location.pathname);
 
       var dataGetTimer = setInterval(function () {
-        $.get('/streams/jobs/' + jobId + '/health/WaveformData/ports/input/0/tuples?partition=' + patientId + '&partition=' + waveformName, function (data, status) {
+        $.get('/health/WaveformData/ports/input/0/tuples?partition=' + patientId  + '&partition=' + waveformName, function(data, status) {
           for (var idx in data) {
             if (data[idx].windowCount === lastWindow)
               return;
@@ -529,12 +518,11 @@
 
       var patientNums = [1, 4, 9, 12, 32, 44, 48, 55, 60, 70, 71, 72, 90, 98];
       var sortedPatientIds = Object.keys(patientMap).sort();
-      var jobId = getJobId(window.location.pathname);
 
       for (var idx in patientNums) {
         if (patientNums[idx] < sortedPatientIds.length) {
           var p = { patientId: sortedPatientIds[patientNums[idx]], isManipulationEnabled: manipulationEnabled };
-          $.post('/streams/jobs/' + jobId + '/health/Simulate/ports/output/0/inject', { jsonString: JSON.stringify(p) });
+          $.post('/health/Simulate/ports/output/0/inject', {jsonString : JSON.stringify(p)});
         }
         else {
           break;
@@ -545,8 +533,7 @@
     var timers = [];
 
     function updateVital(patientId, vitalType, elem) {
-      var jobId = getJobId(window.location.pathname);
-      $.get('/streams/jobs/' + jobId + '/health/VitalsData/ports/input/0/tuples?partition=' + patientId + '&partition=' + vitalType, function (data, status) {
+      $.get('/health/VitalsData/ports/input/0/tuples?partition=' + patientId + '&partition=' + vitalType, function(data, status) {
         if (data.length == 0)
           return;
 
@@ -557,15 +544,14 @@
     }
 
     function updateABP(patientId) {
-      var jobId = getJobId(window.location.pathname);
-      $.get('/streams/jobs/' + jobId + '/health/VitalsData/ports/input/0/tuples?partition=' + patientId + '&partition=' + BPSYS_CODE, function (data, status) {
+      $.get('/health/VitalsData/ports/input/0/tuples?partition=' + patientId + '&partition=' + BPSYS_CODE, function(data, status) {
         if (data.length == 0)
           return;
 
         var obs = data[0];
         var abpSysNumeral = numeral(obs.reading.value);
 
-        $.get('/streams/jobs/' + jobId + '/health/VitalsData/ports/input/0/tuples?partition=' + patientId + '&partition=' + BPDIA_CODE, function (data, status) {
+        $.get('/health/VitalsData/ports/input/0/tuples?partition=' + patientId + '&partition=' + BPDIA_CODE, function(data, status) {
           if (data.length == 0)
             return;
 
