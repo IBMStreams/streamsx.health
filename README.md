@@ -6,9 +6,9 @@ Our goal is to make it easy to create real-time healthcare analytics application
 
 ## Getting Started
 
-**NEW Release v0.1 is now available [here](https://github.com/IBMStreams/streamsx.health/releases/tag/v0.1)!**  See this [article](https://developer.ibm.com/streamsdev/2017/04/04/streams-healthcare-analytics-platform-first-pre-release-now-available/) to learn more about this release!
+**NEW Release v0.1 is now available [here](https://github.com/IBMStreams/streamsx.health/releases/tag/v0.1)!**  See this [post](https://github.com/IBMStreams/streamsx.health/wiki/First-Release-Overview) to learn more about this release!
 
-Follow the [**Getting Started Guide**](https://developer.ibm.com/streamsdev/2017/06/07/getting-started-streams-healthcare-analytics-platform/) to learn about how to leverage the services from the Streams Healthcare Analytics Platform
+Follow the [**Getting Started Guide**]https://github.com/IBMStreams/streamsx.health/wiki/Getting-Started) to learn about how to leverage the services from the Streams Healthcare Analytics Platform
 
 ## Streams Healthcare Demos
 
