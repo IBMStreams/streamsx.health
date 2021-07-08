@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+// *******************************************************************************
+// * Copyright (C)2017, International Business Machines Corporation and *
+// * others. All Rights Reserved. *
+// *******************************************************************************
+-->
+<project name="com.ibm.streamsx.objectstorage" basedir="." default="all">
+
+    <import file="../common-build.xml"/>
+
+	<property environment="env" />
+	<property name="streams.install" value="${env.STREAMS_INSTALL}" />
+	<property name="maven.bin" value="${env.M2_HOME}/bin/mvn" />
+	<property name="pom.file.param" value="pom.xml"/>
+	<property name="src.dir" location="impl/java/src" />
+	<property name="build.dir" location="impl/java/build" />
+	<property name="java.bin.dir" location="impl/java/bin" />
+	<property name="bin.dir" location="bin" />
+	<property name="output.dir" location="bin" />
+	<property name="spl-mt" value="${streams.install}/bin/spl-make-toolkit" />
+	<property name="impl.lib.dir" location="impl/lib" />
+	<property name="jarfile" value="com.ibm.streamsx.objectstorage.jar"/>
+	<property name="gensrc.dir" location="impl/java/src-gen" />
+	<property name="opt.dir" location="opt" />
+	<property name="downloads.dir" location="${opt.dir}/downloaded" />
+	<property name="downloads.test.dir" location="${opt.dir}/downloaded/test" />
+	<property name="stocator.release" value="1.0.10" />
+	<property name="test.mode" value="false" />
+	<property name="stocator.jar" location="${downloads.dir}/stocator-${stocator.release}.jar" />
+	<property name="aws.jar.pattern" location="${downloads.dir}/aws*" />
+	<available file="opt/downloaded/.no_download" type="file" property="no.maven.deps"/>
+
+	<target name="all" depends="indexToolkit"/>
+	
+	<target name="init">
+		<fail unless="env.M2_HOME" message="Environment variable M2_HOME not set. Please set this to point to the path of maven home directory" />
+		<mkdir dir="${build.dir}" />
+		<mkdir dir="${impl.lib.dir}" />
+		<mkdir dir="${gensrc.dir}" />
+		<mkdir dir="${src.dir}" />
+		<mkdir dir="${downloads.dir}" />
+		<mkdir dir="${downloads.test.dir}" />
+	</target>
+
+	<path id="cp.downloads">
+		<fileset dir="${opt.dir}" />
+		<fileset dir="${downloads.dir}" />
+	</path>
+
+	<path id="cp.streams">
+		<pathelement location="${streams.install}/lib/com.ibm.streams.operator.samples.jar" />
+	</path>
+
+	<path id="cp.manifest">
+		<path refid="cp.downloads" />		
+	</path>
+
+	<path id="cp.compile">
+		<path refid="cp.streams" />
+		<path refid="cp.manifest" />
+	</path>
+
+	<!-- Downloads libraries using maven -->
+	<target name="maven-deps" unless="no.maven.deps" depends="init">		
+		<exec executable="sh" failonerror="true">
+			<arg value="-c" />			
+			<arg value="${maven.bin} -f ${pom.file.param} --batch-mode dependency:copy-dependencies -DoutputDirectory=${downloads.dir}" />
+		</exec>
+		<!-- Remove stocator.jar. The toolkit itself contains
+		     already stocator.jar with patches. -->
+		<delete file="${stocator.jar}"/>
+		<delete file="${downloads.dir}/asm-3.1.jar"/>
+		<delete includeemptydirs="true">
+		    <fileset dir="${downloads.dir}" includes="aws-*.jar"/>
+		 </delete>
+	</target>
+
+	<target name="compile" depends="init">
+		<antcall target="maven-deps">
+			<param name="pom.file.param" value="pom.xml"/>
+		</antcall>
+		<javac srcdir="${src.dir}" destdir="${build.dir}" debug="true" includeantruntime="no">
+			<classpath>
+				<path refid="cp.compile" />
+			</classpath>
+			<compilerarg line="-s ${gensrc.dir}"/>
+		</javac>
+	</target>
+
+	<target name="package" depends="compile">
+		<jar destfile="${impl.lib.dir}/${jarfile}" 
+			 basedir="${build.dir}"
+			 filesonly="true">
+			<fileset dir="${src.dir}" includes="com/ibm/streamsx/objectstorage/messages/*.properties"/>
+			<manifest>
+				<attribute name="Class-Path" value="${jar.cp.manifest}" />
+			</manifest>
+		</jar>
+	</target>
+
+	<target name="clean">
+		<!-- toolkit clean -->
+		<exec executable="${spl-mt}"  failonerror="true">
+			<arg value="-c"/>
+			<arg value="-i"/>
+			<arg value="."/>
+    		</exec>
+		<delete dir="${build.dir}" />
+		<delete dir="${java.bin.dir}" />
+		<delete dir="${gensrc.dir}" />
+		<delete dir="${downloads.dir}" />
+		<delete dir="${downloads.test.dir}" />
+		<delete dir="${basedir}/output" quiet="true"/>
+		<delete dir="${bin.dir}" quiet="true"/>
+		<delete dir="${output.dir}" quiet="true"/>
+		<delete file="${impl.lib.dir}/${jarfile}"/>
+		<delete dir="${impl.lib.dir}"  quiet="true"/>
+		<delete file="${basedir}/.toolkitList" quiet="true"/>
+		<!-- toolkit clean with spl-make-toolkit does not delete generated operator xml files -->
+		<delete dir="${basedir}/com.ibm.streamsx.objectstorage.s3/native.function" quiet="true"/>
+		<delete includeemptydirs="true">
+	    		<fileset dir="${basedir}" includes="com.ibm.streamsx.objectstorage/ObjectStorage*/**"/>
+		</delete>
+		<delete includeemptydirs="true">
+	    		<fileset dir="${basedir}" includes="com.ibm.streamsx.objectstorage.s3/S3ObjectStorage*/**"/>
+		</delete>
+	</target>
+	
+	<target name="indexToolkit" depends="package">
+		<echo message="Tookit to index: ${basedir}"/>
+		<exec executable="${spl-mt}">
+			<arg value="--directory"/>
+			<arg value="${basedir}"/>
+			<arg value="-m"/>
+		</exec>
+	</target>
+	
+	<target name="test">
+		<antcall target="maven-deps">
+			 <param name="pom.file.param" value="pom.test.xml"/>
+			 <param name="downloads.dir" value="${downloads.test.dir}"/>
+		</antcall>
+	</target>
+</project>
