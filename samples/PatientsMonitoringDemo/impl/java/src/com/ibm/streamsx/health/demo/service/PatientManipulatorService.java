@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.lang.Math;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -39,165 +40,172 @@ import com.ibm.streamsx.topology.json.JSONSchemas;
 import com.ibm.streamsx.topology.spl.SPLStreams;
 
 /**
- * Description: This service will modify the value of an observation tuple
- * for specific patients. The control port is used to specify which patient
+ * Description: This service will modify the value of an observation tuple for
+ * specific patients. The control port is used to specify which patient
  * observations should be modified.
  * 
  * The values are modified by adding random Gaussian noise to each observation
- * value. 
+ * value.
  * 
  * Control port schema:
  * 
- * {
- * 	"patientId" : "string", 
- *  "isManipulationEnabled" : Boolean
- * }
+ * { "patientId" : "string", "isManipulationEnabled" : Boolean }
  */
 public class PatientManipulatorService {
 
-	public static final String PATIENT_MANIPULATOR_TOPIC = "patient-manipulator-topic"; 
-	public static final String CONTROL_INPUT_TOPIC = "manipulator.control.input";
-	
-	private Topology topo;
-	private ArrayList<String> topics = new ArrayList<String>();
-	
-	public PatientManipulatorService(String... topics) {
-		topo = new Topology("PatientManipulatorService");
-		topo.addClassDependency(Observation.class);
-		topo.addClassDependency(HealthDataBeaconService.class);
-		
-		for (int i = 0; i < topics.length; i++) {
-			if (!topics[i].isEmpty())
-				this.topics.add(topics[i]);
-		}
-	}
+  public static final String PATIENT_MANIPULATOR_TOPIC = "patient-manipulator-topic";
+  public static final String CONTROL_INPUT_TOPIC = "manipulator.control.input";
 
-	public void build() {
-				
-		TStream<Observation> obsStream = null;
-		
-		for (String topic  : topics) {
-			TStream<Observation> tstream = SubscribeConnector.subscribe(topo, topic.trim());
-			
-			if (obsStream == null)
-				obsStream = tstream;
-			else
-				obsStream = obsStream.union(tstream);
-		}
-		
-		TSink controlSink = SPLStreams.subscribe(topo, CONTROL_INPUT_TOPIC, JSONSchemas.JSON).convert(t -> t.getString(0)).asType(String.class).sink(new PatientController());
+  private Topology topo;
+  private ArrayList<String> topics = new ArrayList<String>();
 
-		TStream<Observation> modifiedObs = obsStream.modify(new Manipulator());
-		controlSink.colocate(modifiedObs);
-		
-		PublishConnector.publishObservation(modifiedObs, getPublishedTopic());
-	}
+  public PatientManipulatorService(String... topics) {
+    topo = new Topology("PatientManipulatorService");
+    topo.addClassDependency(Observation.class);
+    topo.addClassDependency(HealthDataBeaconService.class);
 
-	public String getPublishedTopic() {
-		return PATIENT_MANIPULATOR_TOPIC;
-	}
-	
-	public void run(Type type, Map<String, Object> submissionParams) throws Exception {
-		build();
-		StreamsContextFactory.getStreamsContext(type).submit(topo).get();
-	}
+    for (int i = 0; i < topics.length; i++) {
+      if (!topics[i].isEmpty())
+        this.topics.add(topics[i]);
+    }
+  }
 
-	private static class Manipulator implements UnaryOperator<Observation> {
-		private static final long serialVersionUID = 1L;
-		
-		private Map<String, AbstractVitalsGenerator> generators;
-		
-		public Manipulator() {
-		
-		}
-		
-		public Object readResolve() {
-			generators = new HashMap<String, AbstractVitalsGenerator>();
-			generators.put(ReadingTypeCode.HEART_RATE.name(), new HeartRateDataGenerator("", VitalsDataRange.HIGH));
-			generators.put(ReadingTypeCode.BP_SYSTOLIC.name(), new ABPSystolicDataGenerator("", VitalsDataRange.HIGH));
-			generators.put(ReadingTypeCode.BP_DIASTOLIC.name(), new ABPDiastolicDataGenerator("", VitalsDataRange.HIGH));
-			generators.put(ReadingTypeCode.TEMPERATURE.name(), new TemperatureDataGenerator("", VitalsDataRange.HIGH));
-			generators.put(ReadingTypeCode.SPO2.name(), new SpO2DataGenerator("", VitalsDataRange.LOW));
-			
-			return this;
-		}
-		
-		@Override
-		public Observation apply(Observation obs) {
-			String patientId = obs.getPatientId();			
-			if(PatientsManager.getInstance().has(patientId)) {
-				Reading reading = obs.getReading();
-				if(isHeartRate(obs)) {
-					reading.setValue(generators.get(ReadingTypeCode.HEART_RATE.name()).get().getReading().getValue());
-				} else if(isBPSystolic(obs)) {
-					reading.setValue(generators.get(ReadingTypeCode.BP_SYSTOLIC.name()).get().getReading().getValue());
-				} else if(isBPDiastolic(obs)) {
-					reading.setValue(generators.get(ReadingTypeCode.BP_DIASTOLIC.name()).get().getReading().getValue());
-				} else if(isTemperature(obs)) {
-					reading.setValue(generators.get(ReadingTypeCode.TEMPERATURE.name()).get().getReading().getValue());
-				} else if(isSpO2(obs)) {
-					reading.setValue(generators.get(ReadingTypeCode.SPO2.name()).get().getReading().getValue());
-				}
-			}
-			
-			return obs;
-		}
-	}
-	
-	private static class PatientController implements Consumer<String> {
-		private static final long serialVersionUID = 1L;
+  public void build() {
 
-		private transient Gson gson;
-		
-		public Object readResolve() {
-			gson = new Gson();
-			return this;
-		}
-		
-		@Override
-		public void accept(String controlData) {
-			JsonObject jsonObj = gson.fromJson(controlData, JsonObject.class);
-			String patientId = jsonObj.get("patientId").getAsString();
-			boolean isManipulating = jsonObj.get("isManipulationEnabled").getAsBoolean();
-			if(isManipulating) {
-				PatientsManager.getInstance().addPatient(patientId);
-			} else {
-				PatientsManager.getInstance().removePatient(patientId);
-			}
-		} 		
-	}
-	
-	public static class PatientsManager implements Serializable {
-		private static final long serialVersionUID = 1L; 
+    TStream<Observation> obsStream = null;
 
-		private static PatientsManager instance;
+    for (String topic : topics) {
+      TStream<Observation> tstream = SubscribeConnector.subscribe(topo, topic.trim());
 
-		private Set<String> patients;
-		
-		public static PatientsManager getInstance() {
-			if(instance == null)
-				instance = new PatientsManager();
-			return instance;
-		}
+      if (obsStream == null)
+        obsStream = tstream;
+      else
+        obsStream = obsStream.union(tstream);
+    }
 
-		public PatientsManager() {
-			patients = new HashSet<String>();
-		}
+    TSink controlSink = SPLStreams.subscribe(topo, CONTROL_INPUT_TOPIC, JSONSchemas.JSON).convert(t -> t.getString(0))
+        .asType(String.class).sink(new PatientController());
 
-		public boolean has(String patientId) {
-			return patients.contains(patientId);
-		}
-		
-		public void addPatient(String patientId) {
-			patients.add(patientId);
-		}
+    TStream<Observation> modifiedObs = obsStream.modify(new Manipulator());
+    controlSink.colocate(modifiedObs);
 
-		public void removePatient(String patientId) {
-			patients.remove(patientId);
-		}
-		
-		public Set<String> getPatients() {
-			return patients;
-		}
-	}
+    PublishConnector.publishObservation(modifiedObs, getPublishedTopic());
+  }
+
+  public String getPublishedTopic() {
+    return PATIENT_MANIPULATOR_TOPIC;
+  }
+
+  public void run(Type type, Map<String, Object> submissionParams) throws Exception {
+    build();
+    StreamsContextFactory.getStreamsContext(type).submit(topo).get();
+  }
+
+  private static class Manipulator implements UnaryOperator<Observation> {
+    private static final long serialVersionUID = 1L;
+
+    private Map<String, AbstractVitalsGenerator> generators;
+
+    public Manipulator() {
+
+    }
+
+    public Object readResolve() {
+      generators = new HashMap<String, AbstractVitalsGenerator>();
+      generators.put(ReadingTypeCode.HEART_RATE.name(), new HeartRateDataGenerator("", VitalsDataRange.HIGH));
+      generators.put(ReadingTypeCode.BP_SYSTOLIC.name(), new ABPSystolicDataGenerator("", VitalsDataRange.HIGH));
+      generators.put(ReadingTypeCode.BP_DIASTOLIC.name(), new ABPDiastolicDataGenerator("", VitalsDataRange.HIGH));
+      generators.put(ReadingTypeCode.TEMPERATURE.name(), new TemperatureDataGenerator("", VitalsDataRange.HIGH));
+      generators.put(ReadingTypeCode.SPO2.name(), new SpO2DataGenerator("", VitalsDataRange.LOW));
+
+      return this;
+    }
+
+    @Override
+    public Observation apply(Observation obs) {
+      String patientId = obs.getPatientId();
+      if (PatientsManager.getInstance().has(patientId)) {
+        Double alerts = PatientsManager.getInstance().getAlerts(patientId);
+        Reading reading = obs.getReading();
+        if (isHeartRate(obs)) {
+          reading.setValue(generators.get(ReadingTypeCode.HEART_RATE.name()).get().getReading().getValue());
+        } else if (isBPSystolic(obs) && alerts > 0.6) {
+          reading.setValue(generators.get(ReadingTypeCode.BP_SYSTOLIC.name()).get().getReading().getValue());
+        } else if (isBPDiastolic(obs) && alerts > 0.7) {
+          reading.setValue(generators.get(ReadingTypeCode.BP_DIASTOLIC.name()).get().getReading().getValue());
+        } else if (isTemperature(obs) && alerts > 0.8) {
+          reading.setValue(generators.get(ReadingTypeCode.TEMPERATURE.name()).get().getReading().getValue());
+        } else if (isSpO2(obs) && alerts > 0.9) {
+          reading.setValue(generators.get(ReadingTypeCode.SPO2.name()).get().getReading().getValue());
+        }
+      }
+
+      return obs;
+    }
+  }
+
+  private static class PatientController implements Consumer<String> {
+    private static final long serialVersionUID = 1L;
+
+    private transient Gson gson;
+
+    public Object readResolve() {
+      gson = new Gson();
+      return this;
+    }
+
+    @Override
+    public void accept(String controlData) {
+      JsonObject jsonObj = gson.fromJson(controlData, JsonObject.class);
+      String patientId = jsonObj.get("patientId").getAsString();
+      boolean isManipulating = jsonObj.get("isManipulationEnabled").getAsBoolean();
+      if (isManipulating) {
+        PatientsManager.getInstance().addPatient(patientId);
+      } else {
+        PatientsManager.getInstance().removePatient(patientId);
+      }
+    }
+  }
+
+  public static class PatientsManager implements Serializable {
+    private static final long serialVersionUID = 1L;
+
+    private static PatientsManager instance;
+
+    private Set<String> patients;
+    // randomly generated double determines what alerts are produced
+    private Map<String, Double> patientAlerts = new HashMap<String, Double>();
+
+    public static PatientsManager getInstance() {
+      if (instance == null)
+        instance = new PatientsManager();
+      return instance;
+    }
+
+    public PatientsManager() {
+      patients = new HashSet<String>();
+    }
+
+    public boolean has(String patientId) {
+      return patients.contains(patientId);
+    }
+
+    public void addPatient(String patientId) {
+      patients.add(patientId);
+      patientAlerts.put(patientId, Math.random());
+    }
+
+    public void removePatient(String patientId) {
+      patients.remove(patientId);
+      patients.remove(patientId);
+    }
+
+    public Set<String> getPatients() {
+      return patients;
+    }
+
+    public Double getAlerts(String patient) {
+      return patientAlerts.get(patient);
+    }
+  }
 }

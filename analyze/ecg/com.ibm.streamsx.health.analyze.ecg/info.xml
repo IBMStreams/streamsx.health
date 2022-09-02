@@ -9,7 +9,7 @@
   <info:dependencies>
     <info:toolkit>
       <common:name>com.ibm.streams.timeseries</common:name>
-      <common:version>[4.0.0,5.0.0)</common:version>
+      <common:version>[4.0.0,5.0.0]</common:version>
     </info:toolkit>
     <info:toolkit>
       <common:name>com.ibm.streamsx.health.ingest</common:name>

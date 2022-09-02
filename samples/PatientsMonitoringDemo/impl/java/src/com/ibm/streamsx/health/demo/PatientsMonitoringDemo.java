@@ -18,7 +18,7 @@ import com.ibm.streamsx.topology.context.StreamsContext.Type;
 
 public class PatientsMonitoringDemo {
 
-	private static Type contextType = Type.DISTRIBUTED;
+	private static Type contextType = Type.BUNDLE;
 
 	public static void main(String[] args) throws Exception {
 
